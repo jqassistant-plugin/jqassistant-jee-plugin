@@ -1,0 +1,10 @@
+= jQAssistant JEE Plugin
+
+This is the JEE Plugin of https://jqassistant.org[jQAssistant^].
+
+It provides concepts, constraints, and scanners for the following aspects:
+
+* JPA 2, e.g.
+** entities
+** persistence units
+** named queries
