@@ -116,14 +116,14 @@ class PersistenceXmlScannerPluginTest {
         doAnswer(new Answer<InputStream>() {
             @Override
             public InputStream answer(InvocationOnMock invocationOnMock) throws Throwable {
-                return PersistenceXmlScannerPluginTest.class.getResourceAsStream("/2_0/full/META-INF/persistence.xml");
+                return PersistenceXmlScannerPluginTest.class.getResourceAsStream("/jpa2/2_0/full/META-INF/persistence.xml");
             }
         }).when(item4V20).createStream();
 
         doAnswer(new Answer<InputStream>() {
             @Override
             public InputStream answer(InvocationOnMock invocationOnMock) throws Throwable {
-                return PersistenceXmlScannerPluginTest.class.getResourceAsStream("/2_1/full/META-INF/persistence.xml");
+                return PersistenceXmlScannerPluginTest.class.getResourceAsStream("/jpa2/2_1/full/META-INF/persistence.xml");
             }
         }).when(item4V21).createStream();
 
@@ -131,14 +131,14 @@ class PersistenceXmlScannerPluginTest {
         doAnswer(new Answer<InputStream>() {
             @Override
             public InputStream answer(InvocationOnMock invocationOnMock) throws Throwable {
-                return PersistenceXmlScannerPluginTest.class.getResourceAsStream("/2_0/minimal/META-INF/persistence.xml");
+                return PersistenceXmlScannerPluginTest.class.getResourceAsStream("/jpa2/2_0/minimal/META-INF/persistence.xml");
             }
         }).when(itemMinimal4V20).createStream();
 
         doAnswer(new Answer<InputStream>() {
             @Override
             public InputStream answer(InvocationOnMock invocationOnMock) throws Throwable {
-                return PersistenceXmlScannerPluginTest.class.getResourceAsStream("/2_1/minimal/META-INF/persistence.xml");
+                return PersistenceXmlScannerPluginTest.class.getResourceAsStream("/jpa2/2_1/minimal/META-INF/persistence.xml");
             }
         }).when(itemMinimal4V21).createStream();
 

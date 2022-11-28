@@ -1,17 +1,23 @@
 <jqassistant-plugin xmlns="http://schema.jqassistant.org/plugin/v1.10"
                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                     xsi:schemaLocation="http://schema.jqassistant.org/plugin/v1.10 https://schema.jqassistant.org/plugin/jqassistant-plugin-v1.10.xsd"
-                    name="jQAssistant JPA 2 Plugin" id="jqa.plugin.jpa2">
+                    name="jQAssistant JEE Plugin" id="jqa.plugin.jee">
     <description>Provides a scanner for persistence.xml descriptors and rules for JPA2 specific elements (e.g. entities).</description>
     <model>
         <class>org.jqassistant.plugin.jee.jpa2.model.PersistenceXmlDescriptor</class>
         <class>org.jqassistant.plugin.jee.jpa2.model.PersistenceUnitDescriptor</class>
+        <class>org.jqassistant.plugin.jee.cdi.api.model.BeansXmlDescriptor</class>
+        <class>org.jqassistant.plugin.jee.cdi.api.model.CdiDescriptor</class>
     </model>
     <scanner>
         <class>org.jqassistant.plugin.jee.jpa2.scanner.PersistenceXmlScannerPlugin</class>
+        <class>org.jqassistant.plugin.jee.cdi.impl.scanner.BeansXmlScannerPlugin</class>
     </scanner>
     <rules>
-        <resource>jpa2.xml</resource>
+        <resource>jpa2/jpa2.xml</resource>
+        <resource>cdi/cdi.xml</resource>
+        <resource>cdi/decorator.xml</resource>
+        <resource>cdi/interceptor.xml</resource>
     </rules>
 </jqassistant-plugin>
 
