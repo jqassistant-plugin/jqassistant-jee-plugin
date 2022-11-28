@@ -1,0 +1,9 @@
+
+include::{docRoot}/com.buschmais.jqassistant.plugin/javaee6/asciidoc/scanner-ear.adoc[]
+
+include::{docRoot}/com.buschmais.jqassistant.plugin/javaee6/asciidoc/scanner-war.adoc[]
+
+include::{docRoot}/com.buschmais.jqassistant.plugin/javaee6/asciidoc/scanner-jsf.adoc[]
+
+include::{docRoot}/com.buschmais.jqassistant.plugin/javaee6/asciidoc/scanner-common.adoc[]
+
