@@ -32,7 +32,7 @@ class BeansXmlScannerPluginIT extends AbstractJavaPluginIT {
      */
     @Test
     void beansDescriptor() {
-        scanClassPathDirectory(new File(getClassesDirectory(BeansXmlScannerPluginIT.class), "cdi"));
+        scanClassPathDirectory(new File(getClassesDirectory(BeansXmlScannerPluginIT.class), "cdi")); // for XML documents
         store.beginTransaction();
         List<Object> column = query("MATCH (beans:Cdi:Beans:Xml:File) RETURN beans").getColumn("beans");
         assertThat(column.size(), equalTo(1));
