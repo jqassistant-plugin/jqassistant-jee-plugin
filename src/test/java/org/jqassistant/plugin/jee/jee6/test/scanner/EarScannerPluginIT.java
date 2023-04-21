@@ -3,7 +3,7 @@ package org.jqassistant.plugin.jee.jee6.test.scanner;
 import java.io.File;
 import java.util.List;
 
-import com.buschmais.jqassistant.plugin.common.test.AbstractPluginIT;
+import com.buschmais.jqassistant.core.test.plugin.AbstractPluginIT;
 import com.buschmais.jqassistant.plugin.java.api.model.PackageDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
 

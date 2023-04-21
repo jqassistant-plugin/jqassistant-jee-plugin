@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.buschmais.jqassistant.core.report.api.model.Result;
+import com.buschmais.jqassistant.core.report.api.model.Row;
 import com.buschmais.jqassistant.core.rule.api.model.Constraint;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
 
@@ -48,9 +49,9 @@ class CdiInjectionIT extends AbstractJavaPluginIT {
         Result<Constraint> result = constraintViolations.get(0);
         assertThat("Expected constraint " + ruleName, result, result(constraint(ruleName)));
 
-        List<Map<String, Object>> violatedBeans = result.getRows();
+        List<Row> violatedBeans = result.getRows();
         assertThat("Unexpected number of violations", violatedBeans.size(), equalTo(1));
-        assertThat("Unexpected bean name", BeanWithFieldInjection.class.getName(), equalTo(violatedBeans.get(0).get("invalidBean")));
+        assertThat("Unexpected bean name", BeanWithFieldInjection.class.getName(), equalTo(violatedBeans.get(0).getColumns().get("invalidBean").getValue()));
 
         store.commitTransaction();
     }
@@ -73,7 +74,7 @@ class CdiInjectionIT extends AbstractJavaPluginIT {
         assertThat("Unexpected number of violated constraints", constraintViolations.size(), equalTo(1));
         Result<Constraint> result = constraintViolations.get(0);
         assertThat("Expected constraint " + ruleName, result, result(constraint(ruleName)));
-        List<Map<String, Object>> violatedBeans = result.getRows();
+        List<Row> violatedBeans = result.getRows();
         assertThat("Unexpected number of violations", violatedBeans.size(), equalTo(0));
 
         store.commitTransaction();
@@ -98,7 +99,7 @@ class CdiInjectionIT extends AbstractJavaPluginIT {
         assertThat("Unexpected number of violated constraints", constraintViolations.size(), equalTo(1));
         Result<Constraint> result = constraintViolations.get(0);
         assertThat("Expected constraint " + ruleName, result, result(constraint(ruleName)));
-        List<Map<String, Object>> violations = result.getRows();
+        List<Row> violations = result.getRows();
         assertThat("Unexpected number of violations", violations.size(), equalTo(0));
 
         store.commitTransaction();
@@ -122,9 +123,9 @@ class CdiInjectionIT extends AbstractJavaPluginIT {
         Result<Constraint> result = constraintViolations.get(0);
         assertThat("Expected constraint " + ruleName, result, result(constraint(ruleName)));
 
-        List<Map<String, Object>> violations = result.getRows();
+        List<Row> violations = result.getRows();
         assertThat("Unexpected number of violations", violations, hasSize(1));
-        assertThat("Unexpected bean name", BeanWithFieldInjection.class.getName(), equalTo(violations.get(0).get("invalidBean")));
+        assertThat("Unexpected bean name", BeanWithFieldInjection.class.getName(), equalTo(violations.get(0).getColumns().get("invalidBean").getValue()));
 
         store.commitTransaction();
     }
