@@ -7,7 +7,7 @@ on:
       java_version:
         description: Java version to use
         type: string
-        required: true
+        required: false
         default: 17
       branch:
         description: "The branch to checkout when cutting the release."
