@@ -5,6 +5,10 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'docs/**'
+      - 'java/**'
+      - 'README.md'
     tags-ignore:
       - "*"
   pull_request:
@@ -13,7 +17,7 @@ on:
   workflow_dispatch: {}
 
 concurrency:
-  group: build-${{ github.ref }}
+  group: build-java-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
