@@ -10,9 +10,9 @@ on:
         required: false
         default: 17
       branch:
-        description: "Marks all generated classes with the label :Generated."
+        description: "The branch to checkout when cutting the release."
         required: true
-        default: "master"
+        default: "main"
       releaseVersion:
         description: "Default version to use when preparing a release."
         required: true
