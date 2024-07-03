@@ -27,6 +27,10 @@ It provides concepts, constraints, and scanners for the following aspects:
 ** persistence units
 ** named queries
 
+== Available Scanners
+
+* src/main/asciidoc/cdi-scanner.adoc[CDI]
+
 == Available Constraints
 
 |===
