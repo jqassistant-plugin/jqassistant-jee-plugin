@@ -27,6 +27,14 @@ It provides concepts, constraints, and scanners for the following aspects:
 ** persistence units
 ** named queries
 
+
+== Available Scanners
+
+- link:src/main/asciidoc/scanner.adoc#persistencexml-files[persistence.xml]
+- link:src/main/asciidoc/scanner.adoc#beansxml-files[beans.xml]
+- link:src/main/asciidoc/scanner.adoc#war-files[WAR files]
+- link:src/main/asciidoc/scanner.adoc#ear-files[EAR files]
+
 == Available Constraints
 
 |===
