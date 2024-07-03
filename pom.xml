@@ -46,8 +46,6 @@
   </scm>
 
     <properties>
-        <jqa-java-plugin.version>2.3.0</jqa-java-plugin.version>
-        <jqa-plugin-common.version>2.3.0</jqa-plugin-common.version>
         <jqa-xml-plugin.version>2.3.0</jqa-xml-plugin.version>
     </properties>
 
@@ -177,7 +175,6 @@
         <dependency>
             <groupId>com.buschmais.jqassistant.plugin</groupId>
             <artifactId>common</artifactId>
-            <version>${jqa-plugin-common.version}</version>
         </dependency>
         <dependency>
             <groupId>com.buschmais.jqassistant.plugin</groupId>
@@ -187,20 +184,18 @@
         <dependency>
             <groupId>com.buschmais.jqassistant.plugin</groupId>
             <artifactId>java</artifactId>
-            <version>${jqa-java-plugin.version}</version>
+
         </dependency>
         <dependency>
             <groupId>com.buschmais.jqassistant.plugin</groupId>
             <artifactId>common</artifactId>
             <type>test-jar</type>
-            <version>${jqa-plugin-common.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.buschmais.jqassistant.plugin</groupId>
             <artifactId>java</artifactId>
             <type>test-jar</type>
-            <version>${jqa-java-plugin.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
