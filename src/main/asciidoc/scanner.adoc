@@ -1,5 +1,9 @@
+:toc:
+
+= JEE Scanners
+
 [[PersistenceScanner]]
-== Scanner for persistence.xml files
+== Persistence.xml files
 Imports persistence descriptors from `META-INF/persistence.xml` or
 `WEB-INF/persistence.xml` files.
 
@@ -50,7 +54,7 @@ A persistence unit.
 ---
 
 [[BeansScanner]]
-== Scanner for beans.xml files
+== Beans.xml files
 
 Imports bean descriptors from `META-INF/beans.xml` or `WEB-INF/beans.xml` files.
 
@@ -79,7 +83,7 @@ Represents a `beans.xml` file.
 ---
 
 [[WarArchiveScanner]]
-== Scanner for WAR files
+== WAR files
 Imports WAR (Web Application Archive) files.
 
 === Nodes labeled with `:File:Web:Application:Archive`
@@ -159,7 +163,7 @@ Represents a servlet declaration.
 ---
 
 [[EarArchiveScanner]]
-== Scanner for EAR files
+== EAR files
 Imports EAR (Enterprise ARchive) files.
 
 === Nodes labeled with `:File:Enterprise:Application:Archive`
