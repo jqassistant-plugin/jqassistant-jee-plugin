@@ -1,11 +1,12 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.jqassistant.plugin</groupId>
         <artifactId>parent</artifactId>
-        <version>2.0.0</version>
-        <relativePath />
+        <version>2.3.0</version>
+        <relativePath/>
     </parent>
 
     <artifactId>jqassistant-jee-plugin</artifactId>
@@ -40,15 +41,14 @@
 
     <scm>
         <connection>scm:git:https://github.com/jqassistant-plugin/jqassistant-jee-plugin.git</connection>
-        <developerConnection>scm:git:https://github.com/jqassistant-plugin/jqassistant-jee-plugin.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/jqassistant-plugin/jqassistant-jee-plugin.git
+        </developerConnection>
         <url>https://github.com/jqassistant-plugin/jqassistant-jee-plugin</url>
-    <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <properties>
-        <jqa-java-plugin.version>2.0.0</jqa-java-plugin.version>
-        <jqa-plugin-common.version>2.0.0</jqa-plugin-common.version>
-        <jqa-xml-plugin.version>2.0.0</jqa-xml-plugin.version>
+        <jqa-xml-plugin.version>2.3.0</jqa-xml-plugin.version>
     </properties>
 
 
@@ -57,7 +57,7 @@
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.14.0</version>
+                <version>0.15.3</version>
                 <executions>
                     <execution>
                         <goals>
@@ -130,6 +130,12 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>2.3.2</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
                 <groupId>javax.enterprise</groupId>
                 <artifactId>cdi-api</artifactId>
                 <version>1.2</version>
@@ -170,41 +176,47 @@
             <artifactId>test</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.buschmais.jqassistant.neo4j</groupId>
-            <artifactId>embedded</artifactId>
+            <groupId>com.buschmais.xo</groupId>
+            <artifactId>xo.api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.buschmais.jqassistant.plugin</groupId>
             <artifactId>common</artifactId>
-            <version>${jqa-plugin-common.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.buschmais.jqassistant.plugin</groupId>
             <artifactId>xml</artifactId>
             <version>${jqa-xml-plugin.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.buschmais.jqassistant.plugin</groupId>
             <artifactId>java</artifactId>
-            <version>${jqa-java-plugin.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.buschmais.jqassistant.plugin</groupId>
             <artifactId>common</artifactId>
             <type>test-jar</type>
-            <version>${jqa-plugin-common.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.buschmais.jqassistant.plugin</groupId>
             <artifactId>java</artifactId>
             <type>test-jar</type>
-            <version>${jqa-java-plugin.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
@@ -252,16 +264,21 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <!-- TODO to be removed if mockito version is updated in jQA core BOM -->
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.12.0</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>java-hamcrest</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

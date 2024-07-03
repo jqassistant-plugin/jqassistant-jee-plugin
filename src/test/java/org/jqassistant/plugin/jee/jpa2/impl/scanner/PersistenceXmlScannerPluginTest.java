@@ -40,7 +40,6 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
