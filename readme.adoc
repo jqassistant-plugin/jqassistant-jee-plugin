@@ -29,8 +29,7 @@ It provides concepts, constraints, and scanners for the following aspects:
 
 == Available Scanners
 
-* src/main/asciidoc/cdi-scanner.adoc[CDI]
-
+- cdi-scanner.adoc
 == Available Constraints
 
 |===
