@@ -30,6 +30,8 @@ It provides concepts, constraints, and scanners for the following aspects:
 == Available Scanners
 
 - link:src/main/asciidoc/cdi-scanner.adoc[CDI]
+- link:src/main/asciidoc/scanner.adoc[PersistenceScanner]
+- link:src/main/asciidoc/scanner.adoc[BeansScanner]
 
 == Available Constraints
 
