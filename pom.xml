@@ -156,7 +156,7 @@
             <dependency>
                 <groupId>org.wicketstuff</groupId>
                 <artifactId>javaee-inject-example-ear</artifactId>
-                <version>6.18.0</version>
+                <version>7.0.0</version>
                 <type>ear</type>
                 <scope>test</scope>
             </dependency>
