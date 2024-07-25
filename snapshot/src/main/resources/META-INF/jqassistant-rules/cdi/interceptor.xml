@@ -1,0 +1,35 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+
+    <concept id="interceptor:Interceptor">
+        <description>Labels all classes annotated by "javax.interceptor.Interceptor" with "Interceptor".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (interceptor:Type:Class)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(interceptorType:Type)
+            WHERE
+              interceptorType.fqn = "javax.interceptor.Interceptor"
+            SET
+              interceptor:Interceptor
+            RETURN
+              interceptor AS Interceptor
+        ]]></cypher>
+    </concept>
+
+    <concept id="interceptor:Binding">
+        <description>Labels all annotations annotated by "javax.interceptor.InterceptorBinding" with "Interceptor" and "Binding".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (binding:Type:Annotation)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(bindingType:Type)
+            WHERE
+              bindingType.fqn = "javax.interceptor.InterceptorBinding"
+            SET
+              binding:Interceptor:Binding
+            RETURN
+              binding AS InterceptorBinding
+        ]]></cypher>
+    </concept>
+
+</jqassistant-rules>

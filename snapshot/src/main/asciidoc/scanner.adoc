@@ -1,0 +1,294 @@
+:toc:
+
+= JEE Scanners
+
+[[PersistenceScanner]]
+== Persistence.xml files
+Imports persistence descriptors from `META-INF/persistence.xml` or
+`WEB-INF/persistence.xml` files.
+
+=== `:File:Jpa:Persistence`
+A `persistence.xml` file containing persistence units.
+
+.Properties of `:File:Jpa:Persistence`
+[options="header"]
+|====
+| Name     | Description
+| fileName | The file name
+| version  | The version of the JPA specification this descriptor represents, e.g. `2.0`
+|====
+
+.Relations of `:File:Jpa:Persistence`
+[options="header"]
+|====
+| Name     | Target label(s)          | Cardinality | Description
+| CONTAINS | <<:Jpa:PersistenceUnit>> | 0..n        | References a contained persistence unit
+|====
+
+[[:Jpa:PersistenceUnit]]
+=== :Jpa:PersistenceUnit
+A persistence unit.
+
+.Properties of `:Jpa:PersistenceUnit`
+[options="header"]
+|====
+| Name                   | Description
+| description            | The description of the persistence unit.
+| excludeUnlistedClasses | If the persistence unit should only contain listed classes or all entities.
+| transactionType        | The transaction type, can be `RESOURCE_LOCAL` or `JTA`
+| provider               | The class name of the JPA provider.
+| jtaDatasource          | The JNDI name of the transactional datasource
+| nonJtaDatasource       | The JNDI name of the non-transactional datasource
+| validationMode         | The validation mode, can be `NONE`, `CALLBACK` or `AUTO`
+| sharedCacheMode        | The shared cache mode, e.g. `NONE`
+|====
+
+.Relations of `:Jpa:PersistenceUnit`
+[options="header"]
+|====
+| Name      | Target label(s)     | Cardinality | Description
+| CONTAINS  | <<:Java:Type>>           | 0..n    | References a persistent type (entity) contained in the persistence unit
+| HAS       | <<:Value:Property>> | 0..n    | References a property of the persistence unit
+|====
+
+---
+
+[[BeansScanner]]
+== Beans.xml files
+
+Imports bean descriptors from `META-INF/beans.xml` or `WEB-INF/beans.xml` files.
+
+=== Nodes labeled with `:File:Cdi:Beans`
+
+Represents a `beans.xml` file.
+
+.Properties of `:File:Cdi:Beans`
+[options="header"]
+|====
+| Name               | Description
+| fileName           | The file name
+| version            | The version of the CDI specification this descriptor represents, e.g. `1.0`
+| beanDiscoveryMode  | The bean discovery mode, i.e. `all`, `annotated` or `none`
+|====
+
+.Relations of `:File:Cdi:Beans`
+[options="header"]
+|====
+| Name            | Target label(s)  | Cardinality | Description
+| HAS_INTERCEPTOR | <<:Java:Type>> | 0..n | References an interceptor type which is activated
+| HAS_DECORATOR   | <<:Java:Type>> | 0..n | References a decorator type which is activated
+| HAS_ALTERNATIVE | <<:Java:Type>> | 0..n | References an alternative type (class or stereotype annotation) which is activated
+|====
+
+---
+
+[[WarArchiveScanner]]
+== WAR files
+Imports WAR (Web Application Archive) files.
+
+=== Nodes labeled with `:File:Web:Application:Archive`
+A file representing WAR file.
+
+.Properties of `:File:Web:Application:Archive`
+[options="header"]
+|====
+| Name     | Description
+| fileName | The file name
+|====
+
+.Relations of `:File:Web:Application:Archive`
+[options="header"]
+|====
+| Name     | Target label(s) | Cardinality | Description
+| CONTAINS | <<:File>>       | 0..n        | References the files contained in the archive.
+|====
+
+[[WebXmlScanner]]
+=== Nodes labeled with `:File:Web:Xml`
+Represents a web application descriptor.
+
+.Relations of `:File:Web:Xml`
+[options="header"]
+|====
+| Name                    | Target label(s)     | Cardinality | Description
+| HAS_SESSION_CONFIG      | <<:SessionConfig>>  | 0..1 | References the session configuration.
+| HAS_SERVLET             | <<:Servlet>>        | 0..n | References a servlet declaration.
+| HAS_SERVLET_MAPPING     | ServletMapping      | 0..n | References a servlet mapping declaration.
+| HAS_FILTER              | Filter              | 0..n | References a filter declaration.
+| HAS_FILTER_MAPPING      | FilterMapping       | 0..n | References a filter mapping declaration.
+| HAS_LISTENER            | Listener            | 0..n | References a listener declaration.
+| HAS_CONTEXT_PARAM       | <<.ParamValue>>     | 0..n | References a context parameter declaration.
+| HAS_ERROR_PAGE          | ErrorPage           | 0..n | References an error page declaration.
+| HAS_SECURITY_CONSTRAINT | SecurityConstraint  | 0..n | References a security constraint declaration.
+| HAS_SECURITY_ROLE       | <<:SecurityRole>>   | 0..n | References a security role declaration.
+| HAS_LOGIN_CONFIG        | LoginConfig         | 0..n | References a login configuration.
+|====
+
+
+[[:SessionConfig]]
+=== Nodes labeled with `:SessionConfig`
+Represents a session configuration.
+
+.Properties of `:SessionConfig`
+[options="header"]
+|====
+| Name           | Description
+| sessionTimeout | The session timeout.
+|====
+
+
+[[:Servlet]]
+=== Nodes labeled with `:Servlet`
+Represents a servlet declaration.
+
+.Properties of `:Servlet`
+[options="header"]
+|====
+| Name          | Description
+| enabled       | Indicates if this servlet is enabled.
+| jspFile       | The JSP file representing the servlet.
+| loadOnStartup | Indicates whether the servlet will be loaded on startup.
+|====
+
+.Relations of `:Servlet`
+[options="header"]
+|====
+| Name     | Target label(s) | Cardinality | Description
+| HAS_DESCRIPTION       | <<:Description>>                   | 0..n | References a description of this descriptor.
+| HAS_DISPLAY_NAME      | <<:DisplayName>>                   | 0..n | References a display name of this descriptor.
+| HAS_ICON              | <<:Icon>>                          | 0..n | References an icon of this descriptor.
+| HAS_INIT_PARAM        | <<:ParamValue>>                    | 0..n | References a init parameter.
+|====
+
+---
+
+[[EarArchiveScanner]]
+== EAR files
+Imports EAR (Enterprise ARchive) files.
+
+=== Nodes labeled with `:File:Enterprise:Application:Archive`
+A file representing an EAR file.
+
+.Properties of `:File:Enterprise:Application:Archive`
+[options="header"]
+|====
+| Name     | Description
+| fileName | The file name
+|====
+
+.Relations of `:File:Enterprise:Application:Archive`
+[options="header"]
+|====
+| Name     | Target label(s) | Cardinality | Description
+| CONTAINS | <<:File>>       | 0..n        | References the files contained in the archive.
+|====
+
+[[ApplicationXmlScanner]]
+=== Nodes labeled with `:File:Enterprise:Application:Xml`
+Represents a Java EE application.xml descriptor.
+
+.Properties of `:File:Enterprise:Application:Xml`
+[options="header"]
+|====
+| Name              | Description
+| fileName          | The file name
+| initializeInOrder | If initialize-in-order is true, modules must be initialized in the order they're listed in the deployment descriptor
+| libraryDirectory  | The path to the library directory.
+|====
+
+.Relations of `:File:Enterprise:Application:Xml`
+[options="header"]
+|====
+| Name     | Target label(s) | Cardinality | Description
+| HAS_DESCRIPTION   | <<:Description>>                   | 0..n | References a description of this descriptor.
+| HAS_DISPLAY_NAME  | <<:DisplayName>>                   | 0..n | References a display name of this descriptor.
+| HAS_ICON          | <<:Icon>>                          | 0..n | References an icon of this descriptor.
+| HAS_MODULE        | <<:Enterprise:Application:Module>> | 1..n | References a module specified by this descriptor.
+| HAS_SECURITY_ROLE | <<:SecurityRole>>                  | 0..n | References a security role defined by this descriptor.
+|====
+
+[[:Enterprise:Application:Module]]
+=== Nodes labeled with `:Enterprise:Application:Module`
+Represents a declared module of a Java EE Java application. Can be qualified by either
+`:Ejb`, `:Web`, `:Connector` or `:JavaClient`.
+
+.Properties of `:Enterprise:Application:Module`
+[options="header"]
+|====
+| Name | Description
+| path | The path to the module archive within the enterprise application archive.
+|====
+
+[[:Enterprise:Application:Module:Web]]
+=== Nodes labeled with `:Enterprise:Application:Module:Web`
+Represents a declared web module of a Java EE Java application.
+
+.Properties of `:Enterprise:Application:Module:Web`
+[options="header"]
+|====
+| Name        | Description
+| contextRoot | The context root path to use for the web module.
+|====
+
+[[:Description]]
+=== Nodes labeled with `:Description`
+Represents an internationalized description.
+
+.Properties of `:Description`
+[options="header"]
+|====
+| Name     | Description
+| lang     | The language, e.g. `en`
+| value    | The description.
+|====
+
+
+[[:DisplayName]]
+=== Nodes labeled with `:DisplayName`
+Represents an internationalized display name.
+
+.Properties of `:DisplayName`
+[options="header"]
+|====
+| Name     | Description
+| lang     | The language, e.g. `en`
+| value    | The description.
+|====
+
+
+[[:Icon]]
+=== Nodes labeled with `:Icon`
+Represents an icon.
+
+.Properties of `:Icon`
+[options="header"]
+|====
+| Name      | Description
+| smallIcon | The file name of the small icon, e.g. `smallIcon.png`.
+| largeIcon | The file name of the large icon, e.g. `largeIcon.png`.
+|====
+
+
+[[:SecurityRole]]
+=== Nodes labeled with `:SecurityRole`
+Represents a security role.
+
+.Relations of `:SecurityRole`
+[options="header"]
+|====
+| Name            | Target label(s)  | Cardinality | Description
+| HAS_DESCRIPTION | <<:Description>> | 0..n        | References a description of this security role.
+| HAS_ROLE_NAME   | <<:Description>> | 1           | References the role name.
+|====
+
+
+[[:RoleName]]
+=== Nodes labeled with `:RoleName`
+Represents a role name.
+
+.Properties of `:RoleName`
+[options="header`]
+|====
+| Name | Description
+| name | The name of the role.
+|====

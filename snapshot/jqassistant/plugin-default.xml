@@ -1,0 +1,28 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10">
+
+    <group id="default">
+        <includeConcept refId="plugin:GeneratedType"/>
+    </group>
+
+    <concept id="plugin:GeneratedType">
+        <providesConcept refId="java:GeneratedType"/>
+        <description>Marks all generated classes with the label :Generated.</description>
+        <cypher>
+            <![CDATA[
+                MATCH
+                    (p:Package)-[:CONTAINS*]->(t:Type)
+                WHERE
+                    p.fqn IN [
+                        "org.jcp.xmlns.xml.ns.persistence",
+                        "com.sun.java.xml.ns.persistence",
+                        "org.jcp.xmlns.xml.ns.javaee",
+                        "com.sun.java.xml.ns.javaee"
+                    ]
+                SET
+                    t:Generated
+                RETURN
+                    t AS GeneratedType
+            ]]>
+        </cypher>
+    </concept>
+</jqassistant-rules>
