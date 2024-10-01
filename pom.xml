@@ -258,7 +258,7 @@
             <!-- TODO to be removed if mockito version is updated in jQA core BOM -->
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.14.0</version>
+            <version>5.14.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
