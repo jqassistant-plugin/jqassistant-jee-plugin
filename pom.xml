@@ -48,7 +48,7 @@
     </scm>
 
     <properties>
-        <jqa-xml-plugin.version>2.3.0</jqa-xml-plugin.version>
+        <jqa-xml-plugin.version>2.5.0</jqa-xml-plugin.version>
     </properties>
 
 
