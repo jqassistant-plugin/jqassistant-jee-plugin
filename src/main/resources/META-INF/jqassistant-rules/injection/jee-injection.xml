@@ -6,7 +6,7 @@
         <includeConcept refId="jee-injection:*"/>
         <includeConstraint refId="jee-injection:NoCombinationOfBeanProducersAndApplicationCode" severity="major"/>
         <includeConstraint refId="jee-injection:BeanProducerMustNotBeInvokedDirectly" severity="critical"/>
-        <includeConstraint refId="jee-injection:FieldInjectionIsNotAllowed" severity="major"/>
+        <includeConstraint refId="jee-injection:BeansMustNotUseFieldInjectionExceptEJBs" severity="major"/>
         <includeConstraint refId="jee-injection:FieldsOfInjectablesMustNotBeManipulated" severity="critical"/>
         <includeConstraint refId="jee-injection:InjectablesShouldBeHeldInFinalFields" severity="critical"/>
         <includeConstraint refId="jee-injection:InjectablesMustNotBeAccessedStatically" severity="critical"/>
@@ -14,6 +14,8 @@
         <includeConstraint refId="jee-injection:InjectablesMustNotBeInstantiated" severity="critical"/>
         <includeConstraint refId="jee-injection:InjectablesMustOnlyBeHeldInInjectables" severity="critical"/>
         <includeConstraint refId="jee-injection:JdkClassesMustNotBeInjectables" severity="critical"/>
+        <includeConstraint refId="jee-injection:BeansMustUseConstructorInjection" severity="critical"/>
+        <includeConstraint refId="jee-injection:BeansMustNotUseFieldInjection" severity="critical"/>
     </group>
 
     <concept id="jee-injection:Injectable">
