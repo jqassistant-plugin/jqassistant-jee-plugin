@@ -11,6 +11,7 @@
         <includeConcept refId="ejb3:Remote"/>
         <includeConcept refId="ejb3:Schedule"/>
         <includeConstraint refId="ejb3:ScheduleMethodInEjbContext"/>
+        <includeConstraint refId="ejb3:AvoidStatefulSessionBeans"/>
     </group>
 
     <concept id="ejb3:StatelessSessionBean">
@@ -94,6 +95,15 @@
             MATCH (c:Class)-[:DECLARES]->(m:Method:Schedule)
             WHERE NOT c:Ejb
             RETURN c.fqn AS invalidBean, m.name AS scheduledMethodName
+        ]]></cypher>
+    </constraint>
+
+    <constraint id="ejb3:AvoidStatefulSessionBeans">
+        <requiresConcept refId="ejb3:StatefulSessionBean"/>
+        <description>Stateful Session Beans sollen vermieden werden.</description>
+        <cypher><![CDATA[
+            MATCH (type:Type:Ejb:Stateful)
+            RETURN type AS `Stateful Session Bean`
         ]]></cypher>
     </constraint>
 

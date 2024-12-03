@@ -1,0 +1,35 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+
+    <group id="jsf:Default">
+        <includeConcept refId="jsf:JSFManagedBeans"/>
+        <includeConstraint refId="jsf:CDIBeansInsteadOfJSFManagedBeans"/>
+    </group>
+
+    <concept id="jsf:JSFManagedBeans">
+        <description>Labels all types annotated with @javax.faces.bean.ManagedBean with "Jsf" and "ManagedBean".</description>
+        <cypher><![CDATA[
+            MATCH
+              (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]-(a:Type)
+            WHERE
+              a.fqn="javax.faces.bean.ManagedBean"
+            SET
+              t:Jsf:ManagedBean
+            RETURN
+              t AS `JSF Managed Bean`
+    ]]></cypher>
+    </concept>
+
+    <constraint id="jsf:CDIBeansInsteadOfJSFManagedBeans">
+        <requiresConcept refId="jsf:JSFManagedBeans"/>
+        <description>Anstelle von JSF Managed Beans sollen CDI Beans verwendet werden.</description>
+        <cypher><![CDATA[
+            MATCH
+                (type:Type:Jsf:ManagedBean)
+            RETURN
+                type AS `JSF Managed Bean`
+        ]]></cypher>
+    </constraint>
+
+</jqassistant-rules>

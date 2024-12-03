@@ -2,6 +2,11 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
 
+    <group id="jee-cdi:Default">
+        <includeConstraint refId="cdi:BeansMustUseConstructorInjection"/>
+        <includeConstraint refId="cdi:BeansMustUseConstructorInjection"/>
+    </group>
+
     <concept id="cdi:InjectionPoint">
         <description>Labels all fields or methods annotated by @javax.inject.Inject with "Cdi" and "InjectionPoint".</description>
         <cypher><![CDATA[

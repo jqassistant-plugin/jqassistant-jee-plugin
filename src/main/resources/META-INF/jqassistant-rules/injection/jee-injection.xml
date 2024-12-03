@@ -1,0 +1,295 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v2.2"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v2.2 https://jqassistant.github.io/jqassistant/current/schema/jqassistant-rule-v2.2.xsd">
+
+    <group id="jee-injection:Default">
+        <includeConcept refId="jee-injection:*"/>
+        <includeConstraint refId="jee-injection:NoCombinationOfBeanProducersAndApplicationCode" severity="major"/>
+        <includeConstraint refId="jee-injection:BeanProducerMustNotBeInvokedDirectly" severity="critical"/>
+        <includeConstraint refId="jee-injection:FieldInjectionIsNotAllowed" severity="major"/>
+        <includeConstraint refId="jee-injection:FieldsOfInjectablesMustNotBeManipulated" severity="critical"/>
+        <includeConstraint refId="jee-injection:InjectablesShouldBeHeldInFinalFields" severity="critical"/>
+        <includeConstraint refId="jee-injection:InjectablesMustNotBeAccessedStatically" severity="critical"/>
+        <includeConstraint refId="jee-injection:InjectablesMustNotBeHeldInStaticVariables" severity="critical"/>
+        <includeConstraint refId="jee-injection:InjectablesMustNotBeInstantiated" severity="critical"/>
+        <includeConstraint refId="jee-injection:InjectablesMustOnlyBeHeldInInjectables" severity="critical"/>
+        <includeConstraint refId="jee-injection:JdkClassesMustNotBeInjectables" severity="critical"/>
+    </group>
+
+    <concept id="jee-injection:Injectable">
+        <description>Returns all injectables.</description>
+        <cypher><![CDATA[
+            MATCH
+              (injectable:JavaEE:Injectable)
+            RETURN
+              injectable as Injectable
+        ]]></cypher>
+    </concept>
+
+    <concept id="jee-injection:BeanProducer">
+        <providesConcept refId="jee-injection:Injectable"/>
+        <description>
+            Labels methods which are annotated with "@javax.enterprise.inject.Produces" with
+            "BeanProducer" and their return types with "jee" and "Injectable".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (:Type)-[:DECLARES]->(beanProducer:Method)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotationType:Type),
+              (beanProducer)-[:RETURNS]->(injectable:Type)
+            WHERE
+              annotationType.fqn = "javax.enterprise.inject.Produces"
+            SET
+              injectable:JavaEE:Injectable,
+              beanProducer:JavaEE:BeanProducer
+            RETURN
+              injectable as Injectable, collect(beanProducer) as BeanProducers
+            ORDER BY
+              Injectable.name
+        ]]></cypher>
+    </concept>
+
+    <concept id="jee-injection:InjectionPoint">
+        <description>Labels all fields or methods annotated by @javax.inject.Inject with "InjectionPoint".</description>
+        <cypher><![CDATA[
+            MATCH
+              (:Type)-[:DECLARES]->(member),
+              (member)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(injectType:Type)
+            WHERE
+              (member:Field or member:Method)
+              AND injectType.fqn="javax.inject.Inject"
+            SET
+              member:InjectionPoint
+            RETURN
+              member AS InjectionPoint
+            ORDER BY
+              member.name
+        ]]></cypher>
+    </concept>
+
+    <constraint id="jee-injection:BeanProducerMustNotBeInvokedDirectly">
+        <requiresConcept refId="jee-injection:BeanProducer"/>
+        <requiresConcept refId="java:GeneratedType"/>
+        <description>Bean-Producer-Methoden dürfen nicht direkt aufgerufen werden.</description>
+        <cypher><![CDATA[
+            MATCH
+              (artifact:Artifact)-[:CONTAINS]->(type:Type)-[:DECLARES]->(method:Method),
+              (beanType:Type)-[:DECLARES]->(beanProducer:JavaEE:BeanProducer),
+              (method)-[invokes:INVOKES]->(beanProducer)
+            WHERE NOT (
+              artifact:Test
+              OR type:Generated
+            )
+            RETURN
+              type as Type, invokes as Invocation, beanType as BeanProducerType, beanProducer as BeanProducer
+        ]]></cypher>
+        <report primaryColumn="Invocation"/>
+    </constraint>
+
+    <constraint id="jee-injection:FieldsOfInjectablesMustNotBeManipulated">
+        <requiresConcept refId="jee-injection:Injectable"/>
+        <requiresConcept refId="java:TypeAssignableFrom"/>
+        <requiresConcept refId="java:PostConstruct"/>
+        <requiresConcept refId="java:PreDestroy"/>
+        <requiresConcept refId="java:GeneratedType"/>
+        <description>Fields of injectable types must not be manipulated, except from constructors.</description>
+        <cypher><![CDATA[
+            MATCH
+              (artifact:Artifact)-[:CONTAINS]->(injectable:Type:Injectable),
+              (injectable)-[:DECLARES]->(field:Field)-[:OF_TYPE]->(fieldType:Type),
+              (injectable)-[:DECLARES]->(method:Method),
+              (method)-[writes:WRITES]->(field)
+            WHERE
+              (fieldType)-[:ASSIGNABLE_FROM*0..]->(:Injectable)
+            AND NOT (
+              artifact:Test
+              OR injectable:Generated
+              OR method:Constructor // method is a constructor
+              OR method:PostConstruct
+              OR method:PreDestroy
+              OR (field.synthetic IS NOT NULL AND field.synthetic) // synthetic fields, e.g. generated by Groovy
+            )
+            RETURN
+              injectable as Injectable, writes as WriteToInjectableField, field as Field
+            ORDER BY
+              Injectable.name, Field.name
+        ]]></cypher>
+        <report primaryColumn="WriteToInjectableField"/>
+    </constraint>
+
+    <constraint id="jee-injection:InjectablesShouldBeHeldInFinalFields">
+        <requiresConcept refId="jee-injection:Injectable"/>
+        <requiresConcept refId="jee-injection:InjectionPoint"/>
+        <requiresConcept refId="java:GeneratedType"/>
+        <description>Fields holding injectables should be declared final.</description>
+        <cypher><![CDATA[
+            MATCH
+              (artifact:Artifact)-[:CONTAINS]->(type:Type:Injectable)-[declares:DECLARES]->(field:Field)-[:OF_TYPE]->(injectedType:Type:Injectable)
+            WHERE NOT (
+              artifact:Test
+              OR type:Generated
+              OR (field.final IS NOT NULL AND field.final = true)
+              OR (field.synthetic IS NOT NULL AND field.synthetic) // synthetic fields, e.g. generated by Groovy
+            )
+            RETURN
+              type AS Type, field AS Field
+            ORDER BY
+              Type.name, Field.name
+        ]]></cypher>
+        <report primaryColumn="Field"/>
+    </constraint>
+
+    <constraint id="jee-injection:InjectablesMustNotBeAccessedStatically">
+        <requiresConcept refId="jee-injection:Injectable"/>
+        <requiresConcept refId="java:TypeAssignableFrom"/>
+        <requiresConcept refId="java:GeneratedType"/>
+        <description>Injectable components must not be accessed from static variables.</description>
+        <cypher><![CDATA[
+            MATCH
+              (artifact:Artifact)-[:CONTAINS]->(:Type)-[:DECLARES]->(field:Field)-[:OF_TYPE]->(fieldType:Type),
+              (type:Type)-[:DECLARES]->(method:Method)-[:WRITES|READS]->(field)
+            WHERE
+              (fieldType)-[:ASSIGNABLE_FROM*0..]->(:Injectable)
+              AND field.static
+              AND NOT (
+                artifact:Test
+                OR type:Generated
+              )
+            RETURN
+              type as Type, method as Method, field as Field
+        ]]></cypher>
+        <report primaryColumn="Method"/>
+    </constraint>
+
+    <constraint id="jee-injection:InjectablesMustNotBeHeldInStaticVariables">
+        <requiresConcept refId="jee-injection:Injectable"/>
+        <requiresConcept refId="java:TypeAssignableFrom"/>
+        <requiresConcept refId="java:GeneratedType"/>
+        <description>Injectable components must not be held in static variables.</description>
+        <cypher><![CDATA[
+            MATCH
+              (artifact:Artifact)-[:CONTAINS]->(type:Type)-[:DECLARES]->(field:Field)-[:OF_TYPE]->(fieldType:Type)
+            WHERE
+              (fieldType)-[:ASSIGNABLE_FROM*0..]->(:Injectable)
+              AND field.static
+              AND NOT (
+                artifact:Test
+                OR type:Generated
+              )
+            RETURN
+              type as Type, field as Field
+            ORDER BY
+              Type.name, Field.name
+        ]]></cypher>
+        <report primaryColumn="Field"/>
+    </constraint>
+
+    <constraint id="jee-injection:InjectablesMustNotBeInstantiated">
+        <requiresConcept refId="jee-injection:Injectable"/>
+        <requiresConcept refId="java:GeneratedType"/>
+        <description>If the constructor of an Injectable is called from another Injectable, then the caller must be a BeanProducer.</description>
+        <cypher><![CDATA[
+            MATCH
+              (injectable:Injectable:Type)-[:DECLARES]->(constructor:Constructor),
+              (artifact:Artifact)-[:CONTAINS]->(type:Injectable:Type)-[:DECLARES]->(method:Method),
+              shortestPath((method)-[:INVOKES*]->(constructor))
+            WHERE NOT (
+              artifact:Test
+              OR type:Generated
+              OR method:JavaEE:BeanProducer
+              OR (
+                method:Constructor
+                AND (type)-[:EXTENDS*0..]->(injectable)
+              )
+            )
+            RETURN
+              type as Type, method as Method, injectable as Injectable
+        ]]></cypher>
+        <report primaryColumn="Method"/>
+    </constraint>
+
+    <constraint id="jee-injection:InjectablesMustOnlyBeHeldInInjectables">
+        <requiresConcept refId="jee-injection:Injectable"/>
+        <requiresConcept refId="java:GeneratedType"/>
+        <description>Injectable classes must not be held as fields in non-injectable classes.</description>
+        <cypher><![CDATA[
+            MATCH
+              (artifact:Artifact)-[:CONTAINS]->(t:Type)-[:DECLARES]->(f:Field)-[:OF_TYPE]->(fType:Type:JavaEE:Injectable)
+            WHERE NOT (
+              artifact:Test
+              or t:Generated
+              or t:JavaEE:Injectable
+              or f.synthetic IS NOT NULL // exclude synthetic inner class field referencing the outer class
+            )
+            WITH
+              t, collect(DISTINCT fType.fqn) AS fields
+            OPTIONAL MATCH
+              (t)<-[:EXTENDS|IMPLEMENTS*]-(injectableImpl:Type:JavaEE:Injectable)
+            WITH
+              t, fields, count(DISTINCT injectableImpl) AS injectableImplCnt
+            WHERE
+              t.abstract IS NULL OR injectableImplCnt = 0
+            RETURN
+              t AS NonInjectableHavingInjectablesAsField, fields AS Fields
+        ]]></cypher>
+    </constraint>
+
+    <constraint id="jee-injection:JdkClassesMustNotBeInjectables">
+        <requiresConcept refId="jee-injection:Injectable"/>
+        <description>JDK classes must not be injectables.</description>
+        <cypher><![CDATA[
+            MATCH
+              (type:Type:JavaEE:Injectable)
+            WHERE
+              type.fqn STARTS WITH "java."
+            RETURN
+              type AS Injectable
+        ]]></cypher>
+    </constraint>
+
+    <constraint id="jee-injection:NoCombinationOfBeanProducersAndApplicationCode">
+        <requiresConcept refId="jee-injection:BeanProducer"/>
+        <description>
+            Da JavaEE keinen Konfigurationsstereotyp unterstützt, ist sicherzustellen, dass Bean-Producer nur in Klassen definiert werden,
+            in denen sich keine fachliche Logik befindet.
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (t:Java:Type)-[:DECLARES]->(beanProducer:JavaEE:BeanProducer),
+              (t)-[:DECLARES]->(otherPublicMethod:Method {visibility: "public"})
+            WHERE
+              NOT otherPublicMethod:BeanProducer
+            RETURN DISTINCT
+              t AS `Java-Klasse`
+        ]]></cypher>
+    </constraint>
+
+    <constraint id="jee-injection:FieldInjectionIsNotAllowed">
+        <requiresConcept refId="jee-injection:InjectionPoint"/>
+        <requiresConcept refId="java:GeneratedType"/>
+        <requiresConcept refId="ejb3:StatefulSessionBean"/>
+        <requiresConcept refId="ejb3:StatelessSessionBean"/>
+        <requiresConcept refId="ejb3:SingletonBean"/>
+        <requiresConcept refId="ejb3:MessageDrivenBean"/>
+        <requiresConcept refId="ejb3:Local"/>
+        <requiresConcept refId="ejb3:Remote"/>
+        <description>
+            Die Nutzung von Field-Injection muss vermieden, und stattdessen Constructor Injection verwendet werden. Die
+            einzige Ausnahme stellen Enterprise-Java-Beans dar, für die Field-Injection technisch zwingend erforderlich ist.
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (artifact:Artifact)-[:CONTAINS]->(type:Type)-[:DECLARES]->(field:Field:InjectionPoint)-[:OF_TYPE]->(bean:Java:Type)
+            WHERE NOT (
+              artifact:Test
+              OR type:Generated
+              OR bean:Ejb
+            )
+            RETURN
+              type as Type,
+              field as Field
+        ]]></cypher>
+        <report primaryColumn="Field"/>
+    </constraint>
+
+
+</jqassistant-rules>
