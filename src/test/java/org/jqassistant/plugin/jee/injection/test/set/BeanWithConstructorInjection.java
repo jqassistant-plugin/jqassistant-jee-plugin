@@ -1,4 +1,4 @@
-package org.jqassistant.plugin.jee.cdi.test.set.beans.inject;
+package org.jqassistant.plugin.jee.injection.test.set;
 
 import javax.inject.Inject;
 

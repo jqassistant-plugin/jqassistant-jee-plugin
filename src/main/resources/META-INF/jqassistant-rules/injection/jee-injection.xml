@@ -26,30 +26,8 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jee-injection:BeanProducer">
-        <providesConcept refId="jee-injection:Injectable"/>
-        <description>
-            Labels methods which are annotated with "@javax.enterprise.inject.Produces" with
-            "BeanProducer" and their return types with "jee" and "Injectable".
-        </description>
-        <cypher><![CDATA[
-            MATCH
-              (:Type)-[:DECLARES]->(beanProducer:Method)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotationType:Type),
-              (beanProducer)-[:RETURNS]->(injectable:Type)
-            WHERE
-              annotationType.fqn = "javax.enterprise.inject.Produces"
-            SET
-              injectable:JavaEE:Injectable,
-              beanProducer:JavaEE:BeanProducer
-            RETURN
-              injectable as Injectable, collect(beanProducer) as BeanProducers
-            ORDER BY
-              Injectable.name
-        ]]></cypher>
-    </concept>
-
     <concept id="jee-injection:InjectionPoint">
-        <description>Labels all fields or methods annotated by @javax.inject.Inject with "InjectionPoint".</description>
+        <description>Labels all fields or methods annotated by @javax.inject.Inject with "InjectionPoint" and "Cdi".</description>
         <cypher><![CDATA[
             MATCH
               (:Type)-[:DECLARES]->(member),
@@ -58,7 +36,7 @@
               (member:Field or member:Method)
               AND injectType.fqn="javax.inject.Inject"
             SET
-              member:InjectionPoint
+              member:InjectionPoint:Cdi
             RETURN
               member AS InjectionPoint
             ORDER BY
@@ -67,7 +45,7 @@
     </concept>
 
     <constraint id="jee-injection:BeanProducerMustNotBeInvokedDirectly">
-        <requiresConcept refId="jee-injection:BeanProducer"/>
+        <requiresConcept refId="jee-injection:Injectable"/>
         <requiresConcept refId="java:GeneratedType"/>
         <description>Bean-Producer-Methoden dürfen nicht direkt aufgerufen werden.</description>
         <cypher><![CDATA[
@@ -247,7 +225,7 @@
     </constraint>
 
     <constraint id="jee-injection:NoCombinationOfBeanProducersAndApplicationCode">
-        <requiresConcept refId="jee-injection:BeanProducer"/>
+        <requiresConcept refId="jee-injection:Injectable"/>
         <description>
             Da JavaEE keinen Konfigurationsstereotyp unterstützt, ist sicherzustellen, dass Bean-Producer nur in Klassen definiert werden,
             in denen sich keine fachliche Logik befindet.
@@ -263,7 +241,7 @@
         ]]></cypher>
     </constraint>
 
-    <constraint id="jee-injection:FieldInjectionIsNotAllowed">
+    <constraint id="jee-injection:BeansMustNotUseFieldInjectionExceptEJBs">
         <requiresConcept refId="jee-injection:InjectionPoint"/>
         <requiresConcept refId="java:GeneratedType"/>
         <requiresConcept refId="ejb3:StatefulSessionBean"/>
@@ -291,5 +269,27 @@
         <report primaryColumn="Field"/>
     </constraint>
 
+    <constraint id="jee-injection:BeansMustUseConstructorInjection">
+        <requiresConcept refId="jee-injection:InjectionPoint"/>
+        <description>All CDI beans must use constructor injection.</description>
+        <cypher><![CDATA[
+            MATCH
+              (a:Type)-[:DECLARES]->(member:Cdi:InjectionPoint)
+            WHERE
+              NOT member:Constructor
+            RETURN
+              DISTINCT a.fqn AS invalidBean
+        ]]></cypher>
+    </constraint>
 
+    <constraint id="jee-injection:BeansMustNotUseFieldInjection">
+        <requiresConcept refId="jee-injection:InjectionPoint" />
+        <description>CDI beans shall not use field injection (constructor and setter injections are fine.).</description>
+        <cypher><![CDATA[
+            MATCH
+              (a:Type)-[:DECLARES]->(member:Field:Cdi:InjectionPoint)
+            RETURN
+              DISTINCT a.fqn AS invalidBean
+        ]]></cypher>
+    </constraint>
 </jqassistant-rules>
