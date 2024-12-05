@@ -72,6 +72,8 @@
         <resource>cdi/interceptor.xml</resource>
         <resource>ejb3/ejb3.xml</resource>
         <resource>jpa2/jpa2.xml</resource>
+        <resource>injection/jee-injection.xml</resource>
+        <resource>jsf/jsf.xml</resource>
     </rules>
 </jqassistant-plugin>
 
