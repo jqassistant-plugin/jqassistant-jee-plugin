@@ -2,23 +2,8 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
 
-    <concept id="cdi:InjectionPoint">
-        <description>Labels all fields or methods annotated by @javax.inject.Inject with "Cdi" and "InjectionPoint".</description>
-        <cypher><![CDATA[
-            MATCH
-              (:Type)-[:DECLARES]->(member),
-              (member)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(injectType:Type)
-            WHERE
-              (member:Field or member:Method)
-              and injectType.fqn="javax.inject.Inject"
-            SET
-              member:Cdi:InjectionPoint
-            RETURN
-              member AS InjectionPoint
-        ]]></cypher>
-    </concept>
-
     <concept id="cdi:Produces">
+        <providesConcept refId="jee-injection:Injectable"/>
         <description>Creates a relation PRODUCES between a field and its type or a method and its return type if the parameter is annotated by
             @javax.enterprise.inject.Disposes.
         </description>
@@ -30,6 +15,9 @@
             WHERE
               (member:Field or member:Method)
               and producesType.fqn="javax.enterprise.inject.Produces"
+            SET
+              type:JavaEE:Injectable,
+              member:JavaEE:BeanProducer
             MERGE
               (member)-[:PRODUCES]->(type)
             RETURN
@@ -251,7 +239,7 @@
     </concept>
 
     <concept id="cdi:EventProducer">
-        <requiresConcept refId="cdi:InjectionPoint"/>
+        <requiresConcept refId="jee-injection:InjectionPoint"/>
         <description>Labels all beans declaring "InjectionPoint" of type "javax.enterprise.event.Event" with "Cdi" and "EventProducer".
         </description>
         <cypher><![CDATA[
@@ -268,7 +256,7 @@
     </concept>
 
     <concept id="cdi:EventConsumer">
-        <requiresConcept refId="cdi:InjectionPoint"/>
+        <requiresConcept refId="jee-injection:InjectionPoint"/>
         <description>Labels all beans declaring method that has parameter of type "javax.enterprise.event.Observes" with "Cdi" and "EventConsumer".
         </description>
         <cypher><![CDATA[
@@ -343,29 +331,5 @@
               e AS New
         ]]></cypher>
     </concept>
-
-    <constraint id="cdi:BeansMustUseConstructorInjection">
-        <requiresConcept refId="cdi:InjectionPoint" />
-        <description>All CDI beans must use constructor injection.</description>
-        <cypher><![CDATA[
-            MATCH
-              (a:Type)-[:DECLARES]->(member:Cdi:InjectionPoint)
-            WHERE
-              NOT member:Constructor
-            RETURN
-              DISTINCT a.fqn AS invalidBean
-        ]]></cypher>
-    </constraint>
-
-    <constraint id="cdi:BeansMustNotUseFieldInjection">
-        <requiresConcept refId="cdi:InjectionPoint" />
-        <description>CDI beans shall not use field injection (constructor and setter injections are fine.).</description>
-        <cypher><![CDATA[
-            MATCH
-              (a:Type)-[:DECLARES]->(member:Field:Cdi:InjectionPoint)
-            RETURN
-              DISTINCT a.fqn AS invalidBean
-        ]]></cypher>
-    </constraint>
 
 </jqassistant-rules>

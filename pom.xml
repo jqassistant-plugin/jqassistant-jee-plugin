@@ -139,6 +139,12 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>javax.faces</groupId>
+                <artifactId>javax.faces-api</artifactId>
+                <version>2.1</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.wicketstuff</groupId>
                 <artifactId>javaee-inject-example-ear</artifactId>
                 <version>6.18.0</version>
@@ -221,6 +227,10 @@
         <dependency>
             <groupId>javax.jms</groupId>
             <artifactId>javax.jms-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.faces</groupId>
+            <artifactId>javax.faces-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wicketstuff</groupId>
