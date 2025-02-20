@@ -236,6 +236,7 @@
               (t)-[:DECLARES]->(otherPublicMethod:Method {visibility: "public"})
             WHERE
               NOT otherPublicMethod:BeanProducer
+              AND NOT otherPublicMethod:Constructor
             RETURN DISTINCT
               t AS `Java-Klasse`
         ]]></cypher>
