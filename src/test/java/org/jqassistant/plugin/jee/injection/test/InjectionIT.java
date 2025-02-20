@@ -185,6 +185,21 @@ public class InjectionIT extends AbstractJavaPluginIT {
     }
 
     /**
+     * Verifies that the constraint "jee-injection:JdkClassesMustNotBeInjectables" whitelists {@link java.time.Clock}.
+     *
+     * @throws IOException If the test fails.
+     */
+    @Test
+    void clockAsInjectable() throws Exception {
+        scanClasses(BeanWithInjectedClock.class, BeanWithInjectedClock.ClockProducer.class);
+        Result<Constraint> constraintResult = validateConstraint("jee-injection:JdkClassesMustNotBeInjectables");
+        store.beginTransaction();
+        assertThat(constraintResult.getStatus(), equalTo(SUCCESS));
+        assertThat(constraintResult.getRows().size(), equalTo(0));
+        store.commitTransaction();
+    }
+
+    /**
      * Verifies the constraint "jee-injection:NoCombinationOfBeanProducersAndApplicationCode" with a test class with violations.
      *
      * @throws IOException If the test fails.
