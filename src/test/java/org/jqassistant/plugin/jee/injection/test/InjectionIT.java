@@ -14,26 +14,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.buschmais.jqassistant.core.report.api.model.Result.Status.FAILURE;
 import static com.buschmais.jqassistant.core.report.api.model.Result.Status.SUCCESS;
 import static com.buschmais.jqassistant.core.test.matcher.ConstraintMatcher.constraint;
 import static com.buschmais.jqassistant.core.test.matcher.ResultMatcher.result;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
 
 public class InjectionIT extends AbstractJavaPluginIT {
 
     /**
      * Verifies the concept "jee-injection:InjectionPoint".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void injectionPointIdentification() throws Exception {
-        scanClasses(BeanProducer.class);
+        scanClasses(BeanProducerWithConstraintViolations.class);
         Result<Concept> conceptResult = applyConcept("jee-injection:InjectionPoint");
         store.beginTransaction();
         assertThat(conceptResult.getStatus(), equalTo(Result.Status.SUCCESS));
@@ -47,17 +44,16 @@ public class InjectionIT extends AbstractJavaPluginIT {
     /**
      * Verifies the constraint "jee-injection:BeanProducerMustNotBeInvokedDirectly".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void beanProducerAccess() throws Exception {
-        scanClasses(BeanProducer.class);
+        scanClasses(BeanProducerWithConstraintViolations.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:BeanProducerMustNotBeInvokedDirectly");
         store.beginTransaction();
         assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
         assertThat(constraintResult.getRows().size(), equalTo(1));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Type").getLabel(), endsWith("test.set.BeanProducer"));
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Type").getLabel(), endsWith("test.set.BeanProducerWithConstraintViolations"));
         assertThat(constraintResult.getRows().get(0).getColumns().get("Invocation").getLabel(), endsWith("void beanProducerAccessor()"));
         store.commitTransaction();
     }
@@ -65,12 +61,11 @@ public class InjectionIT extends AbstractJavaPluginIT {
     /**
      * Verifies the constraint "jee-injection:FieldsOfInjectablesMustNotBeManipulated".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void injectableFieldManipulation() throws Exception {
-        scanClasses(BeanProducer.class, InjectableA.class, InjectableB.class);
+        scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, InjectableB.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:FieldsOfInjectablesMustNotBeManipulated");
         store.beginTransaction();
         assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
@@ -87,12 +82,11 @@ public class InjectionIT extends AbstractJavaPluginIT {
     /**
      * Verifies the constraint "jee-injection:InjectablesShouldBeHeldInFinalFields".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void finalFieldsForInjectables() throws Exception {
-        scanClasses(BeanProducer.class, InjectableA.class, InjectableB.class);
+        scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, InjectableB.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesShouldBeHeldInFinalFields");
         store.beginTransaction();
         assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
@@ -107,12 +101,11 @@ public class InjectionIT extends AbstractJavaPluginIT {
     /**
      * Verifies the constraint "jee-injection:InjectablesMustNotBeAccessedStatically".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void staticAccessOfInjectables() throws Exception {
-        scanClasses(BeanProducer.class, InjectableA.class, InjectableB.class);
+        scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, InjectableB.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesMustNotBeAccessedStatically");
         store.beginTransaction();
         assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
@@ -126,12 +119,11 @@ public class InjectionIT extends AbstractJavaPluginIT {
     /**
      * Verifies the constraint "jee-injection:InjectablesMustNotBeHeldInStaticVariables".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void staticVariablesForInjectables() throws Exception {
-        scanClasses(BeanProducer.class, InjectableA.class, InjectableB.class);
+        scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, InjectableB.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesMustNotBeHeldInStaticVariables");
         store.beginTransaction();
         assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
@@ -144,12 +136,11 @@ public class InjectionIT extends AbstractJavaPluginIT {
     /**
      * Verifies the constraint "jee-injection:InjectablesMustNotBeInstantiated".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void injectableInstantiation() throws Exception {
-        scanClasses(BeanProducer.class, InjectableA.class, InjectableB.class);
+        scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, InjectableB.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesMustNotBeInstantiated");
         store.beginTransaction();
         assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
@@ -163,12 +154,11 @@ public class InjectionIT extends AbstractJavaPluginIT {
     /**
      * Verifies the constraint "jee-injection:InjectablesMustOnlyBeHeldInInjectables".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void injectableOfNonInjectable() throws Exception {
-        scanClasses(BeanProducer.class, InjectableA.class, NonInjectableType.class);
+        scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, NonInjectableType.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesMustOnlyBeHeldInInjectables");
         store.beginTransaction();
         assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
@@ -181,12 +171,11 @@ public class InjectionIT extends AbstractJavaPluginIT {
     /**
      * Verifies the constraint "jee-injection:JdkClassesMustNotBeInjectables".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void jdkClassesAsInjectables() throws Exception {
-        scanClasses(BeanProducer.class);
+        scanClasses(BeanProducerWithConstraintViolations.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:JdkClassesMustNotBeInjectables");
         store.beginTransaction();
         assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
@@ -196,36 +185,49 @@ public class InjectionIT extends AbstractJavaPluginIT {
     }
 
     /**
-     * Verifies the constraint "jee-injection:NoCombinationOfBeanProducersAndApplicationCode".
+     * Verifies the constraint "jee-injection:NoCombinationOfBeanProducersAndApplicationCode" with a test class with violations.
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
-    void combinationOfBeanProducersAndApplicationCode() throws Exception {
-        scanClasses(BeanProducer.class);
+    void combinationOfBeanProducersAndApplicationCodeWithViolation() throws Exception {
+        scanClasses(BeanProducerWithConstraintViolations.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:NoCombinationOfBeanProducersAndApplicationCode");
         store.beginTransaction();
         assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
         assertThat(constraintResult.getRows().size(), equalTo(1));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Java-Klasse").getLabel(), endsWith("test.set.BeanProducer"));
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Java-Klasse").getLabel(), endsWith("test.set.BeanProducerWithConstraintViolations"));
+        store.commitTransaction();
+    }
+
+    /**
+     * Verifies the constraint "jee-injection:NoCombinationOfBeanProducersAndApplicationCode" with a test class without violations.
+     *
+     * @throws IOException If the test fails.
+     */
+    @Test
+    void combinationOfBeanProducersAndApplicationCodeWithoutViolation() throws Exception {
+        scanClasses(BeanProducerWithoutConstraintViolations.class);
+        Result<Constraint> constraintResult = validateConstraint("jee-injection:NoCombinationOfBeanProducersAndApplicationCode");
+        store.beginTransaction();
+        assertThat(constraintResult.getStatus(), equalTo(SUCCESS));
+        assertThat(constraintResult.getRows().size(), equalTo(0));
         store.commitTransaction();
     }
 
     /**
      * Verifies the constraint "jee-injection:BeansMustNotUseFieldInjectionExceptEJBs".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void fieldInjectionWithEjb_Violation() throws Exception {
-        scanClasses(BeanProducer.class, LocalEjb.class);
+        scanClasses(BeanProducerWithConstraintViolations.class, LocalEjb.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:BeansMustNotUseFieldInjectionExceptEJBs");
         store.beginTransaction();
         assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
         assertThat(constraintResult.getRows().size(), equalTo(1));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Type").getLabel(), endsWith("test.set.BeanProducer"));
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Type").getLabel(), endsWith("test.set.BeanProducerWithConstraintViolations"));
         assertThat(constraintResult.getRows().get(0).getColumns().get("Field").getLabel(), endsWith("Object injectionPointField"));
         store.commitTransaction();
     }
@@ -234,8 +236,7 @@ public class InjectionIT extends AbstractJavaPluginIT {
      * Verifies the constraint "jee-injection:BeansMustNotUseFieldInjectionExceptEJBs" results in no
      * violations when applied to beans with setter or constructor injection.
      *
-     * @throws java.io.IOException
-     *             If the test fails.
+     * @throws java.io.IOException If the test fails.
      */
     @Test
     void fieldInjectionWithEjb_No_Violation() throws Exception {
