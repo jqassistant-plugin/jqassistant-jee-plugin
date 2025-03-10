@@ -12,7 +12,8 @@
     <version>1.1.0-M4-SNAPSHOT</version>
 
     <name>jQAssistant JEE Plugin</name>
-    <url>https://jqassistant.org/</url>
+    <description>Plugin for jQAssistant to scan and analyze JEE related artifacts (CDI, EJB3, and JPA2 specific elements).</description>
+    <url>https://github.com/jqassistant-plugin/jqassistant-jee-plugin</url>
 
     <organization>
         <name>jQAssistant Development Team</name>
@@ -33,10 +34,6 @@
             <email>stephan.pirnbaum@buschmais.com</email>
         </developer>
     </developers>
-
-    <description>
-        Plugin for jQAssistant to scan and analyze JEE related artifacts (CDI, EJB3, and JPA2 specific elements).
-    </description>
 
     <scm>
         <connection>scm:git:https://github.com/jqassistant-plugin/jqassistant-jee-plugin.git</connection>
