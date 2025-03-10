@@ -35,7 +35,7 @@
     </developers>
 
     <description>
-        Plugin for jQAssistant to be able to scan and analyze JEE related artifacts.
+        Plugin for jQAssistant to scan and analyze JEE related artifacts (CDI, EJB3, and JPA2 specific elements).
     </description>
 
     <scm>
