@@ -1,0 +1,117 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v2.2"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v2.2 https://jqassistant.github.io/jqassistant/current/schema/jqassistant-rule-v2.2.xsd">
+
+    <group id="jee-transaction:Default">
+        <includeConstraint refId="jee-transaction:TransactionalMethodMustNotBeInvokedFromSameClass"/>
+    </group>
+
+    <constraint id="jee-transaction:TransactionalMethodMustNotBeInvokedFromSameClass">
+        <requiresConcept refId="jee-transaction:TransactionalMethod"/>
+        <requiresConcept refId="java:GeneratedType"/>
+        <description>Transactional methods must not be invoked from the same class.</description>
+        <cypher><![CDATA[
+            MATCH
+              (artifact:Artifact)-[:CONTAINS]->(type:Type)-[:DECLARES]->(calledMethod:Method:JavaEE:Transactional),
+              (type:Type)-[:DECLARES]->(callingMethod:Method),
+              (callingMethod:Method)-[invokes:INVOKES]->(calledMethod)
+            WHERE NOT (
+              artifact:Test
+              OR type:Generated
+              OR calledMethod.visibility = "private"
+            )
+            RETURN
+              type as Type, callingMethod as Method, calledMethod as TransactionalMethod, invokes.lineNumber as LineNumber
+        ]]></cypher>
+        <report primaryColumn="callingMethod"/>
+    </constraint>
+
+    <concept id="jee-transaction:TransactionalMethod">
+        <description>Provides transactional methods as ":JavaEE:Transactional:Method".</description>
+        <cypher><![CDATA[
+           MATCH
+             (type:Type)-[:DECLARES]->(transactionalMethod:JavaEE:Transactional:Method)
+           RETURN
+             type as Type, transactionalMethod as TransactionalMethod
+           ORDER BY
+             type.fqn, transactionalMethod.signature
+        ]]></cypher>
+    </concept>
+
+    <concept id="jee-transaction:TransactionalMethodByAnnotatedMethod">
+        <providesConcept refId="jee-transaction:TransactionalMethod" />
+        <description>
+            Label all methods which are annotated with "jakarta.transaction.Transactional"
+            or "javax.transaction.Transactional", with "JavaEE" and "Transactional".
+        </description>
+        <cypher><![CDATA[
+           MATCH
+             (type:Type)-[:DECLARES]->(transactionalMethod:Method),
+             (transactionalMethod:Method)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotationType:Type)
+           WHERE
+             annotationType.fqn in [
+               "jakarta.transaction.Transactional",
+               "javax.transaction.Transactional"
+             ]
+           SET
+             transactionalMethod:JavaEE:Transactional
+           RETURN
+             type as Type, transactionalMethod as TransactionalMethod
+        ]]></cypher>
+    </concept>
+
+    <concept id="jee-transaction:TransactionalMethodByAnnotatedClass">
+        <providesConcept refId="jee-transaction:TransactionalMethod" />
+        <description>
+            Label methods of classes which are directly or indirectly annotated with "jakarta.transaction.Transactional",
+            or "javax.transaction.Transactional" with "JavaEE" and "Transactional".
+        </description>
+        <cypher><![CDATA[
+           MATCH
+             (transactionalClass:Type)-[:EXTENDS|IMPLEMENTS*0..]->(:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotationType:Type),
+             (transactionalClass)-[:DECLARES]->(transactionalMethod:Method)
+           WHERE
+             annotationType.fqn in [
+               "jakarta.transaction.Transactional",
+               "javax.transaction.Transactional"
+             ]
+             and not (
+               transactionalMethod:Constructor
+               or (transactionalMethod.static IS NOT NULL and transactionalMethod.static)
+             )
+           SET
+             transactionalMethod:JavaEE:Transactional
+           RETURN
+             transactionalClass as TransactionalClass, collect(transactionalMethod) as TransactionalMethods
+        ]]></cypher>
+    </concept>
+
+    <concept id="jee-transaction:TransactionalMethodOfEjb">
+        <providesConcept refId="jee-transaction:TransactionalMethod" />
+        <description>
+            Label methods of classes which are directly or indirectly annotated with "javax.ejb.Stateless",
+            "javax.ejb.Stateful, "javax.ejb.Singleton" or "javax.ejb.MessageDriven" with "JavaEE" and "Transactional".
+        </description>
+        <cypher><![CDATA[
+           MATCH
+             (transactionalClass:Type)-[:EXTENDS|IMPLEMENTS*0..]->(:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotationType:Type),
+             (transactionalClass)-[:DECLARES]->(transactionalMethod:Method)
+           WHERE
+             annotationType.fqn in [
+               "javax.ejb.Stateless",
+               "javax.ejb.Stateful",
+               "javax.ejb.Singleton",
+               "javax.ejb.MessageDriven"
+             ]
+             and not (
+               transactionalMethod:Constructor
+               or (transactionalMethod.static IS NOT NULL and transactionalMethod.static)
+             )
+           SET
+             transactionalMethod:JavaEE:Transactional
+           RETURN
+             transactionalClass as TransactionalClass, collect(transactionalMethod) as TransactionalMethods
+        ]]></cypher>
+    </concept>
+
+</jqassistant-rules>
