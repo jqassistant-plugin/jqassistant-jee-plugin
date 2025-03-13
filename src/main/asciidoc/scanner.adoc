@@ -210,7 +210,7 @@ Represents a Java EE application.xml descriptor.
 [[:Enterprise:Application:Module]]
 === Nodes labeled with `:Enterprise:Application:Module`
 Represents a declared module of a Java EE Java application. Can be qualified by either
-`:Ejb`, `:Web`, `:Connector` or `:JavaClient`.
+`:EJB`, `:Web`, `:Connector` or `:JavaClient`.
 
 .Properties of `:Enterprise:Application:Module`
 [options="header"]
