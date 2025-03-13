@@ -4,6 +4,7 @@
 
     <group id="jee-transaction:Default">
         <includeConstraint refId="jee-transaction:TransactionalMethodMustNotBeInvokedFromSameClass"/>
+        <includeConstraint refId="jee-transaction:PrivateMethodMustNotBeAnnotatedWithTransactional"/>
     </group>
 
     <constraint id="jee-transaction:TransactionalMethodMustNotBeInvokedFromSameClass">
