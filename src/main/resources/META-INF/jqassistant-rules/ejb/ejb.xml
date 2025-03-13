@@ -2,18 +2,6 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
 
-    <group id="ejb:EJB">
-        <includeConcept refId="ejb:StatelessSessionBean"/>
-        <includeConcept refId="ejb:StatefulSessionBean"/>
-        <includeConcept refId="ejb:MessageDrivenBean"/>
-        <includeConcept refId="ejb:SingletonBean"/>
-        <includeConcept refId="ejb:Local"/>
-        <includeConcept refId="ejb:Remote"/>
-        <includeConcept refId="ejb:Schedule"/>
-        <includeConstraint refId="ejb:ScheduleMethodInEjbContext"/>
-        <includeConstraint refId="ejb:AvoidStatefulSessionBeans"/>
-    </group>
-
     <concept id="ejb:EJB">
         <description>Provides EJB types as ":EJB".</description>
         <cypher><![CDATA[

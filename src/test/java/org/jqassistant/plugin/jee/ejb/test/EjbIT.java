@@ -110,29 +110,6 @@ class ejbIT extends AbstractJavaPluginIT {
     }
 
     /**
-     * Verifies the analysis group "ejb:EnterpriseJavaBean".
-     *
-     */
-    @Test
-    void enterpriseJavaBean() throws RuleException {
-        scanClasses(StatelessLocalBean.class, StatelessRemoteBean.class, StatefulBean.class, MessageDrivenBean.class, SingletonBean.class);
-        executeGroup("ejb:EJB");
-        store.beginTransaction();
-
-        final List<TypeDescriptor> allEjbs = query("MATCH (ejb:Type:EJB) RETURN ejb").getColumn("ejb");
-        assertThat(allEjbs).hasSize(5);
-        assertThat(allEjbs).haveExactly(1, typeDescriptor(StatelessLocalBean.class));
-        assertThat(allEjbs).haveExactly(1, typeDescriptor(MessageDrivenBean.class));
-        assertThat(allEjbs).haveExactly(1, typeDescriptor(StatelessLocalBean.class));
-        assertThat(allEjbs).haveExactly(1, typeDescriptor(StatelessRemoteBean.class));
-        assertThat(allEjbs).haveExactly(1, typeDescriptor(SingletonBean.class));
-
-        assertThat(query("MATCH (type:Type:EJB:Local) RETURN type").<TypeDescriptor>getColumn("type")).haveExactly(1, typeDescriptor(StatelessLocalBean.class));
-        assertThat(query("MATCH (type:Type:EJB:Remote) RETURN type").<TypeDescriptor>getColumn("type")).haveExactly(1, typeDescriptor(StatelessRemoteBean.class));
-        store.commitTransaction();
-    }
-
-    /**
      * Verifies the provided concept "ejb:EJB".
      */
     @Test
