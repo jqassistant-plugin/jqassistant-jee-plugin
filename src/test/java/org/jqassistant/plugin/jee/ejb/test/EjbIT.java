@@ -1,4 +1,4 @@
-package org.jqassistant.plugin.jee.ejb3.test;
+package org.jqassistant.plugin.jee.ejb.test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import com.buschmais.jqassistant.plugin.java.api.model.MethodDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
 
-import org.jqassistant.plugin.jee.ejb3.test.set.beans.*;
+import org.jqassistant.plugin.jee.ejb.test.set.beans.*;
 import org.junit.jupiter.api.Test;
 
 import static com.buschmais.jqassistant.core.report.api.model.Result.Status.FAILURE;
