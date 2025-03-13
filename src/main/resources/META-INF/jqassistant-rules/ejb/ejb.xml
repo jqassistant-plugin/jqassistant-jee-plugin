@@ -104,7 +104,7 @@
 
     <constraint id="ejb:AvoidStatefulSessionBeans">
         <requiresConcept refId="ejb:StatefulSessionBean"/>
-        <description>Stateful Session Beans sollen vermieden werden.</description>
+        <description>Stateful Session Beans should be avoided.</description>
         <cypher><![CDATA[
             MATCH (type:Type:EJB:Stateful)
             RETURN type AS `Stateful Session Bean`
