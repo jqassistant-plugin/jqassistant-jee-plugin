@@ -120,7 +120,7 @@
         </description>
         <cypher><![CDATA[
            MATCH
-             (transactionalClass:Java:Type:EJB)-[:DECLARES]->(transactionalMethod:Java:Method)
+             (transactionalClass:Java:Type:JEE:EJB)-[:DECLARES]->(transactionalMethod:Java:Method)
            WHERE NOT (
              transactionalMethod:Constructor
              OR (transactionalMethod.static IS NOT NULL and transactionalMethod.static)

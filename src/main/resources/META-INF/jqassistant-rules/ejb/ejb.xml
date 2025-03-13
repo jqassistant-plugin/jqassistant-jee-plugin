@@ -6,7 +6,7 @@
         <description>Provides EJB types as ":EJB".</description>
         <cypher><![CDATA[
            MATCH
-             (type:Java:Type:EJB)
+             (type:Java:Type:JEE:EJB)
            RETURN
              type as EJB
            ORDER BY
@@ -20,7 +20,7 @@
         <cypher><![CDATA[
             MATCH (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
             WHERE a.fqn="javax.ejb.Stateless"
-            SET t:EJB:Stateless
+            SET t:JEE:EJB:Stateless
             RETURN t AS EJB
         ]]></cypher>
     </concept>
@@ -31,7 +31,7 @@
         <cypher><![CDATA[
             MATCH (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
             WHERE a.fqn="javax.ejb.Stateful"
-            SET t:EJB:Stateful
+            SET t:JEE:EJB:Stateful
             RETURN t AS EJB
         ]]></cypher>
     </concept>
@@ -42,7 +42,7 @@
         <cypher><![CDATA[
             MATCH (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
             WHERE a.fqn="javax.ejb.Singleton"
-            SET t:EJB:Singleton
+            SET t:JEE:EJB:Singleton
             RETURN t AS EJB
         ]]></cypher>
     </concept>
@@ -54,7 +54,7 @@
         <cypher><![CDATA[
             MATCH (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
             WHERE a.fqn="javax.ejb.MessageDriven"
-            SET t:EJB:MessageDriven
+            SET t:JEE:EJB:MessageDriven
             RETURN t AS EJB
         ]]></cypher>
     </concept>

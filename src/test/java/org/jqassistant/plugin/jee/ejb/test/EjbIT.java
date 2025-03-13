@@ -36,7 +36,7 @@ class ejbIT extends AbstractJavaPluginIT {
         scanClasses(StatelessLocalBean.class);
         assertThat(applyConcept("ejb:StatelessSessionBean").getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
-        assertThat(query("MATCH (ejb:Type:Stateless:EJB) RETURN ejb").<TypeDescriptor>getColumn("ejb"))
+        assertThat(query("MATCH (ejb:Java:Type:Stateless:JEE:EJB) RETURN ejb").<TypeDescriptor>getColumn("ejb"))
                 .haveExactly(1, typeDescriptor(StatelessLocalBean.class));
         store.commitTransaction();
     }
@@ -49,7 +49,7 @@ class ejbIT extends AbstractJavaPluginIT {
         scanClasses(StatefulBean.class);
         assertThat(applyConcept("ejb:StatefulSessionBean").getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
-        assertThat(query("MATCH (ejb:Type:Stateful:EJB) RETURN ejb").<TypeDescriptor>getColumn("ejb"))
+        assertThat(query("MATCH (ejb:Java:Type:Stateful:JEE:EJB) RETURN ejb").<TypeDescriptor>getColumn("ejb"))
                 .haveExactly(1, typeDescriptor(StatefulBean.class));
         store.commitTransaction();
     }
@@ -65,7 +65,7 @@ class ejbIT extends AbstractJavaPluginIT {
         scanClasses(SingletonBean.class);
         assertThat(applyConcept("ejb:SingletonBean").getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
-        assertThat(query("MATCH (ejb:Type:Singleton:EJB) RETURN ejb").<TypeDescriptor>getColumn("ejb"))
+        assertThat(query("MATCH (ejb:Java:Type:Singleton:JEE:EJB) RETURN ejb").<TypeDescriptor>getColumn("ejb"))
                 .haveExactly(1, typeDescriptor(SingletonBean.class));
         store.commitTransaction();
     }
@@ -78,7 +78,7 @@ class ejbIT extends AbstractJavaPluginIT {
         scanClasses(MessageDrivenBean.class);
         assertThat(applyConcept("ejb:MessageDrivenBean").getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
-        assertThat(query("MATCH (ejb:Type:MessageDriven:EJB) RETURN ejb").<TypeDescriptor>getColumn("ejb"))
+        assertThat(query("MATCH (ejb:Type:Java:MessageDriven:JEE:EJB) RETURN ejb").<TypeDescriptor>getColumn("ejb"))
                 .haveExactly(1, typeDescriptor(MessageDrivenBean.class));
         store.commitTransaction();
     }
@@ -135,7 +135,7 @@ class ejbIT extends AbstractJavaPluginIT {
         assertThat(conceptResultTypes).haveExactly(1, typeDescriptor(StatelessRemoteBean.class));
         assertThat(conceptResultTypes).haveExactly(1, typeDescriptor(SingletonBean.class));
 
-        final List<TypeDescriptor> allEjbs = query("MATCH (ejb:Type:EJB) RETURN ejb").getColumn("ejb");
+        final List<TypeDescriptor> allEjbs = query("MATCH (ejb:Java:Type:JEE:EJB) RETURN ejb").getColumn("ejb");
         assertThat(allEjbs).hasSize(5);
         assertThat(allEjbs).haveExactly(1, typeDescriptor(StatelessLocalBean.class));
         assertThat(allEjbs).haveExactly(1, typeDescriptor(MessageDrivenBean.class));
