@@ -18,7 +18,6 @@
             WHERE NOT (
               artifact:Test
               OR type:Generated
-              OR calledMethod.visibility = "private"
             )
             RETURN
               type as Type, callingMethod as Method, calledMethod as TransactionalMethod, invokes.lineNumber as LineNumber
@@ -53,6 +52,8 @@
                "jakarta.transaction.Transactional",
                "javax.transaction.Transactional"
              ]
+           AND NOT
+             transactionalMethod.visibility = "private"
            SET
              transactionalMethod:JavaEE:Transactional
            RETURN
@@ -75,9 +76,10 @@
                "jakarta.transaction.Transactional",
                "javax.transaction.Transactional"
              ]
-             and not (
+             AND NOT (
                transactionalMethod:Constructor
-               or (transactionalMethod.static IS NOT NULL and transactionalMethod.static)
+               OR (transactionalMethod.static IS NOT NULL and transactionalMethod.static)
+               OR transactionalMethod.visibility = "private"
              )
            SET
              transactionalMethod:JavaEE:Transactional
@@ -103,9 +105,10 @@
                "javax.ejb.Singleton",
                "javax.ejb.MessageDriven"
              ]
-             and not (
+             AND NOT (
                transactionalMethod:Constructor
-               or (transactionalMethod.static IS NOT NULL and transactionalMethod.static)
+               OR (transactionalMethod.static IS NOT NULL and transactionalMethod.static)
+               OR transactionalMethod.visibility = "private"
              )
            SET
              transactionalMethod:JavaEE:Transactional

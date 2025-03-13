@@ -23,13 +23,11 @@ class TransactionalMethodIT extends AbstractJavaPluginIT {
         assertThat(applyConcept("jee-transaction:TransactionalMethod").getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
         final List<MethodDescriptor> methods = query("MATCH (m:JavaEE:Method:Transactional) RETURN m").getColumn("m");
-        assertThat(methods).hasSize(10);
+        assertThat(methods).hasSize(8);
 
         // method level annotations
         assertThat(methods).haveExactly(1, methodDescriptor(JavaxTransactionalMethod.class, "transactionalMethod"));
-        assertThat(methods).haveExactly(1, methodDescriptor(JavaxTransactionalMethod.class, "privateTransactionalMethod"));
         assertThat(methods).haveExactly(1, methodDescriptor(JakartaTransactionalMethod.class, "transactionalMethod"));
-        assertThat(methods).haveExactly(1, methodDescriptor(JakartaTransactionalMethod.class, "privateTransactionalMethod"));
 
         // class level annotations
         assertThat(methods).haveExactly(1, methodDescriptor(JavaxTransactionalClass.class, "transactionalMethod"));

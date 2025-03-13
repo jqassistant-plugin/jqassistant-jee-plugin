@@ -17,11 +17,11 @@ public class JakartaTransactionalMethod {
     }
 
     @Transactional
-    private void privateTransactionalMethod() {
+    private void privateMethod() {
     }
 
-    private void callingPrivateTransactionalMethod() {
-        privateTransactionalMethod(); // Private transactional methods may be called.
+    private void callingPrivateMethod() {
+        privateMethod(); // Private methods are not transactional and may be called.
     }
 
 }
