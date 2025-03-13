@@ -58,11 +58,11 @@ A persistence unit.
 
 Imports bean descriptors from `META-INF/beans.xml` or `WEB-INF/beans.xml` files.
 
-=== Nodes labeled with `:File:Cdi:Beans`
+=== Nodes labeled with `:File:CDI:Beans`
 
 Represents a `beans.xml` file.
 
-.Properties of `:File:Cdi:Beans`
+.Properties of `:File:CDI:Beans`
 [options="header"]
 |====
 | Name               | Description
@@ -71,7 +71,7 @@ Represents a `beans.xml` file.
 | beanDiscoveryMode  | The bean discovery mode, i.e. `all`, `annotated` or `none`
 |====
 
-.Relations of `:File:Cdi:Beans`
+.Relations of `:File:CDI:Beans`
 [options="header"]
 |====
 | Name            | Target label(s)  | Cardinality | Description
