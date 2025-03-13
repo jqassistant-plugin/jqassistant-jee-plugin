@@ -41,7 +41,7 @@ class CdiIT extends AbstractJavaPluginIT {
         scanClasses(DependentBean.class);
         assertThat(applyConcept("cdi:Dependent").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
-        List<Object> column = query("MATCH (e:Cdi:Dependent) RETURN e").getColumn("e");
+        List<Object> column = query("MATCH (e:CDI:Dependent) RETURN e").getColumn("e");
         assertThat(column, hasItem(typeDescriptor(DependentBean.class)));
         assertThat(column, hasItem(methodDescriptor(DependentBean.class, "producerMethod")));
         assertThat(column, hasItem(fieldDescriptor(DependentBean.class, "producerField")));
@@ -59,7 +59,7 @@ class CdiIT extends AbstractJavaPluginIT {
         scanClasses(RequestScopedBean.class);
         assertThat(applyConcept("cdi:RequestScoped").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
-        List<Object> column = query("MATCH (e:Cdi:RequestScoped) RETURN e").getColumn("e");
+        List<Object> column = query("MATCH (e:CDI:RequestScoped) RETURN e").getColumn("e");
         assertThat(column, hasItem(typeDescriptor(RequestScopedBean.class)));
         assertThat(column, hasItem(methodDescriptor(RequestScopedBean.class, "producerMethod")));
         assertThat(column, hasItem(fieldDescriptor(RequestScopedBean.class, "producerField")));
@@ -77,7 +77,7 @@ class CdiIT extends AbstractJavaPluginIT {
         scanClasses(SessionScopedBean.class);
         assertThat(applyConcept("cdi:SessionScoped").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
-        List<Object> column = query("MATCH (e:Cdi:SessionScoped) RETURN e").getColumn("e");
+        List<Object> column = query("MATCH (e:CDI:SessionScoped) RETURN e").getColumn("e");
         assertThat(column, hasItem(typeDescriptor(SessionScopedBean.class)));
         assertThat(column, hasItem(methodDescriptor(SessionScopedBean.class, "producerMethod")));
         assertThat(column, hasItem(fieldDescriptor(SessionScopedBean.class, "producerField")));
@@ -95,7 +95,7 @@ class CdiIT extends AbstractJavaPluginIT {
         scanClasses(ConversationScopedBean.class);
         assertThat(applyConcept("cdi:ConversationScoped").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
-        List<Object> column = query("MATCH (e:Cdi:ConversationScoped) RETURN e").getColumn("e");
+        List<Object> column = query("MATCH (e:CDI:ConversationScoped) RETURN e").getColumn("e");
         assertThat(column, hasItem(typeDescriptor(ConversationScopedBean.class)));
         assertThat(column, hasItem(methodDescriptor(ConversationScopedBean.class, "producerMethod")));
         assertThat(column, hasItem(fieldDescriptor(ConversationScopedBean.class, "producerField")));
@@ -113,7 +113,7 @@ class CdiIT extends AbstractJavaPluginIT {
         scanClasses(ApplicationScopedBean.class);
         assertThat(applyConcept("cdi:ApplicationScoped").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
-        List<Object> column = query("MATCH (e:Cdi:ApplicationScoped) RETURN e").getColumn("e");
+        List<Object> column = query("MATCH (e:CDI:ApplicationScoped) RETURN e").getColumn("e");
         assertThat(column, hasItem(typeDescriptor(ApplicationScopedBean.class)));
         assertThat(column, hasItem(methodDescriptor(ApplicationScopedBean.class, "producerMethod")));
         assertThat(column, hasItem(fieldDescriptor(ApplicationScopedBean.class, "producerField")));
@@ -131,7 +131,7 @@ class CdiIT extends AbstractJavaPluginIT {
         scanClasses(SingletonScopedBean.class);
         assertThat(applyConcept("cdi:SingletonScoped").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
-        List<Object> column = query("MATCH (e:Cdi:SingletonScoped) RETURN e").getColumn("e");
+        List<Object> column = query("MATCH (e:CDI:SingletonScoped) RETURN e").getColumn("e");
         assertThat("Expected SingletonScoped bean", column, hasItem(typeDescriptor(SingletonScopedBean.class)));
         store.commitTransaction();
     }
@@ -147,7 +147,7 @@ class CdiIT extends AbstractJavaPluginIT {
         scanClasses(CustomStereotype.class);
         assertThat(applyConcept("cdi:Stereotype").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
-        List<Object> column = query("MATCH (s:Cdi:Stereotype) RETURN s").getColumn("s");
+        List<Object> column = query("MATCH (s:CDI:Stereotype) RETURN s").getColumn("s");
         assertThat(column, hasItem(typeDescriptor(CustomStereotype.class)));
         store.commitTransaction();
     }
@@ -163,7 +163,7 @@ class CdiIT extends AbstractJavaPluginIT {
         scanClasses(AlternativeBean.class);
         assertThat(applyConcept("cdi:Alternative").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
-        List<Object> column = query("MATCH (a:Cdi:Alternative) RETURN a").getColumn("a");
+        List<Object> column = query("MATCH (a:CDI:Alternative) RETURN a").getColumn("a");
         assertThat(column, hasItem(typeDescriptor(AlternativeBean.class)));
         store.commitTransaction();
     }
@@ -179,7 +179,7 @@ class CdiIT extends AbstractJavaPluginIT {
         scanClasses(SpecializesBean.class);
         assertThat(applyConcept("cdi:Specializes").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
-        List<Object> column = query("MATCH (e:Cdi:Specializes) RETURN e").getColumn("e");
+        List<Object> column = query("MATCH (e:CDI:Specializes) RETURN e").getColumn("e");
         assertThat(column, hasItem(typeDescriptor(SpecializesBean.class)));
         assertThat(column, hasItem(methodDescriptor(SpecializesBean.class, "doSomething")));
         store.commitTransaction();
@@ -196,8 +196,8 @@ class CdiIT extends AbstractJavaPluginIT {
         scanClasses(CustomQualifier.class);
         assertThat(applyConcept("cdi:Qualifier").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
-        assertThat(query("MATCH (e:Type:Cdi:Qualifier) RETURN e").getColumn("e"), hasItem(typeDescriptor(CustomQualifier.class)));
-        assertThat(query("MATCH (q:Qualifier)-[:DECLARES]->(a:Cdi:Method:Nonbinding) RETURN a").getColumn("a"),
+        assertThat(query("MATCH (e:Type:CDI:Qualifier) RETURN e").getColumn("e"), hasItem(typeDescriptor(CustomQualifier.class)));
+        assertThat(query("MATCH (q:Qualifier)-[:DECLARES]->(a:CDI:Method:Nonbinding) RETURN a").getColumn("a"),
                 hasItem(methodDescriptor(CustomQualifier.class, "nonBindingValue")));
         store.commitTransaction();
     }
@@ -300,7 +300,7 @@ class CdiIT extends AbstractJavaPluginIT {
         scanClasses(NamedBean.class);
         assertThat(applyConcept("cdi:Named").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
-        List<Object> column = query("MATCH (e:Cdi:Named) RETURN e").getColumn("e");
+        List<Object> column = query("MATCH (e:CDI:Named) RETURN e").getColumn("e");
         assertThat(column, hasItem(typeDescriptor(NamedBean.class)));
         assertThat(column, hasItem(methodDescriptor(NamedBean.class, "getValue")));
         store.commitTransaction();
@@ -317,7 +317,7 @@ class CdiIT extends AbstractJavaPluginIT {
         scanClasses(DecoratorBean.class);
         assertThat(applyConcept("cdi:Any").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
-        List<Object> column = query("MATCH (e:Cdi:Any) RETURN e").getColumn("e");
+        List<Object> column = query("MATCH (e:CDI:Any) RETURN e").getColumn("e");
         assertThat(column, hasItem(fieldDescriptor(DecoratorBean.class, "delegate")));
         store.commitTransaction();
     }
@@ -333,7 +333,7 @@ class CdiIT extends AbstractJavaPluginIT {
         scanClasses(NewBean.class);
         assertThat(applyConcept("cdi:New").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
-        List<Object> column = query("MATCH (e:Cdi:New) RETURN e").getColumn("e");
+        List<Object> column = query("MATCH (e:CDI:New) RETURN e").getColumn("e");
         assertThat(column, hasItem(fieldDescriptor(NewBean.class, "bean")));
         store.commitTransaction();
     }
@@ -349,7 +349,7 @@ class CdiIT extends AbstractJavaPluginIT {
         scanClasses(DefaultBean.class);
         assertThat(applyConcept("cdi:Default").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
-        List<Object> column = query("MATCH (e:Cdi:Default) RETURN e").getColumn("e");
+        List<Object> column = query("MATCH (e:CDI:Default) RETURN e").getColumn("e");
         assertThat(column, hasItem(fieldDescriptor(DefaultBean.class, "bean")));
         store.commitTransaction();
     }

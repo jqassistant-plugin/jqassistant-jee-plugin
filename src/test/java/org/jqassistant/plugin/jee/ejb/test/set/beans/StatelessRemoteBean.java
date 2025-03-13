@@ -1,4 +1,4 @@
-package org.jqassistant.plugin.jee.ejb3.test.set.beans;
+package org.jqassistant.plugin.jee.ejb.test.set.beans;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateless;

@@ -48,8 +48,8 @@ It provides concepts, constraints, and scanners for the following aspects:
 |cdi:BeansMustNotUseFieldInjection
 |CDI beans shall not use field injection (constructor and setter injections are fine.).
 
-|EJB 3
-|ejb3:ScheduleMethodInEjbContext
+|EJB
+|ejb:ScheduleMethodInEjbContext
 |Check that Schedule methods are only declared in EJB classes.
 
 |JPA 2

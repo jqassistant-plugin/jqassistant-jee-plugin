@@ -70,10 +70,11 @@
         <resource>cdi/cdi.xml</resource>
         <resource>cdi/decorator.xml</resource>
         <resource>cdi/interceptor.xml</resource>
-        <resource>ejb3/ejb3.xml</resource>
+        <resource>ejb/ejb.xml</resource>
         <resource>jpa2/jpa2.xml</resource>
         <resource>injection/jee-injection.xml</resource>
         <resource>jsf/jsf.xml</resource>
+        <resource>transaction/jee-transaction.xml</resource>
     </rules>
 </jqassistant-plugin>
 

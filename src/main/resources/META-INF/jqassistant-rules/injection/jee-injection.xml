@@ -20,14 +20,14 @@
         <description>Returns all injectables.</description>
         <cypher><![CDATA[
             MATCH
-              (injectable:JavaEE:Injectable)
+              (injectable:JEE:Injectable)
             RETURN
               injectable as Injectable
         ]]></cypher>
     </concept>
 
     <concept id="jee-injection:InjectionPoint">
-        <description>Labels all fields or methods annotated by @javax.inject.Inject with "InjectionPoint" and "Cdi".</description>
+        <description>Labels all fields or methods annotated by @javax.inject.Inject with "InjectionPoint" and "CDI".</description>
         <cypher><![CDATA[
             MATCH
               (:Type)-[:DECLARES]->(member),
@@ -36,7 +36,7 @@
               (member:Field or member:Method)
               AND injectType.fqn="javax.inject.Inject"
             SET
-              member:InjectionPoint:Cdi
+              member:InjectionPoint:CDI
             RETURN
               member AS InjectionPoint
             ORDER BY
@@ -51,7 +51,7 @@
         <cypher><![CDATA[
             MATCH
               (artifact:Artifact)-[:CONTAINS]->(type:Type)-[:DECLARES]->(method:Method),
-              (beanType:Type)-[:DECLARES]->(beanProducer:JavaEE:BeanProducer),
+              (beanType:Type)-[:DECLARES]->(beanProducer:JEE:BeanProducer),
               (method)-[invokes:INVOKES]->(beanProducer)
             WHERE NOT (
               artifact:Test
@@ -173,7 +173,7 @@
             WHERE NOT (
               artifact:Test
               OR type:Generated
-              OR method:JavaEE:BeanProducer
+              OR method:JEE:BeanProducer
               OR (
                 method:Constructor
                 AND (type)-[:EXTENDS*0..]->(injectable)
@@ -191,17 +191,17 @@
         <description>Injectable classes must not be held as fields in non-injectable classes.</description>
         <cypher><![CDATA[
             MATCH
-              (artifact:Artifact)-[:CONTAINS]->(t:Type)-[:DECLARES]->(f:Field)-[:OF_TYPE]->(fType:Type:JavaEE:Injectable)
+              (artifact:Artifact)-[:CONTAINS]->(t:Type)-[:DECLARES]->(f:Field)-[:OF_TYPE]->(fType:Type:JEE:Injectable)
             WHERE NOT (
               artifact:Test
               or t:Generated
-              or t:JavaEE:Injectable
+              or t:JEE:Injectable
               or f.synthetic IS NOT NULL // exclude synthetic inner class field referencing the outer class
             )
             WITH
               t, collect(DISTINCT fType.fqn) AS fields
             OPTIONAL MATCH
-              (t)<-[:EXTENDS|IMPLEMENTS*]-(injectableImpl:Type:JavaEE:Injectable)
+              (t)<-[:EXTENDS|IMPLEMENTS*]-(injectableImpl:Type:JEE:Injectable)
             WITH
               t, fields, count(DISTINCT injectableImpl) AS injectableImplCnt
             WHERE
@@ -217,7 +217,7 @@
             the named class explicitly recommends using dependency injection.</description>
         <cypher><![CDATA[
             MATCH
-              (type:Type:JavaEE:Injectable)
+              (type:Type:JEE:Injectable)
             WHERE
               type.fqn STARTS WITH "java."
               AND NOT type.fqn = "java.time.Clock"
@@ -229,12 +229,12 @@
     <constraint id="jee-injection:NoCombinationOfBeanProducersAndApplicationCode">
         <requiresConcept refId="jee-injection:Injectable"/>
         <description>
-            Da JavaEE keinen Konfigurationsstereotyp unterstützt, ist sicherzustellen, dass Bean-Producer nur in Klassen definiert werden,
+            Da JEE keinen Konfigurationsstereotyp unterstützt, ist sicherzustellen, dass Bean-Producer nur in Klassen definiert werden,
             in denen sich keine fachliche Logik befindet.
         </description>
         <cypher><![CDATA[
             MATCH
-              (t:Java:Type)-[:DECLARES]->(beanProducer:JavaEE:BeanProducer),
+              (t:Java:Type)-[:DECLARES]->(beanProducer:JEE:BeanProducer),
               (t)-[:DECLARES]->(otherPublicMethod:Method {visibility: "public"})
             WHERE
               NOT otherPublicMethod:BeanProducer
@@ -247,12 +247,7 @@
     <constraint id="jee-injection:BeansMustNotUseFieldInjectionExceptEJBs">
         <requiresConcept refId="jee-injection:InjectionPoint"/>
         <requiresConcept refId="java:GeneratedType"/>
-        <requiresConcept refId="ejb3:StatefulSessionBean"/>
-        <requiresConcept refId="ejb3:StatelessSessionBean"/>
-        <requiresConcept refId="ejb3:SingletonBean"/>
-        <requiresConcept refId="ejb3:MessageDrivenBean"/>
-        <requiresConcept refId="ejb3:Local"/>
-        <requiresConcept refId="ejb3:Remote"/>
+        <requiresConcept refId="ejb:EJB"/>
         <description>
             Die Nutzung von Field-Injection muss vermieden, und stattdessen Constructor Injection verwendet werden. Die
             einzige Ausnahme stellen Enterprise-Java-Beans dar, für die Field-Injection technisch zwingend erforderlich ist.
@@ -263,7 +258,7 @@
             WHERE NOT (
               artifact:Test
               OR type:Generated
-              OR bean:Ejb
+              OR bean:EJB
             )
             RETURN
               type as Type,
