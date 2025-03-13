@@ -247,12 +247,12 @@
     <constraint id="jee-injection:BeansMustNotUseFieldInjectionExceptEJBs">
         <requiresConcept refId="jee-injection:InjectionPoint"/>
         <requiresConcept refId="java:GeneratedType"/>
-        <requiresConcept refId="ejb3:StatefulSessionBean"/>
-        <requiresConcept refId="ejb3:StatelessSessionBean"/>
-        <requiresConcept refId="ejb3:SingletonBean"/>
-        <requiresConcept refId="ejb3:MessageDrivenBean"/>
-        <requiresConcept refId="ejb3:Local"/>
-        <requiresConcept refId="ejb3:Remote"/>
+        <requiresConcept refId="ejb:StatefulSessionBean"/>
+        <requiresConcept refId="ejb:StatelessSessionBean"/>
+        <requiresConcept refId="ejb:SingletonBean"/>
+        <requiresConcept refId="ejb:MessageDrivenBean"/>
+        <requiresConcept refId="ejb:Local"/>
+        <requiresConcept refId="ejb:Remote"/>
         <description>
             Die Nutzung von Field-Injection muss vermieden, und stattdessen Constructor Injection verwendet werden. Die
             einzige Ausnahme stellen Enterprise-Java-Beans dar, für die Field-Injection technisch zwingend erforderlich ist.
