@@ -25,6 +25,29 @@
         <report primaryColumn="callingMethod"/>
     </constraint>
 
+    <constraint id="jee-transaction:PrivateMethodMustNotBeAnnotatedWithTransactional">
+        <requiresConcept refId="java:GeneratedType"/>
+        <description>Private methods must not be annotated with "jakarta.transaction.Transactional"
+            or "javax.transaction.Transactional".</description>
+        <cypher><![CDATA[
+           MATCH
+             (artifact:Artifact)-[:CONTAINS]->(type:Java:Type)-[:DECLARES]->(method:Java:Method {visibility: "private"}),
+             (method:Method)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotationType:Java:Type)
+           WHERE
+             annotationType.fqn in [
+               "jakarta.transaction.Transactional",
+               "javax.transaction.Transactional"
+             ]
+           AND NOT (
+             artifact:Test
+             OR type:Generated
+           )
+           RETURN
+             type as Type, method as Method
+        ]]></cypher>
+        <report primaryColumn="method"/>
+    </constraint>
+
     <concept id="jee-transaction:TransactionalMethod">
         <description>Provides transactional methods as ":JavaEE:Transactional:Method".</description>
         <cypher><![CDATA[
