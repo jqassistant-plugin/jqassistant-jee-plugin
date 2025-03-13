@@ -8,6 +8,10 @@ public class JavaxTransactionalClass {
     public void transactionalMethod(){
     }
 
+    private void callingTransactional() {
+        transactionalMethod();
+    }
+
     private void privateMethod() {
     }
 

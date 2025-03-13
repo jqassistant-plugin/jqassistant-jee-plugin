@@ -11,6 +11,10 @@ public class StatefulEjb {
     public void transactionalMethod(){
     }
 
+    private void callingTransactional() {
+        transactionalMethod();
+    }
+
     private void privateMethod() {
     }
 

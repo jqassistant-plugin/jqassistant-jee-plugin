@@ -11,6 +11,10 @@ public class SingletonEjb {
     public void transactionalMethod(){
     }
 
+    private void callingTransactional() {
+        transactionalMethod();
+    }
+
     private void privateMethod() {
     }
 
