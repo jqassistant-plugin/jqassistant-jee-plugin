@@ -90,26 +90,18 @@
 
     <concept id="jee-transaction:TransactionalMethodOfEjb">
         <providesConcept refId="jee-transaction:TransactionalMethod" />
+        <requiresConcept refId="ejb:EJB" />
         <description>
-            Label methods of classes which are directly or indirectly annotated with "javax.ejb.Stateless",
-            "javax.ejb.Stateful, "javax.ejb.Singleton" or "javax.ejb.MessageDriven" with "JavaEE" and "Transactional".
+            Label methods of EJBs with "JavaEE" and "Transactional".
         </description>
         <cypher><![CDATA[
            MATCH
-             (transactionalClass:Type)-[:EXTENDS|IMPLEMENTS*0..]->(:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotationType:Type),
-             (transactionalClass)-[:DECLARES]->(transactionalMethod:Method)
-           WHERE
-             annotationType.fqn in [
-               "javax.ejb.Stateless",
-               "javax.ejb.Stateful",
-               "javax.ejb.Singleton",
-               "javax.ejb.MessageDriven"
-             ]
-             AND NOT (
-               transactionalMethod:Constructor
-               OR (transactionalMethod.static IS NOT NULL and transactionalMethod.static)
-               OR transactionalMethod.visibility = "private"
-             )
+             (transactionalClass:Java:Type:EJB)-[:DECLARES]->(transactionalMethod:Java:Method)
+           WHERE NOT (
+             transactionalMethod:Constructor
+             OR (transactionalMethod.static IS NOT NULL and transactionalMethod.static)
+             OR transactionalMethod.visibility = "private"
+           )
            SET
              transactionalMethod:JavaEE:Transactional
            RETURN
