@@ -22,7 +22,7 @@ class TransactionalMethodIT extends AbstractJavaPluginIT {
                 );
         assertThat(applyConcept("jee-transaction:TransactionalMethod").getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
-        final List<MethodDescriptor> methods = query("MATCH (m:JavaEE:Method:Transactional) RETURN m").getColumn("m");
+        final List<MethodDescriptor> methods = query("MATCH (m:JEE:Method:Transactional) RETURN m").getColumn("m");
         assertThat(methods).hasSize(8);
 
         // method level annotations

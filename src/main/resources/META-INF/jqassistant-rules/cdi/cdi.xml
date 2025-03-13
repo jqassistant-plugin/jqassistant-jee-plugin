@@ -16,8 +16,8 @@
               (member:Field or member:Method)
               and producesType.fqn="javax.enterprise.inject.Produces"
             SET
-              type:JavaEE:Injectable,
-              member:JavaEE:BeanProducer
+              type:JEE:Injectable,
+              member:JEE:BeanProducer
             MERGE
               (member)-[:PRODUCES]->(type)
             RETURN

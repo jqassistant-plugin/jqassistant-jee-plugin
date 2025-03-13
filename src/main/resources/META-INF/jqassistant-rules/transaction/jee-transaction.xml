@@ -13,7 +13,7 @@
         <description>Transactional methods must not be invoked from the same class.</description>
         <cypher><![CDATA[
             MATCH
-              (artifact:Artifact)-[:CONTAINS]->(type:Type)-[:DECLARES]->(calledMethod:Method:JavaEE:Transactional),
+              (artifact:Artifact)-[:CONTAINS]->(type:Type)-[:DECLARES]->(calledMethod:Method:JEE:Transactional),
               (type:Type)-[:DECLARES]->(callingMethod:Method),
               (callingMethod:Method)-[invokes:INVOKES]->(calledMethod)
             WHERE NOT (
@@ -50,10 +50,10 @@
     </constraint>
 
     <concept id="jee-transaction:TransactionalMethod">
-        <description>Provides transactional methods as ":JavaEE:Transactional:Method".</description>
+        <description>Provides transactional methods as ":JEE:Transactional:Method".</description>
         <cypher><![CDATA[
            MATCH
-             (type:Type)-[:DECLARES]->(transactionalMethod:JavaEE:Transactional:Method)
+             (type:Type)-[:DECLARES]->(transactionalMethod:JEE:Transactional:Method)
            RETURN
              type as Type, transactionalMethod as TransactionalMethod
            ORDER BY
@@ -65,7 +65,7 @@
         <providesConcept refId="jee-transaction:TransactionalMethod" />
         <description>
             Label all methods which are annotated with "jakarta.transaction.Transactional"
-            or "javax.transaction.Transactional", with "JavaEE" and "Transactional".
+            or "javax.transaction.Transactional", with "JEE" and "Transactional".
         </description>
         <cypher><![CDATA[
            MATCH
@@ -79,7 +79,7 @@
            AND NOT
              transactionalMethod.visibility = "private"
            SET
-             transactionalMethod:JavaEE:Transactional
+             transactionalMethod:JEE:Transactional
            RETURN
              type as Type, transactionalMethod as TransactionalMethod
         ]]></cypher>
@@ -89,7 +89,7 @@
         <providesConcept refId="jee-transaction:TransactionalMethod" />
         <description>
             Label methods of classes which are directly or indirectly annotated with "jakarta.transaction.Transactional",
-            or "javax.transaction.Transactional" with "JavaEE" and "Transactional".
+            or "javax.transaction.Transactional" with "JEE" and "Transactional".
         </description>
         <cypher><![CDATA[
            MATCH
@@ -106,7 +106,7 @@
                OR transactionalMethod.visibility = "private"
              )
            SET
-             transactionalMethod:JavaEE:Transactional
+             transactionalMethod:JEE:Transactional
            RETURN
              transactionalClass as TransactionalClass, collect(transactionalMethod) as TransactionalMethods
         ]]></cypher>
@@ -116,7 +116,7 @@
         <providesConcept refId="jee-transaction:TransactionalMethod" />
         <requiresConcept refId="ejb:EJB" />
         <description>
-            Label methods of EJBs with "JavaEE" and "Transactional".
+            Label methods of EJBs with "JEE" and "Transactional".
         </description>
         <cypher><![CDATA[
            MATCH
@@ -127,7 +127,7 @@
              OR transactionalMethod.visibility = "private"
            )
            SET
-             transactionalMethod:JavaEE:Transactional
+             transactionalMethod:JEE:Transactional
            RETURN
              transactionalClass as TransactionalClass, collect(transactionalMethod) as TransactionalMethods
         ]]></cypher>
