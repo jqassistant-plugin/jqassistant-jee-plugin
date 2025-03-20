@@ -89,6 +89,27 @@
         ]]></cypher>
     </concept>
 
+    <concept id="ejb:TransactionalMethod">
+        <providesConcept refId="jee-transaction:TransactionalMethod" />
+        <requiresConcept refId="ejb:EJB" />
+        <description>
+            Label methods of EJBs with "JEE" and "Transactional".
+        </description>
+        <cypher><![CDATA[
+           MATCH
+             (transactionalClass:Java:Type:JEE:EJB)-[:DECLARES]->(transactionalMethod:Java:Method)
+           WHERE NOT (
+             transactionalMethod:Constructor
+             OR (transactionalMethod.static IS NOT NULL and transactionalMethod.static)
+             OR transactionalMethod.visibility = "private"
+           )
+           SET
+             transactionalMethod:JEE:Transactional
+           RETURN
+             transactionalClass as TransactionalClass, collect(transactionalMethod) as TransactionalMethods
+        ]]></cypher>
+    </concept>
+
     <constraint id="ejb:ScheduleMethodInEjbContext">
         <requiresConcept refId="ejb:StatelessSessionBean"/>
         <requiresConcept refId="ejb:StatefulSessionBean"/>
