@@ -1,0 +1,135 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+
+    <concept id="ejb:EJB">
+        <description>Provides EJB types as ":EJB".</description>
+        <cypher><![CDATA[
+           MATCH
+             (type:Java:Type:JEE:EJB)
+           RETURN
+             type as EJB
+           ORDER BY
+             type.fqn
+        ]]></cypher>
+    </concept>
+
+    <concept id="ejb:StatelessSessionBean">
+        <providesConcept refId="ejb:EJB" />
+        <description>Labels all types annotated with @javax.ejb.Stateless with "EJB" and "Stateless".</description>
+        <cypher><![CDATA[
+            MATCH (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
+            WHERE a.fqn="javax.ejb.Stateless"
+            SET t:JEE:EJB:Stateless
+            RETURN t AS EJB
+        ]]></cypher>
+    </concept>
+
+    <concept id="ejb:StatefulSessionBean">
+        <providesConcept refId="ejb:EJB" />
+        <description>Labels all types annotated with @javax.ejb.Stateful with "EJB" and "Stateful".</description>
+        <cypher><![CDATA[
+            MATCH (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
+            WHERE a.fqn="javax.ejb.Stateful"
+            SET t:JEE:EJB:Stateful
+            RETURN t AS EJB
+        ]]></cypher>
+    </concept>
+
+    <concept id="ejb:SingletonBean">
+        <providesConcept refId="ejb:EJB" />
+        <description>Labels all classes annotated with @javax.ejb.Singleton with "EJB" and "Singleton".</description>
+        <cypher><![CDATA[
+            MATCH (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
+            WHERE a.fqn="javax.ejb.Singleton"
+            SET t:JEE:EJB:Singleton
+            RETURN t AS EJB
+        ]]></cypher>
+    </concept>
+
+    <concept id="ejb:MessageDrivenBean">
+        <providesConcept refId="ejb:EJB" />
+        <description>Labels all types annotated with @javax.ejb.MessageDriven with "EJB" and "MessageDriven".
+        </description>
+        <cypher><![CDATA[
+            MATCH (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
+            WHERE a.fqn="javax.ejb.MessageDriven"
+            SET t:JEE:EJB:MessageDriven
+            RETURN t AS EJB
+        ]]></cypher>
+    </concept>
+
+    <concept id="ejb:Local">
+        <description>Labels all types annotated with @javax.ejb.Local with "Local".</description>
+        <cypher><![CDATA[
+            MATCH (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
+            WHERE a.fqn="javax.ejb.Local"
+            SET t:Local
+            RETURN t AS LocalBean
+        ]]></cypher>
+    </concept>
+
+    <concept id="ejb:Remote">
+        <description>Labels all types annotated with @javax.ejb.Remote with "Remote".</description>
+        <cypher><![CDATA[
+            MATCH (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
+            WHERE a.fqn="javax.ejb.Remote"
+            SET t:Remote
+            RETURN t AS RemoteBean
+        ]]></cypher>
+    </concept>
+
+    <concept id="ejb:Schedule">
+        <description>Labels all methods annotated with @javax.ejb.Schedule with "Schedule".</description>
+        <cypher><![CDATA[
+            MATCH (m:Method)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
+            WHERE a.fqn="javax.ejb.Schedule"
+            SET m:Schedule
+            RETURN m AS ScheduledMethod
+        ]]></cypher>
+    </concept>
+
+    <concept id="ejb:TransactionalMethod">
+        <providesConcept refId="jee-transaction:TransactionalMethod" />
+        <requiresConcept refId="ejb:EJB" />
+        <description>
+            Label methods of EJBs with "JEE" and "Transactional".
+        </description>
+        <cypher><![CDATA[
+           MATCH
+             (transactionalClass:Java:Type:JEE:EJB)-[:DECLARES]->(transactionalMethod:Java:Method)
+           WHERE NOT (
+             transactionalMethod:Constructor
+             OR (transactionalMethod.static IS NOT NULL and transactionalMethod.static)
+             OR transactionalMethod.visibility = "private"
+           )
+           SET
+             transactionalMethod:JEE:Transactional
+           RETURN
+             transactionalClass as TransactionalClass, collect(transactionalMethod) as TransactionalMethods
+        ]]></cypher>
+    </concept>
+
+    <constraint id="ejb:ScheduleMethodInEjbContext">
+        <requiresConcept refId="ejb:StatelessSessionBean"/>
+        <requiresConcept refId="ejb:StatefulSessionBean"/>
+        <requiresConcept refId="ejb:SingletonBean"/>
+        <requiresConcept refId="ejb:Schedule"/>
+        <description>Check that Schedule methods are only delared in EJB classes.</description>
+        <cypher><![CDATA[
+            MATCH (c:Class)-[:DECLARES]->(m:Method:Schedule)
+            WHERE NOT c:EJB
+            RETURN c.fqn AS invalidBean, m.name AS scheduledMethodName
+        ]]></cypher>
+    </constraint>
+
+    <constraint id="ejb:AvoidStatefulSessionBeans">
+        <requiresConcept refId="ejb:StatefulSessionBean"/>
+        <description>Stateful Session Beans should be avoided.</description>
+        <cypher><![CDATA[
+            MATCH (type:Type:EJB:Stateful)
+            RETURN type AS `Stateful Session Bean`
+        ]]></cypher>
+    </constraint>
+
+</jqassistant-rules>

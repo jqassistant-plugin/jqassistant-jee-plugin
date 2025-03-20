@@ -18,7 +18,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Contains integration tests for JavaEE XML descriptors.
+ * Contains integration tests for JEE XML descriptors.
  */
 class XmlDescriptorScannerPluginIT extends AbstractPluginIT {
 

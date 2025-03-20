@@ -1,4 +1,4 @@
-package org.jqassistant.plugin.jee.ejb3.test.set.beans;
+package org.jqassistant.plugin.jee.ejb.test.set.beans;
 
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;

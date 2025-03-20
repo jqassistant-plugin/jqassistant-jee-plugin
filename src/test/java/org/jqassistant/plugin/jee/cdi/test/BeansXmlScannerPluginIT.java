@@ -34,7 +34,7 @@ class BeansXmlScannerPluginIT extends AbstractJavaPluginIT {
     void beansDescriptor() {
         scanClassPathDirectory(new File(getClassesDirectory(BeansXmlScannerPluginIT.class), "cdi")); // for XML documents
         store.beginTransaction();
-        List<Object> column = query("MATCH (beans:Cdi:Beans:Xml:File) RETURN beans").getColumn("beans");
+        List<Object> column = query("MATCH (beans:CDI:Beans:Xml:File) RETURN beans").getColumn("beans");
         assertThat(column.size(), equalTo(1));
         BeansXmlDescriptor beansXmlDescriptor = (BeansXmlDescriptor) column.get(0);
         assertThat(beansXmlDescriptor.getFileName(), equalTo("/META-INF/beans.xml"));
@@ -50,7 +50,7 @@ class BeansXmlScannerPluginIT extends AbstractJavaPluginIT {
     void invalidBeansDescriptor() {
         scanClassPathDirectory(new File(getClassesDirectory(BeansXmlScannerPluginIT.class), "cdi/invalid"));
         store.beginTransaction();
-        List<Object> column = query("MATCH (beans:Cdi:Beans:Xml:File) RETURN beans").getColumn("beans");
+        List<Object> column = query("MATCH (beans:CDI:Beans:Xml:File) RETURN beans").getColumn("beans");
         assertThat(column.size(), equalTo(1));
         BeansXmlDescriptor beansXmlDescriptor = (BeansXmlDescriptor) column.get(0);
         assertThat(beansXmlDescriptor.getFileName(), equalTo("/META-INF/beans.xml"));
