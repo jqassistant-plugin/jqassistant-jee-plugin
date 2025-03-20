@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for the ejb concepts.
  */
-class ejbIT extends AbstractJavaPluginIT {
+class EjbIT extends AbstractJavaPluginIT {
 
     /**
      * Verifies the concept "ejb:StatelessSessionBean".
