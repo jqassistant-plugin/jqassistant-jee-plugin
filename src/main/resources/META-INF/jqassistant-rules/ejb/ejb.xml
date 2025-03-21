@@ -110,6 +110,22 @@
         ]]></cypher>
     </concept>
 
+    <concept id="ejb:Injectable">
+        <providesConcept refId="jee-injection:Injectable"/>
+        <requiresConcept refId="ejb:EJB" />
+        <description>
+            Label EJBs with "Injectable".
+        </description>
+        <cypher><![CDATA[
+           MATCH
+             (type:Java:Type:JEE:EJB)
+           SET
+             type:JEE:Injectable
+           RETURN
+             type as EJB
+        ]]></cypher>
+    </concept>
+
     <constraint id="ejb:ScheduleMethodInEjbContext">
         <requiresConcept refId="ejb:StatelessSessionBean"/>
         <requiresConcept refId="ejb:StatefulSessionBean"/>
