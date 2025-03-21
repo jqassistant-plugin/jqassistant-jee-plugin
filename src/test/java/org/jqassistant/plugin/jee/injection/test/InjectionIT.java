@@ -5,6 +5,8 @@ import com.buschmais.jqassistant.core.report.api.model.Row;
 import com.buschmais.jqassistant.core.rule.api.model.Concept;
 import com.buschmais.jqassistant.core.rule.api.model.Constraint;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.jqassistant.plugin.jee.injection.test.set.BeanWithConstructorInjection;
 import org.jqassistant.plugin.jee.injection.test.set.BeanWithSetterInjection;
 import org.jqassistant.plugin.jee.injection.test.set.*;
@@ -13,6 +15,8 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.buschmais.jqassistant.core.report.api.model.Result.Status.SUCCESS;
 import static com.buschmais.jqassistant.core.test.matcher.ConstraintMatcher.constraint;
@@ -158,13 +162,25 @@ public class InjectionIT extends AbstractJavaPluginIT {
      */
     @Test
     void injectableOfNonInjectable() throws Exception {
-        scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, NonInjectableType.class);
+        scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, NonInjectableType.class, LocalEjb.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesMustOnlyBeHeldInInjectables");
         store.beginTransaction();
         assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
-        assertThat(constraintResult.getRows().size(), equalTo(1));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("NonInjectableHavingInjectablesAsField").getLabel(), endsWith("test.set.NonInjectableType"));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Fields").getLabel(), endsWith("test.set.InjectableA"));
+        assertThat(constraintResult.getRows().size(), equalTo(2));
+
+        final Map<String, List<?>> violations = constraintResult.getRows().stream()
+                .map(Row::getColumns)
+                .collect(Collectors.toMap(
+                        map -> map.get("NonInjectableHavingInjectablesAsField").getLabel(),
+                        map -> (List<?>)  map.get("Fields").getValue()
+                ));
+
+        Assertions.assertThat(violations.keySet()).containsExactlyInAnyOrder(NonInjectableType.class.getName(), BeanProducerWithConstraintViolations.class.getName());
+        Assertions.assertThat(violations.get(NonInjectableType.class.getName()))
+                .asInstanceOf(InstanceOfAssertFactories.LIST).containsExactly(InjectableA.class.getName());
+        Assertions.assertThat(violations.get(BeanProducerWithConstraintViolations.class.getName()))
+                .asInstanceOf(InstanceOfAssertFactories.LIST).containsExactly(LocalEjb.class.getName());
+
         store.commitTransaction();
     }
 
