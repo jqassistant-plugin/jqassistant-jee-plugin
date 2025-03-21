@@ -19,11 +19,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.buschmais.jqassistant.core.report.api.model.Result.Status.SUCCESS;
-import static com.buschmais.jqassistant.core.test.matcher.ConstraintMatcher.constraint;
-import static com.buschmais.jqassistant.core.test.matcher.ResultMatcher.result;
-import static org.hamcrest.CoreMatchers.endsWith;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class InjectionIT extends AbstractJavaPluginIT {
 
@@ -37,11 +34,11 @@ public class InjectionIT extends AbstractJavaPluginIT {
         scanClasses(BeanProducerWithConstraintViolations.class);
         Result<Concept> conceptResult = applyConcept("jee-injection:InjectionPoint");
         store.beginTransaction();
-        assertThat(conceptResult.getStatus(), equalTo(Result.Status.SUCCESS));
-        assertThat(conceptResult.getRows().size(), equalTo(3));
-        assertThat(conceptResult.getRows().get(0).getColumns().get("InjectionPoint").getLabel(), endsWith("LocalEjb ejb"));
-        assertThat(conceptResult.getRows().get(1).getColumns().get("InjectionPoint").getLabel(), endsWith("java.lang.Object injectionPointField"));
-        assertThat(conceptResult.getRows().get(2).getColumns().get("InjectionPoint").getLabel(), endsWith("void test()"));
+        assertThat(conceptResult.getStatus()).isEqualTo(Result.Status.SUCCESS);
+        assertThat(conceptResult.getRows()).hasSize(3);
+        assertThat(conceptResult.getRows().get(0).getColumns().get("InjectionPoint").getLabel()).endsWith("LocalEjb ejb");
+        assertThat(conceptResult.getRows().get(1).getColumns().get("InjectionPoint").getLabel()).endsWith("java.lang.Object injectionPointField");
+        assertThat(conceptResult.getRows().get(2).getColumns().get("InjectionPoint").getLabel()).endsWith("void test()");
         store.commitTransaction();
     }
 
@@ -55,10 +52,10 @@ public class InjectionIT extends AbstractJavaPluginIT {
         scanClasses(BeanProducerWithConstraintViolations.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:BeanProducerMustNotBeInvokedDirectly");
         store.beginTransaction();
-        assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
-        assertThat(constraintResult.getRows().size(), equalTo(1));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Type").getLabel(), endsWith("test.set.BeanProducerWithConstraintViolations"));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Invocation").getLabel(), endsWith("void beanProducerAccessor()"));
+        assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
+        assertThat(constraintResult.getRows()).hasSize(1);
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Type").getLabel()).endsWith("test.set.BeanProducerWithConstraintViolations");
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Invocation").getLabel()).endsWith("void beanProducerAccessor()");
         store.commitTransaction();
     }
 
@@ -72,14 +69,14 @@ public class InjectionIT extends AbstractJavaPluginIT {
         scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, InjectableB.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:FieldsOfInjectablesMustNotBeManipulated");
         store.beginTransaction();
-        assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
-        assertThat(constraintResult.getRows().size(), equalTo(2));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Injectable").getLabel(), endsWith("test.set.InjectableA"));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("WriteToInjectableField").getLabel(), endsWith("void manipulateField()"));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Field").getLabel(), endsWith("InjectableB fieldOfInjectable1"));
-        assertThat(constraintResult.getRows().get(1).getColumns().get("Injectable").getLabel(), endsWith("test.set.InjectableA"));
-        assertThat(constraintResult.getRows().get(1).getColumns().get("WriteToInjectableField").getLabel(), endsWith("void accessFieldStatically()"));
-        assertThat(constraintResult.getRows().get(1).getColumns().get("Field").getLabel(), endsWith("InjectableB fieldOfInjectable2"));
+        assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
+        assertThat(constraintResult.getRows()).hasSize(2);
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Injectable").getLabel()).endsWith("test.set.InjectableA");
+        assertThat(constraintResult.getRows().get(0).getColumns().get("WriteToInjectableField").getLabel()).endsWith("void manipulateField()");
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Field").getLabel()).endsWith("InjectableB fieldOfInjectable1");
+        assertThat(constraintResult.getRows().get(1).getColumns().get("Injectable").getLabel()).endsWith("test.set.InjectableA");
+        assertThat(constraintResult.getRows().get(1).getColumns().get("WriteToInjectableField").getLabel()).endsWith("void accessFieldStatically()");
+        assertThat(constraintResult.getRows().get(1).getColumns().get("Field").getLabel()).endsWith("InjectableB fieldOfInjectable2");
         store.commitTransaction();
     }
 
@@ -93,12 +90,12 @@ public class InjectionIT extends AbstractJavaPluginIT {
         scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, InjectableB.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesShouldBeHeldInFinalFields");
         store.beginTransaction();
-        assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
-        assertThat(constraintResult.getRows().size(), equalTo(2));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Type").getLabel(), endsWith("test.set.InjectableA"));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Field").getLabel(), endsWith("InjectableB fieldOfInjectable1"));
-        assertThat(constraintResult.getRows().get(1).getColumns().get("Type").getLabel(), endsWith("test.set.InjectableA"));
-        assertThat(constraintResult.getRows().get(1).getColumns().get("Field").getLabel(), endsWith("InjectableB fieldOfInjectable2"));
+        assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
+        assertThat(constraintResult.getRows().size()).isEqualTo(2);
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Type").getLabel()).endsWith("test.set.InjectableA");
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Field").getLabel()).endsWith("InjectableB fieldOfInjectable1");
+        assertThat(constraintResult.getRows().get(1).getColumns().get("Type").getLabel()).endsWith("test.set.InjectableA");
+        assertThat(constraintResult.getRows().get(1).getColumns().get("Field").getLabel()).endsWith("InjectableB fieldOfInjectable2");
         store.commitTransaction();
     }
 
@@ -112,11 +109,11 @@ public class InjectionIT extends AbstractJavaPluginIT {
         scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, InjectableB.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesMustNotBeAccessedStatically");
         store.beginTransaction();
-        assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
-        assertThat(constraintResult.getRows().size(), equalTo(1));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Type").getLabel(), endsWith("test.set.InjectableA"));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Method").getLabel(), endsWith("void accessFieldStatically()"));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Field").getLabel(), endsWith("InjectableB fieldOfInjectable2"));
+        assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
+        assertThat(constraintResult.getRows()).hasSize(1);
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Type").getLabel()).endsWith("test.set.InjectableA");
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Method").getLabel()).endsWith("void accessFieldStatically()");
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Field").getLabel()).endsWith("InjectableB fieldOfInjectable2");
         store.commitTransaction();
     }
 
@@ -130,10 +127,10 @@ public class InjectionIT extends AbstractJavaPluginIT {
         scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, InjectableB.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesMustNotBeHeldInStaticVariables");
         store.beginTransaction();
-        assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
-        assertThat(constraintResult.getRows().size(), equalTo(1));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Type").getLabel(), endsWith("test.set.InjectableA"));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Field").getLabel(), endsWith("InjectableB fieldOfInjectable2"));
+        assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
+        assertThat(constraintResult.getRows()).hasSize(1);
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Type").getLabel()).endsWith("test.set.InjectableA");
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Field").getLabel()).endsWith("InjectableB fieldOfInjectable2");
         store.commitTransaction();
     }
 
@@ -147,11 +144,11 @@ public class InjectionIT extends AbstractJavaPluginIT {
         scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, InjectableB.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesMustNotBeInstantiated");
         store.beginTransaction();
-        assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
-        assertThat(constraintResult.getRows().size(), equalTo(1));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Type").getLabel(), endsWith("test.set.InjectableA"));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Method").getLabel(), endsWith("void injectableInstantiation()"));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Injectable").getLabel(), endsWith("test.set.InjectableB"));
+        assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
+        assertThat(constraintResult.getRows()).hasSize(1);
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Type").getLabel()).endsWith("test.set.InjectableA");
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Method").getLabel()).endsWith("void injectableInstantiation()");
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Injectable").getLabel()).endsWith("test.set.InjectableB");
         store.commitTransaction();
     }
 
@@ -165,8 +162,8 @@ public class InjectionIT extends AbstractJavaPluginIT {
         scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, NonInjectableType.class, LocalEjb.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesMustOnlyBeHeldInInjectables");
         store.beginTransaction();
-        assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
-        assertThat(constraintResult.getRows().size(), equalTo(2));
+        assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
+        assertThat(constraintResult.getRows().size()).isEqualTo(2);
 
         final Map<String, List<?>> violations = constraintResult.getRows().stream()
                 .map(Row::getColumns)
@@ -194,9 +191,9 @@ public class InjectionIT extends AbstractJavaPluginIT {
         scanClasses(BeanProducerWithConstraintViolations.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:JdkClassesMustNotBeInjectables");
         store.beginTransaction();
-        assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
-        assertThat(constraintResult.getRows().size(), equalTo(1));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Injectable").getLabel(), endsWith("java.lang.String"));
+        assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
+        assertThat(constraintResult.getRows()).hasSize(1);
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Injectable").getLabel()).endsWith("java.lang.String");
         store.commitTransaction();
     }
 
@@ -210,8 +207,8 @@ public class InjectionIT extends AbstractJavaPluginIT {
         scanClasses(BeanWithInjectedClock.class, BeanWithInjectedClock.ClockProducer.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:JdkClassesMustNotBeInjectables");
         store.beginTransaction();
-        assertThat(constraintResult.getStatus(), equalTo(SUCCESS));
-        assertThat(constraintResult.getRows().size(), equalTo(0));
+        assertThat(constraintResult.getStatus()).isEqualTo(SUCCESS);
+        assertThat(constraintResult.getRows().size()).isEqualTo(0);
         store.commitTransaction();
     }
 
@@ -225,9 +222,9 @@ public class InjectionIT extends AbstractJavaPluginIT {
         scanClasses(BeanProducerWithConstraintViolations.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:NoCombinationOfBeanProducersAndApplicationCode");
         store.beginTransaction();
-        assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
-        assertThat(constraintResult.getRows().size(), equalTo(1));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Java-Klasse").getLabel(), endsWith("test.set.BeanProducerWithConstraintViolations"));
+        assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
+        assertThat(constraintResult.getRows()).hasSize(1);
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Java-Klasse").getLabel()).endsWith("test.set.BeanProducerWithConstraintViolations");
         store.commitTransaction();
     }
 
@@ -241,8 +238,8 @@ public class InjectionIT extends AbstractJavaPluginIT {
         scanClasses(BeanProducerWithoutConstraintViolations.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:NoCombinationOfBeanProducersAndApplicationCode");
         store.beginTransaction();
-        assertThat(constraintResult.getStatus(), equalTo(SUCCESS));
-        assertThat(constraintResult.getRows().size(), equalTo(0));
+        assertThat(constraintResult.getStatus()).isEqualTo(SUCCESS);
+        assertThat(constraintResult.getRows().size()).isEqualTo(0);
         store.commitTransaction();
     }
 
@@ -256,10 +253,10 @@ public class InjectionIT extends AbstractJavaPluginIT {
         scanClasses(BeanProducerWithConstraintViolations.class, LocalEjb.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:BeansMustNotUseFieldInjectionExceptEJBs");
         store.beginTransaction();
-        assertThat(constraintResult.getStatus(), equalTo(Result.Status.FAILURE));
-        assertThat(constraintResult.getRows().size(), equalTo(1));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Type").getLabel(), endsWith("test.set.BeanProducerWithConstraintViolations"));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Field").getLabel(), endsWith("Object injectionPointField"));
+        assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
+        assertThat(constraintResult.getRows()).hasSize(1);
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Type").getLabel()).endsWith("test.set.BeanProducerWithConstraintViolations");
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Field").getLabel()).endsWith("Object injectionPointField");
         store.commitTransaction();
     }
 
@@ -274,15 +271,15 @@ public class InjectionIT extends AbstractJavaPluginIT {
         scanClasses(BeanWithConstructorInjection.class);
         scanClasses(BeanWithSetterInjection.class);
         String ruleName = "jee-injection:BeansMustNotUseFieldInjectionExceptEJBs";
-        assertThat(validateConstraint(ruleName).getStatus(), equalTo(SUCCESS));
+        assertThat(validateConstraint(ruleName).getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
 
         List<Result<Constraint>> constraintViolations = new ArrayList<>(reportPlugin.getConstraintResults().values());
-        assertThat("Unexpected number of violated constraints", constraintViolations.size(), equalTo(1));
+        assertThat(constraintViolations).hasSize(1);
         Result<Constraint> result = constraintViolations.get(0);
-        assertThat("Expected constraint " + ruleName, result, result(constraint(ruleName)));
+        assertThat(result.getRule().getId()).isEqualTo(ruleName);
         List<Row> violations = result.getRows();
-        assertThat("Unexpected number of violations", violations.size(), equalTo(0));
+        assertThat(violations).hasSize(0);
 
         store.commitTransaction();
     }
