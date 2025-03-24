@@ -120,7 +120,7 @@
            MATCH
              (type:Java:Type:JEE:EJB)
            SET
-             type:JEE:Injectable
+             type:Injectable
            RETURN
              type as EJB
         ]]></cypher>
