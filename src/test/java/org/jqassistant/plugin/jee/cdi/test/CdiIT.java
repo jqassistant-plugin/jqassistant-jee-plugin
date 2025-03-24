@@ -2,8 +2,12 @@ package org.jqassistant.plugin.jee.cdi.test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.buschmais.jqassistant.core.report.api.model.Result;
+import com.buschmais.jqassistant.plugin.java.api.model.FieldDescriptor;
+import com.buschmais.jqassistant.plugin.java.api.model.MethodDescriptor;
+import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
 
 import org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.AlternativeBean;
@@ -17,13 +21,10 @@ import org.jqassistant.plugin.jee.cdi.test.set.beans.specializes.SpecializesBean
 import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.CustomStereotype;
 import org.junit.jupiter.api.Test;
 
-import static com.buschmais.jqassistant.plugin.java.test.matcher.FieldDescriptorMatcher.fieldDescriptor;
-import static com.buschmais.jqassistant.plugin.java.test.matcher.MethodDescriptorMatcher.methodDescriptor;
-import static com.buschmais.jqassistant.plugin.java.test.matcher.TypeDescriptorMatcher.typeDescriptor;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.MatcherAssert.assertThat;
-
+import static com.buschmais.jqassistant.plugin.java.test.assertj.FieldDescriptorCondition.fieldDescriptor;
+import static com.buschmais.jqassistant.plugin.java.test.assertj.MethodDescriptorCondition.methodDescriptor;
+import static com.buschmais.jqassistant.plugin.java.test.assertj.TypeDescriptorCondition.typeDescriptor;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for the CDI concepts.
@@ -39,12 +40,16 @@ class CdiIT extends AbstractJavaPluginIT {
     @Test
     void dependent() throws Exception {
         scanClasses(DependentBean.class);
-        assertThat(applyConcept("cdi:Dependent").getStatus(), equalTo(Result.Status.SUCCESS));
+        assertThat(applyConcept("cdi:Dependent").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
-        List<Object> column = query("MATCH (e:CDI:Dependent) RETURN e").getColumn("e");
-        assertThat(column, hasItem(typeDescriptor(DependentBean.class)));
-        assertThat(column, hasItem(methodDescriptor(DependentBean.class, "producerMethod")));
-        assertThat(column, hasItem(fieldDescriptor(DependentBean.class, "producerField")));
+        final List<Object> column = query("MATCH (e:CDI:Dependent) RETURN e").getColumn("e");
+        assertThat(column).hasSize(3);
+        assertThat(column.stream().filter(TypeDescriptor.class::isInstance).map(TypeDescriptor.class::cast))
+                .haveExactly(1, typeDescriptor(DependentBean.class));
+        assertThat(column.stream().filter(MethodDescriptor.class::isInstance).map(MethodDescriptor.class::cast))
+                .haveExactly(1, methodDescriptor(DependentBean.class, "producerMethod"));
+        assertThat(column.stream().filter(FieldDescriptor.class::isInstance).map(FieldDescriptor.class::cast))
+                .haveExactly(1, fieldDescriptor(DependentBean.class, "producerField"));
         store.commitTransaction();
     }
 
@@ -57,12 +62,16 @@ class CdiIT extends AbstractJavaPluginIT {
     @Test
     void requestScoped() throws Exception {
         scanClasses(RequestScopedBean.class);
-        assertThat(applyConcept("cdi:RequestScoped").getStatus(), equalTo(Result.Status.SUCCESS));
+        assertThat(applyConcept("cdi:RequestScoped").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<Object> column = query("MATCH (e:CDI:RequestScoped) RETURN e").getColumn("e");
-        assertThat(column, hasItem(typeDescriptor(RequestScopedBean.class)));
-        assertThat(column, hasItem(methodDescriptor(RequestScopedBean.class, "producerMethod")));
-        assertThat(column, hasItem(fieldDescriptor(RequestScopedBean.class, "producerField")));
+        assertThat(column).hasSize(3);
+        assertThat(column.stream().filter(TypeDescriptor.class::isInstance).map(TypeDescriptor.class::cast))
+                .haveExactly(1, typeDescriptor(RequestScopedBean.class));
+        assertThat(column.stream().filter(MethodDescriptor.class::isInstance).map(MethodDescriptor.class::cast))
+                .haveExactly(1, methodDescriptor(RequestScopedBean.class, "producerMethod"));
+        assertThat(column.stream().filter(FieldDescriptor.class::isInstance).map(FieldDescriptor.class::cast))
+                .haveExactly(1, fieldDescriptor(RequestScopedBean.class, "producerField"));
         store.commitTransaction();
     }
 
@@ -75,12 +84,16 @@ class CdiIT extends AbstractJavaPluginIT {
     @Test
     void sessionScoped() throws Exception {
         scanClasses(SessionScopedBean.class);
-        assertThat(applyConcept("cdi:SessionScoped").getStatus(), equalTo(Result.Status.SUCCESS));
+        assertThat(applyConcept("cdi:SessionScoped").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<Object> column = query("MATCH (e:CDI:SessionScoped) RETURN e").getColumn("e");
-        assertThat(column, hasItem(typeDescriptor(SessionScopedBean.class)));
-        assertThat(column, hasItem(methodDescriptor(SessionScopedBean.class, "producerMethod")));
-        assertThat(column, hasItem(fieldDescriptor(SessionScopedBean.class, "producerField")));
+        assertThat(column).hasSize(3);
+        assertThat(column.stream().filter(TypeDescriptor.class::isInstance).map(TypeDescriptor.class::cast))
+                .haveExactly(1, typeDescriptor(SessionScopedBean.class));
+        assertThat(column.stream().filter(MethodDescriptor.class::isInstance).map(MethodDescriptor.class::cast))
+                .haveExactly(1, methodDescriptor(SessionScopedBean.class, "producerMethod"));
+        assertThat(column.stream().filter(FieldDescriptor.class::isInstance).map(FieldDescriptor.class::cast))
+                .haveExactly(1, fieldDescriptor(SessionScopedBean.class, "producerField"));
         store.commitTransaction();
     }
 
@@ -93,12 +106,16 @@ class CdiIT extends AbstractJavaPluginIT {
     @Test
     void conversationScoped() throws Exception {
         scanClasses(ConversationScopedBean.class);
-        assertThat(applyConcept("cdi:ConversationScoped").getStatus(), equalTo(Result.Status.SUCCESS));
+        assertThat(applyConcept("cdi:ConversationScoped").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<Object> column = query("MATCH (e:CDI:ConversationScoped) RETURN e").getColumn("e");
-        assertThat(column, hasItem(typeDescriptor(ConversationScopedBean.class)));
-        assertThat(column, hasItem(methodDescriptor(ConversationScopedBean.class, "producerMethod")));
-        assertThat(column, hasItem(fieldDescriptor(ConversationScopedBean.class, "producerField")));
+        assertThat(column).hasSize(3);
+        assertThat(column.stream().filter(TypeDescriptor.class::isInstance).map(TypeDescriptor.class::cast))
+                .haveExactly(1, typeDescriptor(ConversationScopedBean.class));
+        assertThat(column.stream().filter(MethodDescriptor.class::isInstance).map(MethodDescriptor.class::cast))
+                .haveExactly(1, methodDescriptor(ConversationScopedBean.class, "producerMethod"));
+        assertThat(column.stream().filter(FieldDescriptor.class::isInstance).map(FieldDescriptor.class::cast))
+                .haveExactly(1, fieldDescriptor(ConversationScopedBean.class, "producerField"));
         store.commitTransaction();
     }
 
@@ -111,12 +128,16 @@ class CdiIT extends AbstractJavaPluginIT {
     @Test
     void applicationScoped() throws Exception {
         scanClasses(ApplicationScopedBean.class);
-        assertThat(applyConcept("cdi:ApplicationScoped").getStatus(), equalTo(Result.Status.SUCCESS));
+        assertThat(applyConcept("cdi:ApplicationScoped").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<Object> column = query("MATCH (e:CDI:ApplicationScoped) RETURN e").getColumn("e");
-        assertThat(column, hasItem(typeDescriptor(ApplicationScopedBean.class)));
-        assertThat(column, hasItem(methodDescriptor(ApplicationScopedBean.class, "producerMethod")));
-        assertThat(column, hasItem(fieldDescriptor(ApplicationScopedBean.class, "producerField")));
+        assertThat(column).hasSize(3);
+        assertThat(column.stream().filter(TypeDescriptor.class::isInstance).map(TypeDescriptor.class::cast))
+                .haveExactly(1, typeDescriptor(ApplicationScopedBean.class));
+        assertThat(column.stream().filter(MethodDescriptor.class::isInstance).map(MethodDescriptor.class::cast))
+                .haveExactly(1, methodDescriptor(ApplicationScopedBean.class, "producerMethod"));
+        assertThat(column.stream().filter(FieldDescriptor.class::isInstance).map(FieldDescriptor.class::cast))
+                .haveExactly(1, fieldDescriptor(ApplicationScopedBean.class, "producerField"));
         store.commitTransaction();
     }
 
@@ -129,10 +150,10 @@ class CdiIT extends AbstractJavaPluginIT {
     @Test
     void singletonScoped() throws Exception {
         scanClasses(SingletonScopedBean.class);
-        assertThat(applyConcept("cdi:SingletonScoped").getStatus(), equalTo(Result.Status.SUCCESS));
+        assertThat(applyConcept("cdi:SingletonScoped").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
-        List<Object> column = query("MATCH (e:CDI:SingletonScoped) RETURN e").getColumn("e");
-        assertThat("Expected SingletonScoped bean", column, hasItem(typeDescriptor(SingletonScopedBean.class)));
+        List<TypeDescriptor> column = query("MATCH (e:CDI:SingletonScoped) RETURN e").getColumn("e");
+        assertThat(column).haveExactly(1, typeDescriptor(SingletonScopedBean.class));
         store.commitTransaction();
     }
 
@@ -145,10 +166,10 @@ class CdiIT extends AbstractJavaPluginIT {
     @Test
     void stereotype() throws Exception {
         scanClasses(CustomStereotype.class);
-        assertThat(applyConcept("cdi:Stereotype").getStatus(), equalTo(Result.Status.SUCCESS));
+        assertThat(applyConcept("cdi:Stereotype").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
-        List<Object> column = query("MATCH (s:CDI:Stereotype) RETURN s").getColumn("s");
-        assertThat(column, hasItem(typeDescriptor(CustomStereotype.class)));
+        List<TypeDescriptor> column = query("MATCH (s:CDI:Stereotype) RETURN s").getColumn("s");
+        assertThat(column).haveExactly(1, typeDescriptor(CustomStereotype.class));
         store.commitTransaction();
     }
 
@@ -161,10 +182,10 @@ class CdiIT extends AbstractJavaPluginIT {
     @Test
     void alternative() throws Exception {
         scanClasses(AlternativeBean.class);
-        assertThat(applyConcept("cdi:Alternative").getStatus(), equalTo(Result.Status.SUCCESS));
+        assertThat(applyConcept("cdi:Alternative").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
-        List<Object> column = query("MATCH (a:CDI:Alternative) RETURN a").getColumn("a");
-        assertThat(column, hasItem(typeDescriptor(AlternativeBean.class)));
+        List<TypeDescriptor> column = query("MATCH (a:CDI:Alternative) RETURN a").getColumn("a");
+        assertThat(column).haveExactly(1, typeDescriptor(AlternativeBean.class));
         store.commitTransaction();
     }
 
@@ -177,11 +198,14 @@ class CdiIT extends AbstractJavaPluginIT {
     @Test
     void specializes() throws Exception {
         scanClasses(SpecializesBean.class);
-        assertThat(applyConcept("cdi:Specializes").getStatus(), equalTo(Result.Status.SUCCESS));
+        assertThat(applyConcept("cdi:Specializes").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<Object> column = query("MATCH (e:CDI:Specializes) RETURN e").getColumn("e");
-        assertThat(column, hasItem(typeDescriptor(SpecializesBean.class)));
-        assertThat(column, hasItem(methodDescriptor(SpecializesBean.class, "doSomething")));
+        assertThat(column).hasSize(2);
+        assertThat(column.stream().filter(TypeDescriptor.class::isInstance).map(TypeDescriptor.class::cast))
+                .haveExactly(1, typeDescriptor(SpecializesBean.class));
+        assertThat(column.stream().filter(MethodDescriptor.class::isInstance).map(MethodDescriptor.class::cast))
+                .haveExactly(1, methodDescriptor(SpecializesBean.class, "doSomething"));
         store.commitTransaction();
     }
 
@@ -194,11 +218,12 @@ class CdiIT extends AbstractJavaPluginIT {
     @Test
     void qualifier() throws Exception {
         scanClasses(CustomQualifier.class);
-        assertThat(applyConcept("cdi:Qualifier").getStatus(), equalTo(Result.Status.SUCCESS));
+        assertThat(applyConcept("cdi:Qualifier").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
-        assertThat(query("MATCH (e:Type:CDI:Qualifier) RETURN e").getColumn("e"), hasItem(typeDescriptor(CustomQualifier.class)));
-        assertThat(query("MATCH (q:Qualifier)-[:DECLARES]->(a:CDI:Method:Nonbinding) RETURN a").getColumn("a"),
-                hasItem(methodDescriptor(CustomQualifier.class, "nonBindingValue")));
+        final List<TypeDescriptor> types = query("MATCH (e:Type:CDI:Qualifier) RETURN e").getColumn("e");
+        assertThat(types).haveExactly(1, typeDescriptor(CustomQualifier.class));
+        final List<MethodDescriptor> methods = query("MATCH (q:Qualifier)-[:DECLARES]->(a:CDI:Method:Nonbinding) RETURN a").getColumn("a");
+        assertThat(methods).haveExactly(1, methodDescriptor(CustomQualifier.class, "nonBindingValue"));
         store.commitTransaction();
     }
 
@@ -211,19 +236,24 @@ class CdiIT extends AbstractJavaPluginIT {
     @Test
     void produces() throws Exception {
         scanClasses(ApplicationScopedBean.class, ConversationScopedBean.class, DependentBean.class, RequestScopedBean.class, SessionScopedBean.class);
-        assertThat(applyConcept("cdi:Produces").getStatus(), equalTo(Result.Status.SUCCESS));
+        assertThat(applyConcept("cdi:Produces").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<Object> column = query("MATCH (p)-[:PRODUCES]->({fqn:'java.lang.String'}) RETURN p").getColumn("p");
-        assertThat(column, hasItem(methodDescriptor(ApplicationScopedBean.class, "producerMethod")));
-        assertThat(column, hasItem(fieldDescriptor(ApplicationScopedBean.class, "producerField")));
-        assertThat(column, hasItem(methodDescriptor(ConversationScopedBean.class, "producerMethod")));
-        assertThat(column, hasItem(fieldDescriptor(ConversationScopedBean.class, "producerField")));
-        assertThat(column, hasItem(methodDescriptor(DependentBean.class, "producerMethod")));
-        assertThat(column, hasItem(fieldDescriptor(DependentBean.class, "producerField")));
-        assertThat(column, hasItem(methodDescriptor(RequestScopedBean.class, "producerMethod")));
-        assertThat(column, hasItem(fieldDescriptor(RequestScopedBean.class, "producerField")));
-        assertThat(column, hasItem(methodDescriptor(SessionScopedBean.class, "producerMethod")));
-        assertThat(column, hasItem(fieldDescriptor(SessionScopedBean.class, "producerField")));
+        assertThat(column).hasSize(10);
+
+        final List<FieldDescriptor> fields = column.stream().filter(FieldDescriptor.class::isInstance).map(FieldDescriptor.class::cast).collect(Collectors.toList());
+        assertThat(fields).haveExactly(1, fieldDescriptor(ApplicationScopedBean.class, "producerField"));
+        assertThat(fields).haveExactly(1, fieldDescriptor(ConversationScopedBean.class, "producerField"));
+        assertThat(fields).haveExactly(1, fieldDescriptor(DependentBean.class, "producerField"));
+        assertThat(fields).haveExactly(1, fieldDescriptor(RequestScopedBean.class, "producerField"));
+        assertThat(fields).haveExactly(1, fieldDescriptor(SessionScopedBean.class, "producerField"));
+
+        final List<MethodDescriptor> methods = column.stream().filter(MethodDescriptor.class::isInstance).map(MethodDescriptor.class::cast).collect(Collectors.toList());
+        assertThat(methods).haveExactly(1, methodDescriptor(ApplicationScopedBean.class, "producerMethod"));
+        assertThat(methods).haveExactly(1, methodDescriptor(ConversationScopedBean.class, "producerMethod"));
+        assertThat(methods).haveExactly(1, methodDescriptor(DependentBean.class, "producerMethod"));
+        assertThat(methods).haveExactly(1, methodDescriptor(RequestScopedBean.class, "producerMethod"));
+        assertThat(methods).haveExactly(1, methodDescriptor(SessionScopedBean.class, "producerMethod"));
         store.commitTransaction();
     }
 
@@ -240,12 +270,12 @@ class CdiIT extends AbstractJavaPluginIT {
         store.beginTransaction();
         // create existing relations with and without properties
         assertThat(query("MATCH (m:Method {name: 'producerMethod'}), (t {fqn:'java.lang.String'}) MERGE (m)-[r:PRODUCES {prop: 'value'}]->(t) RETURN r")
-                .getColumn("r").size(), equalTo(1));
-        assertThat(query("MATCH (f:Field {name: 'producerField'}), (t {fqn:'java.lang.String'}) MERGE (f)-[r:PRODUCES]->(t) RETURN r").getColumn("r").size(),
-                equalTo(1));
+                .getColumn("r")).hasSize(1);
+        assertThat(query("MATCH (f:Field {name: 'producerField'}), (t {fqn:'java.lang.String'}) MERGE (f)-[r:PRODUCES]->(t) RETURN r")
+                .getColumn("r")).hasSize(1);
         verifyUniqueRelation("PRODUCES", 2);
         store.commitTransaction();
-        assertThat(applyConcept("cdi:Produces").getStatus(), equalTo(Result.Status.SUCCESS));
+        assertThat(applyConcept("cdi:Produces").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         verifyUniqueRelation("PRODUCES", 2);
         store.commitTransaction();
@@ -260,10 +290,11 @@ class CdiIT extends AbstractJavaPluginIT {
     @Test
     void disposes() throws Exception {
         scanClasses(DisposesBean.class);
-        assertThat(applyConcept("cdi:Disposes").getStatus(), equalTo(Result.Status.SUCCESS));
+        assertThat(applyConcept("cdi:Disposes").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
-        assertThat(query("MATCH (p:Parameter)-[:DISPOSES]->(disposedType:Type) RETURN disposedType").getColumn("disposedType"),
-                hasItem(typeDescriptor(String.class)));
+        final List<TypeDescriptor> column = query("MATCH (p:Parameter)-[:DISPOSES]->(disposedType:Type) RETURN disposedType")
+                .getColumn("disposedType");
+        assertThat(column).haveExactly(1, typeDescriptor(String.class));
         store.commitTransaction();
     }
 
@@ -279,11 +310,11 @@ class CdiIT extends AbstractJavaPluginIT {
         scanClasses(DisposesBean.class);
         store.beginTransaction();
         // create existing relation with property
-        assertThat(query("MATCH (p:Parameter), (t {fqn:'java.lang.String'}) MERGE (p)-[r:DISPOSES {prop: 'value'}]->(t) RETURN r").getColumn("r").size(),
-                equalTo(1));
+        assertThat(query("MATCH (p:Parameter), (t {fqn:'java.lang.String'}) MERGE (p)-[r:DISPOSES {prop: 'value'}]->(t) RETURN r")
+                        .getColumn("r")).hasSize(1);
         verifyUniqueRelation("DISPOSES", 1);
         store.commitTransaction();
-        assertThat(applyConcept("cdi:Disposes").getStatus(), equalTo(Result.Status.SUCCESS));
+        assertThat(applyConcept("cdi:Disposes").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         verifyUniqueRelation("DISPOSES", 1);
         store.commitTransaction();
@@ -298,11 +329,14 @@ class CdiIT extends AbstractJavaPluginIT {
     @Test
     void named() throws Exception {
         scanClasses(NamedBean.class);
-        assertThat(applyConcept("cdi:Named").getStatus(), equalTo(Result.Status.SUCCESS));
+        assertThat(applyConcept("cdi:Named").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<Object> column = query("MATCH (e:CDI:Named) RETURN e").getColumn("e");
-        assertThat(column, hasItem(typeDescriptor(NamedBean.class)));
-        assertThat(column, hasItem(methodDescriptor(NamedBean.class, "getValue")));
+        assertThat(column).hasSize(2);
+        assertThat(column.stream().filter(TypeDescriptor.class::isInstance).map(TypeDescriptor.class::cast))
+                .haveExactly(1, typeDescriptor(NamedBean.class));
+        assertThat(column.stream().filter(MethodDescriptor.class::isInstance).map(MethodDescriptor.class::cast))
+                .haveExactly(1, methodDescriptor(NamedBean.class, "getValue"));
         store.commitTransaction();
     }
 
@@ -315,10 +349,10 @@ class CdiIT extends AbstractJavaPluginIT {
     @Test
     void any() throws Exception {
         scanClasses(DecoratorBean.class);
-        assertThat(applyConcept("cdi:Any").getStatus(), equalTo(Result.Status.SUCCESS));
+        assertThat(applyConcept("cdi:Any").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
-        List<Object> column = query("MATCH (e:CDI:Any) RETURN e").getColumn("e");
-        assertThat(column, hasItem(fieldDescriptor(DecoratorBean.class, "delegate")));
+        List<FieldDescriptor> column = query("MATCH (e:CDI:Any) RETURN e").getColumn("e");
+        assertThat(column).haveExactly(1, fieldDescriptor(DecoratorBean.class, "delegate"));
         store.commitTransaction();
     }
 
@@ -331,10 +365,10 @@ class CdiIT extends AbstractJavaPluginIT {
     @Test
     void newQualifier() throws Exception {
         scanClasses(NewBean.class);
-        assertThat(applyConcept("cdi:New").getStatus(), equalTo(Result.Status.SUCCESS));
+        assertThat(applyConcept("cdi:New").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
-        List<Object> column = query("MATCH (e:CDI:New) RETURN e").getColumn("e");
-        assertThat(column, hasItem(fieldDescriptor(NewBean.class, "bean")));
+        List<FieldDescriptor> column = query("MATCH (e:CDI:New) RETURN e").getColumn("e");
+        assertThat(column).haveExactly(1, fieldDescriptor(NewBean.class, "bean"));
         store.commitTransaction();
     }
 
@@ -347,10 +381,10 @@ class CdiIT extends AbstractJavaPluginIT {
     @Test
     void defaultQualifier() throws Exception {
         scanClasses(DefaultBean.class);
-        assertThat(applyConcept("cdi:Default").getStatus(), equalTo(Result.Status.SUCCESS));
+        assertThat(applyConcept("cdi:Default").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
-        List<Object> column = query("MATCH (e:CDI:Default) RETURN e").getColumn("e");
-        assertThat(column, hasItem(fieldDescriptor(DefaultBean.class, "bean")));
+        List<FieldDescriptor> column = query("MATCH (e:CDI:Default) RETURN e").getColumn("e");
+        assertThat(column).haveExactly(1, fieldDescriptor(DefaultBean.class, "bean"));
         store.commitTransaction();
     }
 
@@ -364,7 +398,7 @@ class CdiIT extends AbstractJavaPluginIT {
      *            The total of relations with the given name.
      */
     private void verifyUniqueRelation(String relationName, int total) {
-        assertThat(query("MATCH ()-[r:" + relationName + " {prop: 'value'}]->() RETURN r").getColumn("r").size(), equalTo(1));
-        assertThat(query("MATCH ()-[r:" + relationName + "]->() RETURN r").getColumn("r").size(), equalTo(total));
+        assertThat(query("MATCH ()-[r:" + relationName + " {prop: 'value'}]->() RETURN r").getColumn("r")).hasSize(1);
+    assertThat(query("MATCH ()-[r:" + relationName + "]->() RETURN r").getColumn("r")).hasSize(total);
     }
 }
