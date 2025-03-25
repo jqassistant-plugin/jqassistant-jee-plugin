@@ -416,4 +416,20 @@
         ]]></cypher>
     </concept>
 
+    <concept id="cdi:StereotypeInjectable">
+        <providesConcept refId="jee-injection:Injectable"/>
+        <requiresConcept refId="cdi:Stereotype" />
+        <description>
+            Label injectable beans annotated with stereotype annotations with "CDI", "JEE" and "Injectable".
+        </description>
+        <cypher><![CDATA[
+           MATCH
+             (type:Java:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotation:Stereotype)
+           SET
+             type:CDI:JEE:Injectable
+           RETURN
+             type as Injectable
+        ]]></cypher>
+    </concept>
+
 </jqassistant-rules>

@@ -23,6 +23,7 @@ import org.jqassistant.plugin.jee.cdi.test.set.beans.qualifier.NamedBean;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.scope.*;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.specializes.SpecializesBean;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.CustomStereotype;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.StereotypeAnnotatedBean;
 import org.jqassistant.plugin.jee.ejb.test.set.beans.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -450,13 +451,30 @@ class CdiIT extends AbstractJavaPluginIT {
     }
 
     @Test
+    void stereotypeInjectable() throws RuleException {
+        scanClasses(StereotypeAnnotatedBean.class, CustomStereotype.class);
+        final Result<Concept> conceptResult = applyConcept("cdi:StereotypeInjectable");
+        assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
+        store.beginTransaction();
+        assertThat(conceptResult.getRows()).hasSize(1);
+        assertThat(conceptResult.getRows().get(0).getColumns().get("Injectable").getValue())
+                .asInstanceOf(type(TypeDescriptor.class)).is(typeDescriptor(StereotypeAnnotatedBean.class));
+        final List<TypeDescriptor> injectableTypes =
+                query("MATCH (injectableType:Java:Type:Injectable) RETURN injectableType").getColumn("injectableType");
+        assertThat(injectableTypes).hasSize(1);
+        assertThat(injectableTypes.get(0)).is(typeDescriptor(StereotypeAnnotatedBean.class));
+        store.commitTransaction();
+    }
+
+    @Test
     void providedConceptJeeInjectable() throws RuleException {
         scanClasses(DependentBean.class, RequestScopedBean.class, SessionScopedBean.class, ConversationScopedBean.class,
                 ApplicationScopedBean.class, SingletonBean.class, DecoratorBean.class,
                 ProducedBean.class, TypeWithApplicationScopedField.class, TypeWithConversationScopedField.class,
                 TypeWithDependentField.class, TypeWithRequestScopedField.class, TypeWithSessionScopedField.class,
                 TypeWithApplicationScopedMethod.class, TypeWithConversationScopedMethod.class,
-                TypeWithDependentMethod.class, TypeWithRequestScopedMethod.class, TypeWithSessionScopedMethod.class);
+                TypeWithDependentMethod.class, TypeWithRequestScopedMethod.class, TypeWithSessionScopedMethod.class,
+                StereotypeAnnotatedBean.class, CustomStereotype.class);
         final Result<Concept> conceptResult = applyConcept("jee-injection:Injectable");
         assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
@@ -475,7 +493,7 @@ class CdiIT extends AbstractJavaPluginIT {
     }
 
     private static void assertCdiInjectables(List<TypeDescriptor> actualTypes) {
-        assertThat(actualTypes).hasSize(9);
+        assertThat(actualTypes).hasSize(11);
         assertThat(actualTypes).haveExactly(1, typeDescriptor(DependentBean.class));
         assertThat(actualTypes).haveExactly(1, typeDescriptor(RequestScopedBean.class));
         assertThat(actualTypes).haveExactly(1, typeDescriptor(SessionScopedBean.class));
@@ -484,6 +502,8 @@ class CdiIT extends AbstractJavaPluginIT {
         assertThat(actualTypes).haveExactly(1, typeDescriptor(SingletonBean.class));
         assertThat(actualTypes).haveExactly(1, typeDescriptor(DecoratorBean.class));
         assertThat(actualTypes).haveExactly(1, typeDescriptor(ProducedBean.class));
+        assertThat(actualTypes).haveExactly(1, typeDescriptor(StereotypeAnnotatedBean.class));
+        assertThat(actualTypes).haveExactly(1, typeDescriptor(CustomStereotype.class)); // @SessionScoped
         assertThat(actualTypes).haveExactly(1, typeDescriptor(String.class)); // Caused by @Produces
     }
 
