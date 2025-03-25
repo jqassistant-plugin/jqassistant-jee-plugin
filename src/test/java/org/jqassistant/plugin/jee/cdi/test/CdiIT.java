@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.buschmais.jqassistant.core.report.api.model.Column;
 import com.buschmais.jqassistant.core.report.api.model.Result;
+import com.buschmais.jqassistant.core.report.api.model.Row;
+import com.buschmais.jqassistant.core.rule.api.model.Concept;
+import com.buschmais.jqassistant.core.rule.api.model.RuleException;
 import com.buschmais.jqassistant.plugin.java.api.model.FieldDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.model.MethodDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
@@ -19,12 +23,17 @@ import org.jqassistant.plugin.jee.cdi.test.set.beans.qualifier.NamedBean;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.scope.*;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.specializes.SpecializesBean;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.CustomStereotype;
+import org.jqassistant.plugin.jee.ejb.test.set.beans.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
+import static com.buschmais.jqassistant.core.report.api.model.Result.Status.SUCCESS;
 import static com.buschmais.jqassistant.plugin.java.test.assertj.FieldDescriptorCondition.fieldDescriptor;
 import static com.buschmais.jqassistant.plugin.java.test.assertj.MethodDescriptorCondition.methodDescriptor;
 import static com.buschmais.jqassistant.plugin.java.test.assertj.TypeDescriptorCondition.typeDescriptor;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.type;
 
 /**
  * Tests for the CDI concepts.
@@ -34,8 +43,7 @@ class CdiIT extends AbstractJavaPluginIT {
     /**
      * Verifies the concept "cdi:Dependent".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void dependent() throws Exception {
@@ -56,8 +64,7 @@ class CdiIT extends AbstractJavaPluginIT {
     /**
      * Verifies the concept "cdi:RequestScoped".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void requestScoped() throws Exception {
@@ -78,8 +85,7 @@ class CdiIT extends AbstractJavaPluginIT {
     /**
      * Verifies the concept "cdi:SessionScoped".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void sessionScoped() throws Exception {
@@ -100,8 +106,7 @@ class CdiIT extends AbstractJavaPluginIT {
     /**
      * Verifies the concept "cdi:ConversationScoped".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void conversationScoped() throws Exception {
@@ -122,8 +127,7 @@ class CdiIT extends AbstractJavaPluginIT {
     /**
      * Verifies the concept "cdi:ApplicationScoped".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void applicationScoped() throws Exception {
@@ -144,15 +148,14 @@ class CdiIT extends AbstractJavaPluginIT {
     /**
      * Verifies the concept "cdi:SingletonScoped".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void singletonScoped() throws Exception {
         scanClasses(SingletonScopedBean.class);
         assertThat(applyConcept("cdi:SingletonScoped").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
-        List<TypeDescriptor> column = query("MATCH (e:CDI:SingletonScoped) RETURN e").getColumn("e");
+        List<TypeDescriptor> column = query("MATCH (e:CDI:SingletonScoped:JEE:Injectable) RETURN e").getColumn("e");
         assertThat(column).haveExactly(1, typeDescriptor(SingletonScopedBean.class));
         store.commitTransaction();
     }
@@ -160,8 +163,7 @@ class CdiIT extends AbstractJavaPluginIT {
     /**
      * Verifies the concept "cdi:Stereotype".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void stereotype() throws Exception {
@@ -176,8 +178,7 @@ class CdiIT extends AbstractJavaPluginIT {
     /**
      * Verifies the concept "cdi:Alternative".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void alternative() throws Exception {
@@ -192,8 +193,7 @@ class CdiIT extends AbstractJavaPluginIT {
     /**
      * Verifies the concept "cdi:Specializes".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void specializes() throws Exception {
@@ -212,8 +212,7 @@ class CdiIT extends AbstractJavaPluginIT {
     /**
      * Verifies the concept "cdi:Qualifier".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void qualifier() throws Exception {
@@ -230,8 +229,7 @@ class CdiIT extends AbstractJavaPluginIT {
     /**
      * Verifies the concept "cdi:Produces".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void produces() throws Exception {
@@ -261,8 +259,7 @@ class CdiIT extends AbstractJavaPluginIT {
      * Verifies the uniqueness of concept "cdi:Produces" with keeping existing
      * properties.
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void producesUnique() throws Exception {
@@ -284,8 +281,7 @@ class CdiIT extends AbstractJavaPluginIT {
     /**
      * Verifies the concept "cdi:Disposes".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void disposes() throws Exception {
@@ -302,8 +298,7 @@ class CdiIT extends AbstractJavaPluginIT {
      * Verifies the uniqueness of concept "cdi:Disposes" with keeping existing
      * properties.
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void disposesUnique() throws Exception {
@@ -311,7 +306,7 @@ class CdiIT extends AbstractJavaPluginIT {
         store.beginTransaction();
         // create existing relation with property
         assertThat(query("MATCH (p:Parameter), (t {fqn:'java.lang.String'}) MERGE (p)-[r:DISPOSES {prop: 'value'}]->(t) RETURN r")
-                        .getColumn("r")).hasSize(1);
+                .getColumn("r")).hasSize(1);
         verifyUniqueRelation("DISPOSES", 1);
         store.commitTransaction();
         assertThat(applyConcept("cdi:Disposes").getStatus()).isEqualTo(Result.Status.SUCCESS);
@@ -323,8 +318,7 @@ class CdiIT extends AbstractJavaPluginIT {
     /**
      * Verifies the concept "cdi:Named".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void named() throws Exception {
@@ -340,11 +334,20 @@ class CdiIT extends AbstractJavaPluginIT {
         store.commitTransaction();
     }
 
+    @Test
+    void decorator() throws Exception {
+        scanClasses(DecoratorBean.class);
+        assertThat(applyConcept("cdi:Decorator").getStatus()).isEqualTo(Result.Status.SUCCESS);
+        store.beginTransaction();
+        List<TypeDescriptor> column = query("MATCH (e:CDI:Decorator:JEE:Injectable) RETURN e").getColumn("e");
+        assertThat(column).haveExactly(1, typeDescriptor(DecoratorBean.class));
+        store.commitTransaction();
+    }
+
     /**
      * Verifies the concept "cdi:Any".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void any() throws Exception {
@@ -359,8 +362,7 @@ class CdiIT extends AbstractJavaPluginIT {
     /**
      * Verifies the concept "cdi:New".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void newQualifier() throws Exception {
@@ -375,8 +377,7 @@ class CdiIT extends AbstractJavaPluginIT {
     /**
      * Verifies the concept "cdi:Default".
      *
-     * @throws IOException
-     *             If the test fails.
+     * @throws IOException If the test fails.
      */
     @Test
     void defaultQualifier() throws Exception {
@@ -388,17 +389,113 @@ class CdiIT extends AbstractJavaPluginIT {
         store.commitTransaction();
     }
 
+    @ParameterizedTest
+    @ValueSource(classes = {
+            DependentBean.class, RequestScopedBean.class, SessionScopedBean.class, ConversationScopedBean.class,
+            ApplicationScopedBean.class
+    })
+    void scopedOrDependentInjectableType(Class<?> clazz) throws RuleException {
+        scanClasses(clazz);
+        final Result<Concept> conceptResult = applyConcept("cdi:ScopedOrDependentInjectableType");
+        assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
+        store.beginTransaction();
+        assertThat(conceptResult.getRows()).hasSize(1);
+        assertThat(conceptResult.getRows().get(0).getColumns().get("Injectable").getValue())
+                .asInstanceOf(type(TypeDescriptor.class)).is(typeDescriptor(clazz));
+        final List<TypeDescriptor> injectableTypes =
+                query("MATCH (injectableType:Java:Type:Injectable) RETURN injectableType").getColumn("injectableType");
+        assertThat(injectableTypes).hasSize(1);
+        assertThat(injectableTypes.get(0)).is(typeDescriptor(clazz));
+        store.commitTransaction();
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {
+            TypeWithApplicationScopedField.class, TypeWithConversationScopedField.class, TypeWithDependentField.class,
+            TypeWithRequestScopedField.class, TypeWithSessionScopedField.class
+    })
+    void scopedOrDependentInjectableFieldType(Class<?> clazz) throws RuleException {
+        scanClasses(clazz, ProducedBean.class);
+        final Result<Concept> conceptResult = applyConcept("cdi:ScopedOrDependentInjectableFieldType");
+        assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
+        store.beginTransaction();
+        assertThat(conceptResult.getRows()).hasSize(1);
+        assertThat(conceptResult.getRows().get(0).getColumns().get("Injectable").getValue())
+                .asInstanceOf(type(TypeDescriptor.class)).is(typeDescriptor(ProducedBean.class));
+        final List<TypeDescriptor> injectableTypes =
+                query("MATCH (injectableType:Java:Type:Injectable) RETURN injectableType").getColumn("injectableType");
+        assertThat(injectableTypes).hasSize(1);
+        assertThat(injectableTypes.get(0)).is(typeDescriptor(ProducedBean.class));
+        store.commitTransaction();
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {
+            TypeWithApplicationScopedMethod.class, TypeWithConversationScopedMethod.class,
+            TypeWithDependentMethod.class, TypeWithRequestScopedMethod.class, TypeWithSessionScopedMethod.class
+    })
+    void scopedOrDependentInjectableReturnType(Class<?> clazz) throws RuleException {
+        scanClasses(clazz, ProducedBean.class);
+        final Result<Concept> conceptResult = applyConcept("cdi:ScopedOrDependentInjectableReturnType");
+        assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
+        store.beginTransaction();
+        assertThat(conceptResult.getRows()).hasSize(1);
+        assertThat(conceptResult.getRows().get(0).getColumns().get("Injectable").getValue())
+                .asInstanceOf(type(TypeDescriptor.class)).is(typeDescriptor(ProducedBean.class));
+        final List<TypeDescriptor> injectableTypes =
+                query("MATCH (injectableType:Java:Type:Injectable) RETURN injectableType").getColumn("injectableType");
+        assertThat(injectableTypes).hasSize(1);
+        assertThat(injectableTypes.get(0)).is(typeDescriptor(ProducedBean.class));
+        store.commitTransaction();
+    }
+
+    @Test
+    void providedConceptJeeInjectable() throws RuleException {
+        scanClasses(DependentBean.class, RequestScopedBean.class, SessionScopedBean.class, ConversationScopedBean.class,
+                ApplicationScopedBean.class, SingletonBean.class, DecoratorBean.class,
+                ProducedBean.class, TypeWithApplicationScopedField.class, TypeWithConversationScopedField.class,
+                TypeWithDependentField.class, TypeWithRequestScopedField.class, TypeWithSessionScopedField.class,
+                TypeWithApplicationScopedMethod.class, TypeWithConversationScopedMethod.class,
+                TypeWithDependentMethod.class, TypeWithRequestScopedMethod.class, TypeWithSessionScopedMethod.class);
+        final Result<Concept> conceptResult = applyConcept("jee-injection:Injectable");
+        assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
+        store.beginTransaction();
+        final List<TypeDescriptor> conceptResultTypes = conceptResult.getRows().stream()
+                .map(Row::getColumns)
+                .map(columns -> columns.get("Injectable"))
+                .map(Column::getValue)
+                .map(TypeDescriptor.class::cast)
+                .collect(Collectors.toList());
+        assertCdiInjectables(conceptResultTypes);
+
+        final List<TypeDescriptor> injectableTypes =
+                query("MATCH (injectableType:Java:Type:Injectable) RETURN injectableType").getColumn("injectableType");
+        assertCdiInjectables(injectableTypes);
+        store.commitTransaction();
+    }
+
+    private static void assertCdiInjectables(List<TypeDescriptor> actualTypes) {
+        assertThat(actualTypes).hasSize(9);
+        assertThat(actualTypes).haveExactly(1, typeDescriptor(DependentBean.class));
+        assertThat(actualTypes).haveExactly(1, typeDescriptor(RequestScopedBean.class));
+        assertThat(actualTypes).haveExactly(1, typeDescriptor(SessionScopedBean.class));
+        assertThat(actualTypes).haveExactly(1, typeDescriptor(ConversationScopedBean.class));
+        assertThat(actualTypes).haveExactly(1, typeDescriptor(ApplicationScopedBean.class));
+        assertThat(actualTypes).haveExactly(1, typeDescriptor(SingletonBean.class));
+        assertThat(actualTypes).haveExactly(1, typeDescriptor(DecoratorBean.class));
+        assertThat(actualTypes).haveExactly(1, typeDescriptor(ProducedBean.class));
+        assertThat(actualTypes).haveExactly(1, typeDescriptor(String.class)); // Caused by @Produces
+    }
+
     /**
      * Verifies a unique relation with property. An existing transaction is
      * assumed.
      *
-     * @param relationName
-     *            The name of the relation.
-     * @param total
-     *            The total of relations with the given name.
+     * @param relationName The name of the relation.
+     * @param total        The total of relations with the given name.
      */
     private void verifyUniqueRelation(String relationName, int total) {
         assertThat(query("MATCH ()-[r:" + relationName + " {prop: 'value'}]->() RETURN r").getColumn("r")).hasSize(1);
-    assertThat(query("MATCH ()-[r:" + relationName + "]->() RETURN r").getColumn("r")).hasSize(total);
+        assertThat(query("MATCH ()-[r:" + relationName + "]->() RETURN r").getColumn("r")).hasSize(total);
     }
 }
