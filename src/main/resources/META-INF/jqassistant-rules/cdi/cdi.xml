@@ -153,7 +153,7 @@
         <providesConcept refId="jee-injection:Injectable"/>
         <description>Labels all types annotated with @javax.enterprise.context.Dependent,
             @javax.enterprise.context.RequestScoped, @javax.enterprise.context.SessionScoped,
-            @javax.enterprise.context.ConversationScopedo or @javax.enterprise.context.ApplicationScoped
+            @javax.enterprise.context.ConversationScoped or @javax.enterprise.context.ApplicationScoped
             with "CDI", "JEE" and "Injectable".
         </description>
         <cypher><![CDATA[
@@ -420,7 +420,7 @@
         <providesConcept refId="jee-injection:Injectable"/>
         <requiresConcept refId="cdi:Stereotype" />
         <description>
-            Label injectable beans annotated with stereotype annotations with "CDI", "JEE" and "Injectable".
+            Labels injectable beans annotated with stereotype annotations with "CDI", "JEE" and "Injectable".
         </description>
         <cypher><![CDATA[
            MATCH
