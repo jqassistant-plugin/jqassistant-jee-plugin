@@ -149,16 +149,17 @@
         ]]></cypher>
     </concept>
 
-    <concept id="cdi:ScopedOrDependentInjectableType">
+    <concept id="cdi:InjectableClassType">
         <providesConcept refId="jee-injection:Injectable"/>
-        <description>Labels all types annotated with @javax.enterprise.context.Dependent,
+        <requiresConcept refId="cdi:Stereotype" />
+        <description>Labels all classes annotated with @javax.enterprise.context.Dependent,
             @javax.enterprise.context.RequestScoped, @javax.enterprise.context.SessionScoped,
-            @javax.enterprise.context.ConversationScoped or @javax.enterprise.context.ApplicationScoped
-            with "CDI", "JEE" and "Injectable".
+            @javax.enterprise.context.ConversationScoped, @javax.enterprise.context.ApplicationScoped or a stereotype
+            annotation with "CDI", "JEE" and "Injectable".
         </description>
         <cypher><![CDATA[
             MATCH
-              (type:Java:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotation:Type)
+              (type:Java:Type:Class)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotation:Type)
             WHERE
               annotation.fqn in [
                 "javax.enterprise.context.Dependent",
@@ -167,6 +168,7 @@
                 "javax.enterprise.context.ConversationScoped",
                 "javax.enterprise.context.ApplicationScoped"
               ]
+              OR annotation:Stereotype
             SET
               type:CDI:JEE:Injectable
             RETURN
@@ -174,12 +176,13 @@
         ]]></cypher>
     </concept>
 
-    <concept id="cdi:ScopedOrDependentInjectableFieldType">
+    <concept id="cdi:InjectableFieldType">
         <providesConcept refId="jee-injection:Injectable"/>
+        <requiresConcept refId="cdi:Stereotype" />
         <description>Labels all types of fields annotated with @javax.enterprise.context.Dependent,
             @javax.enterprise.context.RequestScoped, @javax.enterprise.context.SessionScoped,
-            @javax.enterprise.context.ConversationScoped or @javax.enterprise.context.ApplicationScoped
-            with "CDI", "JEE" and "Injectable".
+            @javax.enterprise.context.ConversationScoped, @javax.enterprise.context.ApplicationScoped or a stereotype
+            annotation with "CDI", "JEE" and "Injectable".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -193,6 +196,7 @@
                 "javax.enterprise.context.ConversationScoped",
                 "javax.enterprise.context.ApplicationScoped"
               ]
+              OR annotation:Stereotype
             SET
               fieldType:CDI:JEE:Injectable
             RETURN
@@ -200,12 +204,13 @@
         ]]></cypher>
     </concept>
 
-    <concept id="cdi:ScopedOrDependentInjectableReturnType">
+    <concept id="cdi:InjectableReturnType">
         <providesConcept refId="jee-injection:Injectable"/>
+        <requiresConcept refId="cdi:Stereotype" />
         <description>Labels all return types of methods annotated with @javax.enterprise.context.Dependent,
             @javax.enterprise.context.RequestScoped, @javax.enterprise.context.SessionScoped,
-            @javax.enterprise.context.ConversationScoped or @javax.enterprise.context.ApplicationScoped
-            with "CDI", "JEE" and "Injectable".
+            @javax.enterprise.context.ConversationScoped, @javax.enterprise.context.ApplicationScoped or a stereotype
+            annotation with "CDI", "JEE" and "Injectable".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -219,6 +224,7 @@
                 "javax.enterprise.context.ConversationScoped",
                 "javax.enterprise.context.ApplicationScoped"
               ]
+              OR annotation:Stereotype
             SET
               returnType:CDI:JEE:Injectable
             RETURN
@@ -413,22 +419,6 @@
               e:CDI:New
             RETURN
               e AS New
-        ]]></cypher>
-    </concept>
-
-    <concept id="cdi:StereotypeInjectable">
-        <providesConcept refId="jee-injection:Injectable"/>
-        <requiresConcept refId="cdi:Stereotype" />
-        <description>
-            Labels injectable beans annotated with stereotype annotations with "CDI", "JEE" and "Injectable".
-        </description>
-        <cypher><![CDATA[
-           MATCH
-             (type:Java:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotation:Stereotype)
-           SET
-             type:CDI:JEE:Injectable
-           RETURN
-             type as Injectable
         ]]></cypher>
     </concept>
 
