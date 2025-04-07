@@ -6,7 +6,7 @@
         <includeConcept refId="jee-injection:*"/>
         <includeConstraint refId="jee-injection:NoCombinationOfBeanProducersAndApplicationCode" severity="major"/>
         <includeConstraint refId="jee-injection:BeanProducerMustNotBeInvokedDirectly" severity="critical"/>
-        <includeConstraint refId="jee-injection:BeansMustNotUseFieldInjectionExceptEJBs" severity="major"/>
+        <includeConstraint refId="jee-injection:BeansMustNotUseFieldInjection" severity="major"/>
         <includeConstraint refId="jee-injection:FieldsOfInjectablesMustNotBeManipulated" severity="critical"/>
         <includeConstraint refId="jee-injection:InjectablesShouldBeHeldInFinalFields" severity="critical"/>
         <includeConstraint refId="jee-injection:InjectablesMustNotBeAccessedStatically" severity="critical"/>
@@ -244,13 +244,12 @@
         ]]></cypher>
     </constraint>
 
-    <constraint id="jee-injection:BeansMustNotUseFieldInjectionExceptEJBs">
+    <constraint id="jee-injection:BeansMustNotUseFieldInjection">
         <requiresConcept refId="jee-injection:InjectionPoint"/>
         <requiresConcept refId="java:GeneratedType"/>
         <requiresConcept refId="ejb:EJB"/>
         <description>
-            Die Nutzung von Field-Injection muss vermieden, und stattdessen Constructor Injection verwendet werden. Die
-            einzige Ausnahme stellen Enterprise-Java-Beans dar, für die Field-Injection technisch zwingend erforderlich ist.
+            Die Nutzung von Field-Injection muss vermieden, und stattdessen Constructor Injection verwendet werden.
         </description>
         <cypher><![CDATA[
             MATCH
@@ -258,7 +257,6 @@
             WHERE NOT (
               artifact:Test
               OR type:Generated
-              OR bean:EJB
             )
             RETURN
               type as Type,
