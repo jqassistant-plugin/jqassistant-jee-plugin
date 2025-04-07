@@ -93,7 +93,7 @@
         <providesConcept refId="jee-transaction:TransactionalMethod" />
         <requiresConcept refId="ejb:EJB" />
         <description>
-            Label methods of EJBs with "JEE" and "Transactional".
+            Labels methods of EJBs with "JEE" and "Transactional".
         </description>
         <cypher><![CDATA[
            MATCH
@@ -107,6 +107,22 @@
              transactionalMethod:JEE:Transactional
            RETURN
              transactionalClass as TransactionalClass, collect(transactionalMethod) as TransactionalMethods
+        ]]></cypher>
+    </concept>
+
+    <concept id="ejb:Injectable">
+        <providesConcept refId="jee-injection:Injectable"/>
+        <requiresConcept refId="ejb:EJB" />
+        <description>
+            Labels EJBs with "Injectable".
+        </description>
+        <cypher><![CDATA[
+           MATCH
+             (type:Java:Type:JEE:EJB)
+           SET
+             type:Injectable
+           RETURN
+             type as EJB
         ]]></cypher>
     </concept>
 

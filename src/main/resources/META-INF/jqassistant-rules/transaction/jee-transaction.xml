@@ -64,7 +64,7 @@
     <concept id="jee-transaction:TransactionalMethodByAnnotatedMethod">
         <providesConcept refId="jee-transaction:TransactionalMethod" />
         <description>
-            Label all methods which are annotated with "jakarta.transaction.Transactional"
+            Labels all methods which are annotated with "jakarta.transaction.Transactional"
             or "javax.transaction.Transactional", with "JEE" and "Transactional".
         </description>
         <cypher><![CDATA[
@@ -88,7 +88,7 @@
     <concept id="jee-transaction:TransactionalMethodByAnnotatedClass">
         <providesConcept refId="jee-transaction:TransactionalMethod" />
         <description>
-            Label methods of classes which are directly or indirectly annotated with "jakarta.transaction.Transactional",
+            Labels methods of classes which are directly or indirectly annotated with "jakarta.transaction.Transactional",
             or "javax.transaction.Transactional" with "JEE" and "Transactional".
         </description>
         <cypher><![CDATA[
