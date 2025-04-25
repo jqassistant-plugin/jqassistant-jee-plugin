@@ -1,0 +1,142 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v2.2"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v2.2 https://jqassistant.github.io/jqassistant/current/schema/jqassistant-rule-v2.2.xsd">
+
+    <concept id="jqassistant-dashboard-jqassistant-plugins:ArtifactProvidesVersion">
+        <providesConcept refId="jqassistant-dashboard:ComponentVersionContainsFile"/>
+        <description>Identify a jQAssistant plugin as component version containing files.</description>
+        <cypher><![CDATA[
+            MATCH
+              (project:Maven:Project),
+              (project)-[:CREATES]->(artifact:Artifact{type:"jar"})-[:CONTAINS]->(:File:Xml{fileName:"/META-INF/jqassistant-plugin.xml"}),
+              (project)-[:HAS_EFFECTIVE_MODEL]->(pom:Maven:Pom)
+            MERGE
+              (pom)-[:DESCRIBES]-(artifact)
+            SET
+              artifact:Dashboard
+            RETURN
+              artifact as Artifact
+            ORDER BY
+              artifact.fqn
+        ]]></cypher>
+    </concept>
+
+    <concept id="jqassistant-dashboard-jqassistant-plugins:PluginProvidesLabel">
+        <providesConcept refId="jqassistant-dashboard:FileProvidesCapability"/>
+        <requiresConcept refId="jqassistant-dashboard-jqassistant-plugins:ArtifactProvidesVersion"/>
+        <cypher><![CDATA[
+            MATCH
+              (component:Dashboard:Component)-[:HAS_VERSION]->(version:Dashboard:Version)<-[:PROVIDES]-(artifact:Artifact),
+              (artifact)-[:CONTAINS]->(file:Java:Type:File)-[:EXTENDS|IMPLEMENTS*0..]->(interface:Interface)-[:ANNOTATED_BY]->(label)-[:OF_TYPE]->(:Type{fqn:"com.buschmais.xo.neo4j.api.annotation.Label"})
+            OPTIONAL MATCH
+              (label)-[:HAS]->(value:Value:Primitive{name:"value"})
+            WITH
+              component, version, file, coalesce(value.value, interface.name) as labelValue
+            CALL (*) {
+              MERGE
+                (capability:Dashboard:Capability{type:"Label", value:labelValue})
+              MERGE
+                (file)-[:PROVIDES_CAPABILITY]->(capability)
+              RETURN
+                capability
+            } IN TRANSACTIONS
+            RETURN
+              component as Component, version as Version, file as File, capability as Capability
+            ORDER BY
+              component.id, version.version, capability.type, capability.value
+        ]]></cypher>
+    </concept>
+
+    <concept id="jqassistant-dashboard-jqassistant-plugins:PluginProvidesRule">
+        <providesConcept refId="jqassistant-dashboard:FileProvidesCapability"/>
+        <requiresConcept refId="jqassistant-dashboard-jqassistant-plugins:ArtifactProvidesVersion"/>
+        <cypher><![CDATA[
+            MATCH
+              (component:Dashboard:Component)-[:HAS_VERSION]->(version:Dashboard:Version)<-[:PROVIDES]-(artifact:Artifact),
+              (artifact)-[:CONTAINS]->(file:File:Xml)-[:HAS_ROOT_ELEMENT]->(root:Element{name:"jqassistant-rules"}),
+              (root)-[:HAS_ELEMENT]->(rule:Xml:Element)-[:HAS_ATTRIBUTE]->(id:Xml:Attribute{name:"id"})
+            OPTIONAL MATCH
+              (rule)-[:HAS_ELEMENT]->(:Xml:Element{name:"description"})-[:HAS_TEXT]->(description:Xml:Text)
+            WITH
+              component, version, file, case rule.name
+                when "concept" then "Concept"
+                when "constraint" then "Constraint"
+                when "group" then "Group"
+                else "unknown"
+              end as capabilityType, id.value as ruleId, description
+            CALL (*) {
+              MERGE
+                (capability:Dashboard:Capability{type:capabilityType, value:ruleId})
+              MERGE
+                (file)-[:PROVIDES_CAPABILITY]->(capability)
+              SET
+                capability.description=trim(description.value)
+              RETURN
+                capability
+            } IN TRANSACTIONS
+            RETURN
+              component as Component, version as Version, file as File, capability as Capability
+            ORDER BY
+              component.id, version.version, capability.type, capability.value
+        ]]></cypher>
+    </concept>
+
+    <concept id="jqassistant-dashboard-jqassistant-plugins:RuleRequiresConcept">
+        <providesConcept refId="jqassistant-dashboard:FileRequiresCapability"/>
+        <requiresConcept refId="jqassistant-dashboard-jqassistant-plugins:ArtifactProvidesVersion"/>
+        <cypher><![CDATA[
+            MATCH
+              (component:Dashboard:Component)-[:HAS_VERSION]->(version:Dashboard:Version)<-[:PROVIDES]-(artifact:Artifact),
+              (artifact)-[:CONTAINS]->(file:File:Xml)-[:HAS_ROOT_ELEMENT]->(root:Element{name:"jqassistant-rules"}),
+              (root)-[:HAS_ELEMENT]->(rule:Xml:Element)-[:HAS_ELEMENT]->(requiresConcept:Xml:Element{name: "requiresConcept"}),
+              (requiresConcept)-[:HAS_ATTRIBUTE]->(refId:Xml:Attribute{name:"refId"})
+            WHERE
+              rule.name in ["concept", "constraint"]
+            CALL (*) {
+              MERGE
+                (capability:Dashboard:Capability{type:"Concept", value:refId.value})
+              MERGE
+                (file)-[:REQUIRES_CAPABILITY]->(capability)
+              RETURN
+                capability
+            } IN TRANSACTIONS
+            RETURN
+              component as Component, version as Version, file as File, capability as Capability
+            ORDER BY
+              component.id, version.version, capability.type, capability.value
+        ]]></cypher>
+    </concept>
+
+    <concept id="jqassistant-dashboard-jqassistant-plugins:GroupIncludesRule">
+        <providesConcept refId="jqassistant-dashboard:FileRequiresCapability"/>
+        <requiresConcept refId="jqassistant-dashboard-jqassistant-plugins:ArtifactProvidesVersion"/>
+        <cypher><![CDATA[
+            MATCH
+              (component:Dashboard:Component)-[:HAS_VERSION]->(version:Dashboard:Version)<-[:PROVIDES]-(artifact:Artifact),
+              (artifact)-[:CONTAINS]->(file:File:Xml)-[:HAS_ROOT_ELEMENT]->(root:Element{name:"jqassistant-rules"}),
+              (root)-[:HAS_ELEMENT]->(rule:Xml:Element{name: "group"})-[:HAS_ELEMENT]->(include:Xml:Element),
+              (include)-[:HAS_ATTRIBUTE]->(refId:Xml:Attribute{name:"refId"})
+            WITH
+              component, version, file, case include.name
+                when "includeConcept" then "Concept"
+                when "includeConstraint" then "Constraint"
+                when "includeGroup" then "Group"
+                else "unknown"
+              end as capabilityType, refId.value as ruleId
+            CALL (*) {
+              MERGE
+                (capability:Dashboard:Capability{type:capabilityType, value:ruleId})
+              MERGE
+                (file)-[:REQUIRES_CAPABILITY]->(capability)
+              RETURN
+                capability
+            } IN TRANSACTIONS
+            RETURN
+              component as Component, version as Version, file as File, capability as Capability
+            ORDER BY
+              component.id, version.version, capability.type, capability.value
+        ]]></cypher>
+    </concept>
+
+</jqassistant-rules>
+

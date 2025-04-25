@@ -1,0 +1,18 @@
+jqassistant:
+  plugins:
+    - group-id: org.jqassistant.tooling.dashboard
+      artifact-id: jqassistant-dashboard-plugin
+      version: 1.0.0-SNAPSHOT
+  scan:
+    properties:
+      xml.file.include: "**/*.xml"
+  analyze:
+    concepts:
+      - jqassistant-dashboard:ComponentVersionReport
+    report:
+      properties:
+        dashboard:
+          url: http://localhost:8080/
+          api-key: secret_api_token
+          owner: "jqassistant"
+          project: "plugins"
