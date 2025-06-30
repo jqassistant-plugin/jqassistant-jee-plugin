@@ -15,6 +15,7 @@ jqassistant:
   analyze:
     concepts:
       - jqassistant-dashboard:ComponentVersionReport
+    execute-applied-concepts: true
     report:
       properties:
         dashboard:
