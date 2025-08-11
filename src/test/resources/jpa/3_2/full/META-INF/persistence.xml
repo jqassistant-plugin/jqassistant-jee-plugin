@@ -5,7 +5,7 @@
         <jta-data-source>jtaDataSource</jta-data-source>
         <non-jta-data-source>nonJtaDataSource</non-jta-data-source>
         <mapping-file>mappingFile</mapping-file>
-        <class>org.jqassistant.plugin.jee.jpa2.test.set.entity.JpaEntity</class>
+        <class>org.jqassistant.plugin.jee.jpa.test.set.entity.JpaEntity</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
         <validation-mode>AUTO</validation-mode>

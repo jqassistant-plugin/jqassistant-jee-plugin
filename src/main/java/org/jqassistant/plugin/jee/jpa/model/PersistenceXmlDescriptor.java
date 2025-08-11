@@ -1,4 +1,4 @@
-package org.jqassistant.plugin.jee.jpa2.model;
+package org.jqassistant.plugin.jee.jpa.model;
 
 import java.util.List;
 
@@ -13,11 +13,11 @@ import com.buschmais.xo.neo4j.api.annotation.Property;
 public interface PersistenceXmlDescriptor extends XmlFileDescriptor, JpaDescriptor {
 
     @Property("version")
-    public String getVersion();
+    String getVersion();
 
-    public void setVersion(String version);
+    void setVersion(String version);
 
     @Property("contains")
-    public List<PersistenceUnitDescriptor> getContains();
+    List<PersistenceUnitDescriptor> getContains();
 
 }

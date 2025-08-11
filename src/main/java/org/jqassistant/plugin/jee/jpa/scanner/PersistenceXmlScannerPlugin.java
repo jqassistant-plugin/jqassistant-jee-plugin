@@ -1,4 +1,4 @@
-package org.jqassistant.plugin.jee.jpa2.scanner;
+package org.jqassistant.plugin.jee.jpa.scanner;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,8 +21,8 @@ import https.jakarta_ee.xml.ns.persistence.Persistence;
 import https.jakarta_ee.xml.ns.persistence.PersistenceUnitCachingType;
 import https.jakarta_ee.xml.ns.persistence.PersistenceUnitTransactionType;
 import https.jakarta_ee.xml.ns.persistence.PersistenceUnitValidationModeType;
-import org.jqassistant.plugin.jee.jpa2.model.PersistenceUnitDescriptor;
-import org.jqassistant.plugin.jee.jpa2.model.PersistenceXmlDescriptor;
+import org.jqassistant.plugin.jee.jpa.model.PersistenceUnitDescriptor;
+import org.jqassistant.plugin.jee.jpa.model.PersistenceXmlDescriptor;
 
 /**
  * A scanner for JPA model units.

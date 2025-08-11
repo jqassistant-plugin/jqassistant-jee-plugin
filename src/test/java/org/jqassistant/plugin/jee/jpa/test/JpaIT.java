@@ -1,4 +1,4 @@
-package org.jqassistant.plugin.jee.jpa2.test;
+package org.jqassistant.plugin.jee.jpa.test;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,12 +14,12 @@ import com.buschmais.jqassistant.plugin.common.api.model.PropertyDescriptor;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
 
 import org.hamcrest.Matcher;
-import org.jqassistant.plugin.jee.jpa2.model.PersistenceUnitDescriptor;
-import org.jqassistant.plugin.jee.jpa2.model.PersistenceXmlDescriptor;
-import org.jqassistant.plugin.jee.jpa2.test.matcher.PersistenceUnitMatcher;
-import org.jqassistant.plugin.jee.jpa2.test.set.entity.JpaEmbeddable;
-import org.jqassistant.plugin.jee.jpa2.test.set.entity.JpaEntity;
-import org.jqassistant.plugin.jee.jpa2.test.set.entity.SingleNamedQueryEntity;
+import org.jqassistant.plugin.jee.jpa.model.PersistenceUnitDescriptor;
+import org.jqassistant.plugin.jee.jpa.model.PersistenceXmlDescriptor;
+import org.jqassistant.plugin.jee.jpa.test.matcher.PersistenceUnitMatcher;
+import org.jqassistant.plugin.jee.jpa.test.set.entity.JpaEmbeddable;
+import org.jqassistant.plugin.jee.jpa.test.set.entity.JpaEntity;
+import org.jqassistant.plugin.jee.jpa.test.set.entity.SingleNamedQueryEntity;
 import org.junit.jupiter.api.Test;
 
 import static com.buschmais.jqassistant.core.report.api.model.Result.Status.FAILURE;

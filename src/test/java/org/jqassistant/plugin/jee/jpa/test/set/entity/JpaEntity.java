@@ -1,11 +1,6 @@
-package org.jqassistant.plugin.jee.jpa2.test.set.entity;
+package org.jqassistant.plugin.jee.jpa.test.set.entity;
 
-import javax.persistence.Embedded;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
+import javax.persistence.*;
 
 /**
  * A JPA entity.

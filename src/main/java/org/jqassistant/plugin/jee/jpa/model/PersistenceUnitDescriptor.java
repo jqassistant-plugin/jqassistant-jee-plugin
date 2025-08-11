@@ -1,4 +1,4 @@
-package org.jqassistant.plugin.jee.jpa2.model;
+package org.jqassistant.plugin.jee.jpa.model;
 
 import java.util.List;
 import java.util.Set;

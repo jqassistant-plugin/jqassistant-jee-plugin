@@ -1,4 +1,4 @@
-package org.jqassistant.plugin.jee.jpa2.test.set.entity;
+package org.jqassistant.plugin.jee.jpa.test.set.entity;
 
 public class JpaEmbedded {
 

@@ -1,4 +1,4 @@
-package org.jqassistant.plugin.jee.jpa2.impl.scanner;
+package org.jqassistant.plugin.jee.jpa.impl.scanner;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,9 +20,10 @@ import com.buschmais.jqassistant.plugin.java.api.scanner.TypeCache;
 import com.buschmais.jqassistant.plugin.java.api.scanner.TypeResolver;
 import com.buschmais.jqassistant.plugin.xml.api.model.XmlFileDescriptor;
 
-import org.jqassistant.plugin.jee.jpa2.model.PersistenceUnitDescriptor;
-import org.jqassistant.plugin.jee.jpa2.model.PersistenceXmlDescriptor;
-import org.jqassistant.plugin.jee.jpa2.scanner.PersistenceXmlScannerPlugin;
+import org.jqassistant.plugin.jee.jpa.model.PersistenceUnitDescriptor;
+import org.jqassistant.plugin.jee.jpa.model.PersistenceXmlDescriptor;
+import org.jqassistant.plugin.jee.jpa.scanner.PersistenceXmlScannerPlugin;
+import org.jqassistant.plugin.jee.jpa.test.set.entity.JpaEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -136,7 +137,7 @@ class PersistenceXmlScannerPluginTest {
         doReturn(jpaEntityDescriptor).when(cachedType)
                 .getTypeDescriptor();
         doReturn(cachedType).when(typeResolver)
-                .resolve(eq("org.jqassistant.plugin.jee.jpa2.test.set.entity.JpaEntity"), eq(context));
+                .resolve(eq(JpaEntity.class.getName()), eq(context));
         doReturn(typeResolver).when(context)
                 .peek(TypeResolver.class);
         doReturn(context).when(scanner)

@@ -1,6 +1,6 @@
-package org.jqassistant.plugin.jee.jpa2.test.matcher;
+package org.jqassistant.plugin.jee.jpa.test.matcher;
 
-import org.jqassistant.plugin.jee.jpa2.model.PersistenceUnitDescriptor;
+import org.jqassistant.plugin.jee.jpa.model.PersistenceUnitDescriptor;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -11,7 +11,7 @@ import org.hamcrest.TypeSafeMatcher;
  */
 public class PersistenceUnitMatcher extends TypeSafeMatcher<PersistenceUnitDescriptor> {
 
-    private String name;
+    private final String name;
 
     public PersistenceUnitMatcher(String name) {
         this.name = name;
