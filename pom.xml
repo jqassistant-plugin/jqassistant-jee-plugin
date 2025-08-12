@@ -55,11 +55,12 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <!--
                             <catalog>src/main/resources/META-INF/xsd/catalog.cat</catalog>
-                            -->
                             <strict>false</strict>
                             <schemaDirectory>src/main/resources/META-INF/xsd</schemaDirectory>
+                            <schemaExcludes>
+                                <schemaExclude>xml.xsd</schemaExclude>
+                            </schemaExcludes>
                             <!-- Provide namespace in each generated class to avoid problems loading this information from package-info.java on Java 11 and newer -->
                             <packageLevelAnnotations>false</packageLevelAnnotations>
                             <args>
