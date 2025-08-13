@@ -45,8 +45,8 @@
         <class>org.jqassistant.plugin.jee.jee6.api.model.WebModuleDescriptor</class>
         <class>org.jqassistant.plugin.jee.jee6.api.model.JsfFaceletDescriptor</class>
 
-        <class>org.jqassistant.plugin.jee.jpa2.model.PersistenceXmlDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jpa2.model.PersistenceUnitDescriptor</class>
+        <class>org.jqassistant.plugin.jee.jpa.model.PersistenceXmlDescriptor</class>
+        <class>org.jqassistant.plugin.jee.jpa.model.PersistenceUnitDescriptor</class>
     </model>
     <scope>
         <class>org.jqassistant.plugin.jee.jee6.api.scanner.WebApplicationScope</class>
@@ -64,7 +64,7 @@
         <class>org.jqassistant.plugin.jee.jee6.impl.scanner.ApplicationXmlScannerPlugin</class>
         <class>org.jqassistant.plugin.jee.jee6.impl.scanner.JsfFaceletScannerPlugin</class>
 
-        <class>org.jqassistant.plugin.jee.jpa2.scanner.PersistenceXmlScannerPlugin</class>
+        <class>org.jqassistant.plugin.jee.jpa.scanner.PersistenceXmlScannerPlugin</class>
     </scanner>
     <rules>
         <resource>cdi/cdi.xml</resource>
