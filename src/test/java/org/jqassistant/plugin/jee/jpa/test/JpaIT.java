@@ -166,13 +166,13 @@ class JpaIT extends AbstractJavaPluginIT {
                         .size(), equalTo(1));
         assertThat(query("CREATE (n:Jpa:NamedQuery {name: 'otherQuery', query: 'SELECT e'}) RETURN n").getColumn("n")
                 .size(), equalTo(1));
-        verifyUniqueRelation(JpaEntity.TESTQUERY_NAME, JpaEntity.TESTQUERY_QUERY, 2, 0, 0);
-        verifyUniqueRelation(SingleNamedQueryEntity.TESTQUERY_NAME, SingleNamedQueryEntity.TESTQUERY_QUERY, 2, 0, 0);
+        verifyUniqueRelation(JpaEntity.TESTQUERY_NAME, JpaEntity.TESTQUERY_QUERY, 0, 0);
+        verifyUniqueRelation(SingleNamedQueryEntity.TESTQUERY_NAME, SingleNamedQueryEntity.TESTQUERY_QUERY, 0, 0);
         store.commitTransaction();
         assertThat(applyConcept("jpa2:NamedQuery").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
-        verifyUniqueRelation(JpaEntity.TESTQUERY_NAME, JpaEntity.TESTQUERY_QUERY, 2, 1, 0);
-        verifyUniqueRelation(SingleNamedQueryEntity.TESTQUERY_NAME, SingleNamedQueryEntity.TESTQUERY_QUERY, 2, 1, 0);
+        verifyUniqueRelation(JpaEntity.TESTQUERY_NAME, JpaEntity.TESTQUERY_QUERY, 1, 0);
+        verifyUniqueRelation(SingleNamedQueryEntity.TESTQUERY_NAME, SingleNamedQueryEntity.TESTQUERY_QUERY, 1, 0);
         store.commitTransaction();
     }
 
@@ -197,13 +197,13 @@ class JpaIT extends AbstractJavaPluginIT {
                         .size(), equalTo(1));
         assertThat(query("CREATE (n:Jpa:NamedQuery {name: 'otherQuery', query: 'SELECT e'}) RETURN n").getColumn("n")
                 .size(), equalTo(1));
-        verifyUniqueRelation(JpaEntity.TESTQUERY_NAME, JpaEntity.TESTQUERY_QUERY, 2, 1, 0);
-        verifyUniqueRelation(SingleNamedQueryEntity.TESTQUERY_NAME, SingleNamedQueryEntity.TESTQUERY_QUERY, 2, 1, 0);
+        verifyUniqueRelation(JpaEntity.TESTQUERY_NAME, JpaEntity.TESTQUERY_QUERY, 1, 0);
+        verifyUniqueRelation(SingleNamedQueryEntity.TESTQUERY_NAME, SingleNamedQueryEntity.TESTQUERY_QUERY, 1, 0);
         store.commitTransaction();
         assertThat(applyConcept("jpa2:NamedQuery").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
-        verifyUniqueRelation(JpaEntity.TESTQUERY_NAME, JpaEntity.TESTQUERY_QUERY, 2, 1, 0);
-        verifyUniqueRelation(SingleNamedQueryEntity.TESTQUERY_NAME, SingleNamedQueryEntity.TESTQUERY_QUERY, 2, 1, 0);
+        verifyUniqueRelation(JpaEntity.TESTQUERY_NAME, JpaEntity.TESTQUERY_QUERY, 1, 0);
+        verifyUniqueRelation(SingleNamedQueryEntity.TESTQUERY_NAME, SingleNamedQueryEntity.TESTQUERY_QUERY, 1, 0);
         store.commitTransaction();
     }
 
@@ -228,13 +228,13 @@ class JpaIT extends AbstractJavaPluginIT {
                         .size(), equalTo(1));
         assertThat(query("CREATE (n:Jpa:NamedQuery {name: 'otherQuery', query: 'SELECT e'}) RETURN n").getColumn("n")
                 .size(), equalTo(1));
-        verifyUniqueRelation(JpaEntity.TESTQUERY_NAME, JpaEntity.TESTQUERY_QUERY, 2, 0, 1);
-        verifyUniqueRelation(SingleNamedQueryEntity.TESTQUERY_NAME, SingleNamedQueryEntity.TESTQUERY_QUERY, 2, 0, 1);
+        verifyUniqueRelation(JpaEntity.TESTQUERY_NAME, JpaEntity.TESTQUERY_QUERY, 0, 1);
+        verifyUniqueRelation(SingleNamedQueryEntity.TESTQUERY_NAME, SingleNamedQueryEntity.TESTQUERY_QUERY, 0, 1);
         store.commitTransaction();
         assertThat(applyConcept("jpa2:NamedQuery").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
-        verifyUniqueRelation(JpaEntity.TESTQUERY_NAME, JpaEntity.TESTQUERY_QUERY, 2, 1, 0);
-        verifyUniqueRelation(SingleNamedQueryEntity.TESTQUERY_NAME, SingleNamedQueryEntity.TESTQUERY_QUERY, 2, 1, 0);
+        verifyUniqueRelation(JpaEntity.TESTQUERY_NAME, JpaEntity.TESTQUERY_QUERY, 1, 0);
+        verifyUniqueRelation(SingleNamedQueryEntity.TESTQUERY_NAME, SingleNamedQueryEntity.TESTQUERY_QUERY, 1, 0);
         store.commitTransaction();
     }
 
@@ -243,21 +243,44 @@ class JpaIT extends AbstractJavaPluginIT {
      */
     @Test
     void fullPersistenceDescriptorV20() {
-        fullPersistenceDescriptor("jpa/2_0/full", SCHEMA_2_0);
+        persistenceDescriptor("jpa/2_0/full", SCHEMA_2_0);
     }
 
     @Test
     void fullPersistenceDescriptorV21() {
-        fullPersistenceDescriptor("jpa/2_1/full", SCHEMA_2_1);
+        persistenceDescriptor("jpa/2_1/full", SCHEMA_2_1);
     }
 
     @Test
     void fullPersistenceDescriptorV32() {
-        fullPersistenceDescriptor("jpa/3_2/full", SCHEMA_3_2);
+        persistenceDescriptor("jpa/3_2/full", SCHEMA_3_2);
     }
 
-    private void fullPersistenceDescriptor(String path, String schema) {
-        minimalPersistenceDescriptor(path, schema);
+    @Test
+    void minimalPersistenceDescriptorV20() {
+        persistenceDescriptor("jpa/2_0/minimal", SCHEMA_2_0);
+    }
+
+    /**
+     * Verifies scanning of persistence descriptors.
+     */
+    @Test
+    void minimalPersistenceDescriptorV21() {
+        persistenceDescriptor("jpa/2_1/minimal", SCHEMA_2_1);
+    }
+
+    private void persistenceDescriptor(String path, String schema) {
+        scanClassPathDirectory(new File(getClassesDirectory(JpaEntity.class), path));
+        store.beginTransaction();
+        TestResult testResult = query("MATCH (p:Jpa:Persistence:Xml) RETURN p");
+        assertThat(testResult.getRows()
+                .size(), equalTo(1));
+        List<? super PersistenceXmlDescriptor> persistenceDescriptors = testResult.getColumn("p");
+        PersistenceXmlDescriptor persistenceXmlDescriptor = (PersistenceXmlDescriptor) persistenceDescriptors.get(0);
+        assertThat(persistenceXmlDescriptor.getVersion(), equalTo(schema));
+        List<PersistenceUnitDescriptor> persistenceUnits = persistenceXmlDescriptor.getContains();
+        assertThat(persistenceUnits, hasItem(PersistenceUnitMatcher.persistenceUnitDescriptor("persistence-unit")));
+        store.commitTransaction();
     }
 
     @Test
@@ -300,33 +323,6 @@ class JpaIT extends AbstractJavaPluginIT {
         assertThat(persistenceUnitDescriptor.getContains(), hasItem(typeDescriptor(JpaEntity.class)));
         Matcher<? super PropertyDescriptor> valueMatcher = valueDescriptor("stringProperty", equalTo("stringValue"));
         assertThat(persistenceUnitDescriptor.getProperties(), hasItem(valueMatcher));
-        store.commitTransaction();
-    }
-
-    @Test
-    void minimalPersistenceDescriptorV20() {
-        minimalPersistenceDescriptor("jpa/2_0/minimal", SCHEMA_2_0);
-    }
-
-    /**
-     * Verifies scanning of persistence descriptors.
-     */
-    @Test
-    void minimalPersistenceDescriptorV21() {
-        minimalPersistenceDescriptor("jpa/2_1/minimal", SCHEMA_2_1);
-    }
-
-    private void minimalPersistenceDescriptor(String path, String schema) {
-        scanClassPathDirectory(new File(getClassesDirectory(JpaEntity.class), path));
-        store.beginTransaction();
-        TestResult testResult = query("MATCH (p:Jpa:Persistence:Xml) RETURN p");
-        assertThat(testResult.getRows()
-                .size(), equalTo(1));
-        List<? super PersistenceXmlDescriptor> persistenceDescriptors = testResult.getColumn("p");
-        PersistenceXmlDescriptor persistenceXmlDescriptor = (PersistenceXmlDescriptor) persistenceDescriptors.get(0);
-        assertThat(persistenceXmlDescriptor.getVersion(), equalTo(schema));
-        List<PersistenceUnitDescriptor> persistenceUnits = persistenceXmlDescriptor.getContains();
-        assertThat(persistenceUnits, hasItem(PersistenceUnitMatcher.persistenceUnitDescriptor("persistence-unit")));
         store.commitTransaction();
     }
 
@@ -419,21 +415,15 @@ class JpaIT extends AbstractJavaPluginIT {
      *         The query name.
      * @param query
      *         The query.
-     * @param relationCount
-     *         The number of :DEFINES relations to named query nodes.
      * @param withQueryCount
      *         The number of nodes with the query attribute.
      * @param withoutQueryCount
      *         The number of nodes without the query attribute.
      */
-    private void verifyUniqueRelation(String queryName, String query, int relationCount, int withQueryCount, int withoutQueryCount) {
+    private void verifyUniqueRelation(String queryName, String query, int withQueryCount, int withoutQueryCount) {
         TestResult result = query("MATCH ()-[r:DEFINES]->(:Jpa:NamedQuery) RETURN r");
-        if (relationCount == 0) {
-            assertThat(result.getRows(), empty());
-        } else {
-            assertThat(result.getColumn("r")
-                    .size(), equalTo(relationCount));
-        }
+        assertThat(result.getColumn("r")
+                .size(), equalTo(2));
         assertThat(query("MATCH (q:Jpa:NamedQuery {prop: 'value'}) RETURN q").getColumn("q")
                 .size(), equalTo(2));
         result = query("MATCH ()-[:DEFINES]->(q:Jpa:NamedQuery {name: '" + queryName + "', query: '" + query + "'}) RETURN q");
