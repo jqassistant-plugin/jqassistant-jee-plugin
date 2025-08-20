@@ -71,8 +71,12 @@
         <resource>cdi/decorator.xml</resource>
         <resource>cdi/interceptor.xml</resource>
         <resource>ejb/ejb.xml</resource>
+        <resource>ejb/jakarta-ejb.xml</resource>
+        <resource>ejb/javax-ejb.xml</resource>
         <resource>jpa2/jpa2.xml</resource>
         <resource>injection/jee-injection.xml</resource>
+        <resource>injection/jakarta-jee-injection.xml</resource>
+        <resource>injection/javax-jee-injection.xml</resource>
         <resource>jsf/jsf.xml</resource>
         <resource>transaction/jee-transaction.xml</resource>
     </rules>

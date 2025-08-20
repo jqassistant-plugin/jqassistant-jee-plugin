@@ -1,9 +1,5 @@
 package org.jqassistant.plugin.jee.ejb.test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.buschmais.jqassistant.core.report.api.model.Column;
 import com.buschmais.jqassistant.core.report.api.model.Result;
 import com.buschmais.jqassistant.core.report.api.model.Row;
@@ -13,9 +9,19 @@ import com.buschmais.jqassistant.core.rule.api.model.RuleException;
 import com.buschmais.jqassistant.plugin.java.api.model.MethodDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
+import com.buschmais.jqassistant.plugin.java.test.assertj.TypeDescriptorCondition;
+import org.jqassistant.plugin.jee.ejb.test.set.beans.jakarta.*;
+import org.jqassistant.plugin.jee.ejb.test.set.beans.javax.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import org.jqassistant.plugin.jee.ejb.test.set.beans.*;
-import org.junit.jupiter.api.Test;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.buschmais.jqassistant.core.report.api.model.Result.Status.FAILURE;
 import static com.buschmais.jqassistant.core.report.api.model.Result.Status.SUCCESS;
@@ -31,26 +37,28 @@ class EjbIT extends AbstractJavaPluginIT {
     /**
      * Verifies the concept "ejb:StatelessSessionBean".
      */
-    @Test
-    public void statelessSessionBean() throws RuleException {
-        scanClasses(StatelessLocalBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxStatelessLocalBean.class, JakartaStatelessLocalBean.class})
+    public void statelessSessionBean(Class<?> classToScan) throws RuleException {
+        scanClasses(classToScan);
         assertThat(applyConcept("ejb:StatelessSessionBean").getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
         assertThat(query("MATCH (ejb:Java:Type:Stateless:JEE:EJB) RETURN ejb").<TypeDescriptor>getColumn("ejb"))
-                .haveExactly(1, typeDescriptor(StatelessLocalBean.class));
+                .haveExactly(1, typeDescriptor(classToScan));
         store.commitTransaction();
     }
 
     /**
      * Verifies the concept "ejb:StatefulSessionBean".
      */
-    @Test
-    public void statefulSessionBean() throws RuleException {
-        scanClasses(StatefulBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxStatefulBean.class, JakartaStatefulBean.class})
+    public void statefulSessionBean(Class<?> classToScan) throws RuleException {
+        scanClasses(classToScan);
         assertThat(applyConcept("ejb:StatefulSessionBean").getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
         assertThat(query("MATCH (ejb:Java:Type:Stateful:JEE:EJB) RETURN ejb").<TypeDescriptor>getColumn("ejb"))
-                .haveExactly(1, typeDescriptor(StatefulBean.class));
+                .haveExactly(1, typeDescriptor(classToScan));
         store.commitTransaction();
     }
 
@@ -60,63 +68,67 @@ class EjbIT extends AbstractJavaPluginIT {
      * @throws java.io.IOException
      *             If the test fails.
      */
-    @Test
-    void singletonBean() throws Exception {
-        scanClasses(SingletonBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxSingletonBean.class, JakartaSingletonBean.class})
+    void singletonBean(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         assertThat(applyConcept("ejb:SingletonBean").getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
         assertThat(query("MATCH (ejb:Java:Type:Singleton:JEE:EJB) RETURN ejb").<TypeDescriptor>getColumn("ejb"))
-                .haveExactly(1, typeDescriptor(SingletonBean.class));
+                .haveExactly(1, typeDescriptor(classToScan));
         store.commitTransaction();
     }
 
     /**
      * Verifies the concept "ejb:MessageDrivenBean".
      */
-    @Test
-    void messageDrivenBean() throws RuleException {
-        scanClasses(MessageDrivenBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxMessageDrivenBean.class, JakartaMessageDrivenBean.class})
+    void messageDrivenBean(Class<?> classToScan) throws RuleException {
+        scanClasses(classToScan);
         assertThat(applyConcept("ejb:MessageDrivenBean").getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
         assertThat(query("MATCH (ejb:Type:Java:MessageDriven:JEE:EJB) RETURN ejb").<TypeDescriptor>getColumn("ejb"))
-                .haveExactly(1, typeDescriptor(MessageDrivenBean.class));
+                .haveExactly(1, typeDescriptor(classToScan));
         store.commitTransaction();
     }
 
     /**
      * Verifies the concept "ejb:Local".
      */
-    @Test
-    void localSessionBean() throws RuleException {
-        scanClasses(StatelessLocalBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxStatelessLocalBean.class, JakartaStatelessLocalBean.class})
+    void localSessionBean(Class<?> classToScan) throws RuleException {
+        scanClasses(classToScan);
         assertThat(applyConcept("ejb:Local").getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
         assertThat(query("MATCH (type:Type:Local) RETURN type").<TypeDescriptor>getColumn("type"))
-                .haveExactly(1, typeDescriptor(StatelessLocalBean.class));
+                .haveExactly(1, typeDescriptor(classToScan));
         store.commitTransaction();
     }
 
     /**
      * Verifies the concept "ejb:Remote".
      */
-    @Test
-    void remoteSessionBean() throws RuleException {
-        scanClasses(StatelessRemoteBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxStatelessRemoteBean.class, JakartaStatelessRemoteBean.class})
+    void remoteSessionBean(Class<?> classToScan) throws RuleException {
+        scanClasses(classToScan);
         assertThat(applyConcept("ejb:Remote").getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
         assertThat(query("MATCH (type:Type:Remote) RETURN type").<TypeDescriptor>getColumn("type"))
-                .haveExactly(1, typeDescriptor(StatelessRemoteBean.class));
+                .haveExactly(1, typeDescriptor(classToScan));
         store.commitTransaction();
     }
 
     /**
      * Verifies the provided concept "ejb:EJB".
      */
-    @Test
-    void providedConceptEjb() throws RuleException {
+    @ParameterizedTest
+    @MethodSource({"provideBeansToTest"})
+    void providedConceptEjb(Class<?>[] beansToScan, Class<?>[] actualEjbs) throws RuleException {
         // Scan ScheduledBean as well to check if it is correctly NOT identified as an EJB
-        scanClasses(StatelessLocalBean.class, StatelessRemoteBean.class, StatefulBean.class, MessageDrivenBean.class,
-                SingletonBean.class, ScheduledEJB.class, ScheduledBean.class);
+        scanClasses(beansToScan);
 
         final Result<Concept> conceptResult = applyConcept("ejb:EJB");
         assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
@@ -129,31 +141,32 @@ class EjbIT extends AbstractJavaPluginIT {
                 .map(Column::getValue)
                 .map(TypeDescriptor.class::cast)
                 .collect(Collectors.toList());
-        assertExactlyAllTestEjbs(conceptResultTypes);
+        assertExactlyAllTestEjbs(conceptResultTypes, actualEjbs);
 
         final List<TypeDescriptor> allEjbs = query("MATCH (ejb:Java:Type:JEE:EJB) RETURN ejb").getColumn("ejb");
-        assertExactlyAllTestEjbs(allEjbs);
+        assertExactlyAllTestEjbs(allEjbs, actualEjbs);
         store.commitTransaction();
     }
 
     /**
      * Verifies the concept "ejb:Schedule".
      */
-    @Test
-    void scheduleMethod() throws RuleException, NoSuchMethodException {
-        scanClasses(ScheduledBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxScheduledBean.class, JakartaScheduledBean.class})
+    void scheduleMethod(Class<?> classToScan) throws RuleException, NoSuchMethodException {
+        scanClasses(classToScan);
         assertThat(applyConcept("ejb:Schedule").getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
         assertThat(query("MATCH (timer:Method:Schedule) RETURN timer").<MethodDescriptor>getColumn("timer"))
-                .haveExactly(1, methodDescriptor(ScheduledBean.class, "invokeTimer"));
+                .haveExactly(1, methodDescriptor(classToScan, "invokeTimer"));
         store.commitTransaction();
     }
 
-    @Test
-    void ejbInjectable() throws RuleException {
+    @ParameterizedTest
+    @MethodSource({"provideBeansToTest"})
+    void ejbInjectable(Class<?>[] beansToScan, Class<?>[] actualEjbs) throws RuleException {
         // Scan ScheduledBean as well to check if it is correctly NOT identified as an EJB
-        scanClasses(StatelessLocalBean.class, StatelessRemoteBean.class, StatefulBean.class, MessageDrivenBean.class,
-                SingletonBean.class, ScheduledEJB.class, ScheduledBean.class);
+        scanClasses(beansToScan);
         final Result<Concept> conceptResult = applyConcept("ejb:Injectable");
         assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
@@ -163,19 +176,19 @@ class EjbIT extends AbstractJavaPluginIT {
                 .map(Column::getValue)
                 .map(TypeDescriptor.class::cast)
                 .collect(Collectors.toList());
-        assertExactlyAllTestEjbs(conceptResultTypes);
+        assertExactlyAllTestEjbs(conceptResultTypes, actualEjbs);
 
         final List<TypeDescriptor> injectableTypes =
                 query("MATCH (injectableType:Java:Type:Injectable) RETURN injectableType").getColumn("injectableType");
-        assertExactlyAllTestEjbs(injectableTypes);
+        assertExactlyAllTestEjbs(injectableTypes, actualEjbs);
         store.commitTransaction();
     }
 
-    @Test
-    void providedConceptJeeInjectable() throws RuleException {
+    @ParameterizedTest
+    @MethodSource({"provideBeansToTest"})
+    void providedConceptJeeInjectable(Class<?>[] beansToScan, Class<?>[] actualEjbs) throws RuleException {
         // Scan ScheduledBean as well to check if it is correctly NOT identified as an EJB
-        scanClasses(StatelessLocalBean.class, StatelessRemoteBean.class, StatefulBean.class, MessageDrivenBean.class,
-                SingletonBean.class, ScheduledEJB.class, ScheduledBean.class);
+        scanClasses(beansToScan);
         final Result<Concept> conceptResult = applyConcept("jee-injection:Injectable");
         assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
@@ -185,30 +198,21 @@ class EjbIT extends AbstractJavaPluginIT {
                 .map(Column::getValue)
                 .map(TypeDescriptor.class::cast)
                 .collect(Collectors.toList());
-        assertExactlyAllTestEjbs(conceptResultTypes);
+        assertExactlyAllTestEjbs(conceptResultTypes, actualEjbs);
 
         final List<TypeDescriptor> injectableTypes =
                 query("MATCH (injectableType:Java:Type:Injectable) RETURN injectableType").getColumn("injectableType");
-        assertExactlyAllTestEjbs(injectableTypes);
+        assertExactlyAllTestEjbs(injectableTypes, actualEjbs);
         store.commitTransaction();
-    }
-
-    private static void assertExactlyAllTestEjbs(List<TypeDescriptor> actualTypes) {
-        assertThat(actualTypes).hasSize(6);
-        assertThat(actualTypes).haveExactly(1, typeDescriptor(StatelessLocalBean.class));
-        assertThat(actualTypes).haveExactly(1, typeDescriptor(MessageDrivenBean.class));
-        assertThat(actualTypes).haveExactly(1, typeDescriptor(StatelessLocalBean.class));
-        assertThat(actualTypes).haveExactly(1, typeDescriptor(StatelessRemoteBean.class));
-        assertThat(actualTypes).haveExactly(1, typeDescriptor(SingletonBean.class));
-        assertThat(actualTypes).haveExactly(1, typeDescriptor(ScheduledEJB.class));
     }
 
     /**
      * Verifies the constraint "ejb:ScheduleMethodInEjbContext" results in no violations when applied to valid beans.
      */
-    @Test
-    void scheduleMethodWithoutEjb_No_Violation() throws RuleException {
-        scanClasses(ScheduledEJB.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxScheduledEJB.class, JakartaScheduledEJB.class})
+    void scheduleMethodWithoutEjb_No_Violation(Class<?> classToScan) throws RuleException {
+        scanClasses(classToScan);
         final String ruleName = "ejb:ScheduleMethodInEjbContext";
         assertThat(validateConstraint(ruleName).getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
@@ -224,9 +228,10 @@ class EjbIT extends AbstractJavaPluginIT {
     /**
      * Verifies the constraint "ejb:ScheduleMethodInEjbContext".
      */
-    @Test
-    void scheduleMethodWithoutEjb() throws RuleException {
-        scanClasses(ScheduledBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxScheduledBean.class, JakartaScheduledBean.class})
+    void scheduleMethodWithoutEjb(Class<?> classToScan) throws RuleException {
+        scanClasses(classToScan);
         final String ruleName = "ejb:ScheduleMethodInEjbContext";
         assertThat(validateConstraint(ruleName).getStatus()).isEqualTo(FAILURE);
 
@@ -239,9 +244,64 @@ class EjbIT extends AbstractJavaPluginIT {
 
         final List<Row> violations = result.getRows();
         assertThat(violations).as("There should be exactly 1 constraint violation").hasSize(1);
-        assertThat(violations.get(0).getColumns().get("invalidBean").getValue()).as("Bean name should be correct").isEqualTo(ScheduledBean.class.getName());
+        assertThat(violations.get(0).getColumns().get("invalidBean").getValue()).as("Bean name should be correct").isEqualTo(classToScan.getName());
         assertThat(violations.get(0).getColumns().get("scheduledMethodName").getValue()).as("Method name schuld be correct").isEqualTo("invokeTimer");
 
         store.commitTransaction();
+    }
+
+    private static Stream<Arguments> provideBeansToTest() {
+        Class<?>[] scannableJavaxBeans = new Class<?>[] {
+            JavaxStatelessLocalBean.class,
+            JavaxStatelessRemoteBean.class,
+            JavaxStatefulBean.class,
+            JavaxMessageDrivenBean.class,
+            JavaxSingletonBean.class,
+            JavaxScheduledEJB.class,
+            JavaxScheduledBean.class
+        };
+
+        Class<?>[] actualJavaxEjbs = new Class<?>[] {
+            JavaxStatelessLocalBean.class,
+            JavaxStatelessRemoteBean.class,
+            JavaxStatefulBean.class,
+            JavaxMessageDrivenBean.class,
+            JavaxSingletonBean.class,
+            JavaxScheduledEJB.class
+        };
+
+        Class<?>[] scannableJakartaBeans = new Class<?>[] {
+            JakartaStatelessLocalBean.class,
+            JakartaStatelessRemoteBean.class,
+            JakartaStatefulBean.class,
+            JakartaMessageDrivenBean.class,
+            JakartaSingletonBean.class,
+            JakartaScheduledEJB.class,
+            JakartaScheduledBean.class
+        };
+
+        Class<?>[] actualJakartaEjbs = new Class<?>[] {
+            JakartaStatelessLocalBean.class,
+            JakartaStatelessRemoteBean.class,
+            JakartaStatefulBean.class,
+            JakartaMessageDrivenBean.class,
+            JakartaSingletonBean.class,
+            JakartaScheduledEJB.class
+        };
+
+        return Stream.of(
+            Arguments.of(scannableJavaxBeans, actualJavaxEjbs),
+            Arguments.of(scannableJakartaBeans, actualJakartaEjbs)
+        );
+    }
+
+    private static void assertExactlyAllTestEjbs(List<TypeDescriptor> actualTypes, Class<?>[] expectedTypes) {
+        TypeDescriptorCondition[] expectedTypeDescriptors = Arrays.stream(expectedTypes)
+                .map(TypeDescriptorCondition::typeDescriptor)
+                .toArray(TypeDescriptorCondition[]::new);
+        assertThat(actualTypes).hasSize(6);
+        for(TypeDescriptorCondition typeDescriptorCondition : expectedTypeDescriptors) {
+            assertThat(actualTypes).haveExactly(1, typeDescriptorCondition);
+        }
     }
 }

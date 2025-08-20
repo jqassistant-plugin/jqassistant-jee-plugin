@@ -1,4 +1,4 @@
-package org.jqassistant.plugin.jee.ejb.test.set.beans;
+package org.jqassistant.plugin.jee.ejb.test.set.beans.javax;
 
 import javax.ejb.Local;
 import javax.ejb.Stateful;
@@ -8,5 +8,5 @@ import javax.ejb.Stateful;
  */
 @Stateful
 @Local
-public class StatefulBean {
+public class JavaxStatefulBean {
 }

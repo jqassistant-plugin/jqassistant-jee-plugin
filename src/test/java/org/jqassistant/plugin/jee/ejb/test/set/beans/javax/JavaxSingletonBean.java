@@ -1,4 +1,4 @@
-package org.jqassistant.plugin.jee.ejb.test.set.beans;
+package org.jqassistant.plugin.jee.ejb.test.set.beans.javax;
 
 import javax.ejb.Local;
 import javax.ejb.Singleton;
@@ -8,5 +8,5 @@ import javax.ejb.Singleton;
  */
 @Singleton
 @Local
-public class SingletonBean {
+public class JavaxSingletonBean {
 }

@@ -26,7 +26,7 @@ import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.CustomStereotype
 import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.StereotypeAnnotatedBean;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.TypeWithStereotypeAnnotatedField;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.TypeWithStereotypeAnnotatedMethod;
-import org.jqassistant.plugin.jee.ejb.test.set.beans.*;
+import org.jqassistant.plugin.jee.ejb.test.set.beans.javax.JavaxSingletonBean;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -456,7 +456,7 @@ class CdiIT extends AbstractJavaPluginIT {
     @Test
     void providedConceptJeeInjectable() throws RuleException {
         scanClasses(DependentBean.class, RequestScopedBean.class, SessionScopedBean.class, ConversationScopedBean.class,
-                ApplicationScopedBean.class, SingletonBean.class, DecoratorBean.class,
+                ApplicationScopedBean.class, JavaxSingletonBean.class, DecoratorBean.class,
                 ProducedBean.class, TypeWithApplicationScopedField.class, TypeWithConversationScopedField.class,
                 TypeWithDependentField.class, TypeWithRequestScopedField.class, TypeWithSessionScopedField.class,
                 TypeWithApplicationScopedMethod.class, TypeWithConversationScopedMethod.class,
@@ -486,7 +486,7 @@ class CdiIT extends AbstractJavaPluginIT {
         assertThat(actualTypes).haveExactly(1, typeDescriptor(SessionScopedBean.class));
         assertThat(actualTypes).haveExactly(1, typeDescriptor(ConversationScopedBean.class));
         assertThat(actualTypes).haveExactly(1, typeDescriptor(ApplicationScopedBean.class));
-        assertThat(actualTypes).haveExactly(1, typeDescriptor(SingletonBean.class));
+        assertThat(actualTypes).haveExactly(1, typeDescriptor(JavaxSingletonBean.class));
         assertThat(actualTypes).haveExactly(1, typeDescriptor(DecoratorBean.class));
         assertThat(actualTypes).haveExactly(1, typeDescriptor(ProducedBean.class));
         assertThat(actualTypes).haveExactly(1, typeDescriptor(StereotypeAnnotatedBean.class));

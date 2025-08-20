@@ -1,4 +1,4 @@
-package org.jqassistant.plugin.jee.ejb.test.set.beans;
+package org.jqassistant.plugin.jee.ejb.test.set.beans.javax;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -8,5 +8,5 @@ import javax.ejb.Stateless;
  */
 @Stateless
 @Remote
-public class StatelessRemoteBean {
+public class JavaxStatelessRemoteBean {
 }
