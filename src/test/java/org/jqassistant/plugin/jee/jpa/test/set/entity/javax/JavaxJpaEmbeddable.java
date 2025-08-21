@@ -1,9 +1,9 @@
-package org.jqassistant.plugin.jee.jpa.test.set.entity;
+package org.jqassistant.plugin.jee.jpa.test.set.entity.javax;
 
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class JpaEmbeddable {
+public class JavaxJpaEmbeddable {
 
     private int intValue;
 

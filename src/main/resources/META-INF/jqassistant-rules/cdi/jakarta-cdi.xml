@@ -1,0 +1,436 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+
+    <concept id="jakarta-cdi:Produces">
+        <providesConcept refId="cdi:Produces"/>
+        <description>Creates a relation PRODUCES between a field and its type or a method and its return type if the parameter is annotated by
+            @jakarta.enterprise.inject.Disposes.
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (:Type)-[:DECLARES]->(member),
+              (member)-[:OF_TYPE|RETURNS]->(type),
+              (member)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(producesType:Type)
+            WHERE
+              (member:Field or member:Method)
+              and producesType.fqn="jakarta.enterprise.inject.Produces"
+            SET
+              type:JEE:Injectable,
+              member:JEE:BeanProducer
+            MERGE
+              (member)-[:PRODUCES]->(type)
+            RETURN
+              member AS Producer
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:Disposes">
+        <providesConcept refId="cdi:Disposes"/>
+        <description>Creates a relation DISPOSES between a parameter and its type if the parameter is annotated by @jakarta.enterprise.inject.Disposes.
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (:Type)-[:DECLARES]->(disposeMethod:Method)-[:HAS]->(parameter:Parameter),
+              (parameter)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(disposesType:Type),
+              (parameter)-[:OF_TYPE]->(type:Type)
+            WHERE
+              disposesType.fqn="jakarta.enterprise.inject.Disposes"
+            MERGE
+              (parameter)-[:DISPOSES]->(type)
+            RETURN
+              disposeMethod AS DisposeMethod
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:Qualifier">
+        <providesConcept refId="cdi:Qualifier"/>
+        <description>Labels all annotation types annotated by @jakarta.inject.Qualifier with "CDI" and "Qualifier" and adds the labels "CDI"
+            and "Nonbinding" to
+            all non-binding annotation values (i.e. which are annotated by @jakarta.enterprise.util.Nonbinding).
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (qualifier:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(qualifierType:Type)
+            WHERE
+              qualifierType.fqn = "jakarta.inject.Qualifier"
+            SET
+              qualifier:CDI:Qualifier
+            WITH
+              qualifier
+            MATCH
+              (qualifier)-[:DECLARES]->(attribute:Method),
+              (attribute)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(nonbindingType:Type)
+            WHERE
+              nonbindingType.fqn = "jakarta.enterprise.util.Nonbinding"
+            SET
+              attribute:CDI:Nonbinding
+            RETURN
+              distinct qualifier AS Qualifier
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:Dependent">
+        <providesConcept refId="cdi:Dependent"/>
+        <description>Labels all beans, fields or methods annotated by @jakarta.enterprise.context.Dependent with "CDI" and "Dependent".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (e)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(scopeType:Type)
+            WHERE
+              (e:Type or e:Method or e:Field)
+              and scopeType.fqn="jakarta.enterprise.context.Dependent"
+            SET
+              e:CDI:Dependent
+            RETURN
+              e AS DependentElement
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:RequestScoped">
+        <providesConcept refId="cdi:RequestScoped"/>
+        <description>Labels all beans, fields or methods annotated by @jakarta.enterprise.context.RequestScoped with "CDI" and "RequestScoped".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (e)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(scopeType:Type)
+            WHERE
+              (e:Type or e:Method or e:Field)
+              and scopeType.fqn="jakarta.enterprise.context.RequestScoped"
+            SET
+              e:CDI:RequestScoped
+            RETURN
+              e AS RequestScopedElement
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:SessionScoped">
+        <providesConcept refId="cdi:SessionScoped"/>
+        <description>Labels all beans, fields or methods annotated by @jakarta.enterprise.context.SessionScoped with "CDI" and "SessionScoped".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (e)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(scopeType:Type)
+            WHERE
+              (e:Type or e:Method or e:Field)
+              and scopeType.fqn="jakarta.enterprise.context.SessionScoped"
+            SET
+              e:CDI:SessionScoped
+            RETURN
+              e AS SessionScopedElement
+        ]]></cypher>
+    </concept>
+
+
+    <concept id="jakarta-cdi:ConversationScoped">
+        <providesConcept refId="cdi:ConversationScoped"/>
+        <description>Labels all beans, fields or methods annotated by @jakarta.enterprise.context.ConversationScoped with "CDI" and "ConversationScoped".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (e)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(scopeType:Type)
+            WHERE
+              (e:Type or e:Method or e:Field)
+              and scopeType.fqn="jakarta.enterprise.context.ConversationScoped"
+            SET
+              e:CDI:ConversationScoped
+            RETURN
+              e AS ConversationScopedElement
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:ApplicationScoped">
+        <providesConcept refId="cdi:ApplicationScoped"/>
+        <description>Labels all beans, fields or methods annotated by @jakarta.enterprise.context.ApplicationScoped with "CDI" and "ApplicationScoped".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (e)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(scopeType:Type)
+            WHERE
+              (e:Type or e:Method or e:Field)
+              and scopeType.fqn="jakarta.enterprise.context.ApplicationScoped"
+            SET
+              e:CDI:ApplicationScoped
+            RETURN
+              e AS ApplicationScopedElement
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:InjectableClassType">
+        <providesConcept refId="cdi:InjectableClassType"/>
+        <description>Labels all classes annotated with @jakarta.enterprise.context.Dependent,
+            @jakarta.enterprise.context.RequestScoped, @jakarta.enterprise.context.SessionScoped,
+            @jakarta.enterprise.context.ConversationScoped, @jakarta.enterprise.context.ApplicationScoped or a stereotype
+            annotation with "CDI", "JEE" and "Injectable".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (type:Java:Type:Class)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotation:Type)
+            WHERE
+              annotation.fqn in [
+                "jakarta.enterprise.context.Dependent",
+                "jakarta.enterprise.context.RequestScoped",
+                "jakarta.enterprise.context.SessionScoped",
+                "jakarta.enterprise.context.ConversationScoped",
+                "jakarta.enterprise.context.ApplicationScoped"
+              ]
+              OR annotation:Stereotype
+            SET
+              type:CDI:JEE:Injectable
+            RETURN
+              type AS Injectable
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:InjectableFieldType">
+        <providesConcept refId="cdi:InjectableFieldType"/>
+        <description>Labels all types of fields annotated with @jakarta.enterprise.context.Dependent,
+            @jakarta.enterprise.context.RequestScoped, @jakarta.enterprise.context.SessionScoped,
+            @jakarta.enterprise.context.ConversationScoped, @jakarta.enterprise.context.ApplicationScoped or a stereotype
+            annotation with "CDI", "JEE" and "Injectable".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (field:Java:Field)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotation:Type),
+              (field)-[:OF_TYPE]->(fieldType:Java:Type)
+            WHERE
+              annotation.fqn in [
+                "jakarta.enterprise.context.Dependent",
+                "jakarta.enterprise.context.RequestScoped",
+                "jakarta.enterprise.context.SessionScoped",
+                "jakarta.enterprise.context.ConversationScoped",
+                "jakarta.enterprise.context.ApplicationScoped"
+              ]
+              OR annotation:Stereotype
+            SET
+              fieldType:CDI:JEE:Injectable
+            RETURN
+              fieldType AS Injectable
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:InjectableReturnType">
+        <providesConcept refId="cdi:InjectableReturnType"/>
+        <description>Labels all return types of methods annotated with @jakarta.enterprise.context.Dependent,
+            @jakarta.enterprise.context.RequestScoped, @jakarta.enterprise.context.SessionScoped,
+            @jakarta.enterprise.context.ConversationScoped, @jakarta.enterprise.context.ApplicationScoped or a stereotype
+            annotation with "CDI", "JEE" and "Injectable".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (method:Java:Method)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotation:Type),
+              (method)-[:RETURNS]->(returnType:Java:Type)
+            WHERE
+              annotation.fqn in [
+                "jakarta.enterprise.context.Dependent",
+                "jakarta.enterprise.context.RequestScoped",
+                "jakarta.enterprise.context.SessionScoped",
+                "jakarta.enterprise.context.ConversationScoped",
+                "jakarta.enterprise.context.ApplicationScoped"
+              ]
+              OR annotation:Stereotype
+            SET
+              returnType:CDI:JEE:Injectable
+            RETURN
+              returnType AS Injectable
+        ]]></cypher>
+    </concept>
+
+
+
+    <concept id="jakarta-cdi:SingletonScoped">
+        <providesConcept refId="cdi:SingletonScoped"/>
+        <description>Labels all beans annotated by @jakarta.inject.Singleton with "CDI", "SingletonScoped", "JEE" and "Injectable".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
+            WHERE
+              a.fqn = "jakarta.inject.Singleton"
+            SET
+              t:CDI:SingletonScoped:JEE:Injectable
+            RETURN
+              t AS cdiSingleton
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:Stereotype">
+        <providesConcept refId="cdi:Stereotype"/>
+        <description>Labels all annotation types annotated by @jakarta.enterprise.inject.Stereotype with "CDI" and "Stereotype".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (stereotype:Type:Annotation)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(stereotypeType:Type)
+            WHERE
+              stereotypeType.fqn="jakarta.enterprise.inject.Stereotype"
+            SET
+              stereotype:CDI:Stereotype
+            RETURN
+              stereotype AS Stereotype
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:Alternative">
+        <providesConcept refId="cdi:Alternative"/>
+        <description>Labels all types annotated by @jakarta.enterprise.inject.Alternative with "CDI" and "Alternative".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (alternative:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(alternativeType:Type)
+            WHERE
+              alternativeType.fqn="jakarta.enterprise.inject.Alternative"
+            SET
+              alternative:CDI:Alternative
+            RETURN
+              alternative AS Alternative
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:Specializes">
+        <providesConcept refId="cdi:Specializes"/>
+        <description>Labels all types and methods annotated by @jakarta.enterprise.inject.Specializes with "CDI" and "Specializes".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (specializes)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(specializesType:Type)
+            WHERE
+              (specializes:Type or specializes:Method)
+              and specializesType.fqn="jakarta.enterprise.inject.Specializes"
+            SET
+              specializes:CDI:Specializes
+            RETURN
+              specializes AS Specialization
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:Delegate">
+        <providesConcept refId="cdi:Delegate"/>
+        <description>Labels all fields annotated by @jakarta.decorator.Delegate with "CDI" and "Delegate".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (delegate:Field)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(delegateType:Type)
+            WHERE
+              delegateType.fqn="jakarta.decorator.Delegate"
+            SET
+              delegate:CDI:Delegate
+            RETURN
+              delegate AS Delegate
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:Decorator">
+        <providesConcept refId="cdi:Decorator"/>
+        <description>Labels all types annotated by @jakarta.decorator.Decorator with "CDI", "Decorator", "JEE" and "Injectable".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (decorator:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(decoratorType:Type)
+            WHERE
+              decoratorType.fqn="jakarta.decorator.Decorator"
+            SET
+              decorator:CDI:Decorator:JEE:Injectable
+            RETURN
+              decorator AS Decorator
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:EventProducer">
+        <providesConcept refId="cdi:EventProducer"/>
+        <description>Labels all beans declaring "InjectionPoint" of type "jakarta.enterprise.event.Event" with "CDI" and "EventProducer".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (a:Type)-[:DECLARES]->(member:Field:CDI:InjectionPoint),
+              (member)-[:OF_TYPE]->(injectType:Type)
+            WHERE
+              injectType.fqn = "jakarta.enterprise.event.Event"
+            SET
+              a:CDI:EventProducer
+            RETURN
+              DISTINCT a.fqn AS cdiEventProducers
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:EventConsumer">
+        <providesConcept refId="cdi:EventConsumer"/>
+        <description>Labels all beans declaring method that has parameter of type "jakarta.enterprise.event.Observes" with "CDI" and "EventConsumer".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (a:Type)-[:DECLARES]->(member:Method)-[:HAS]->(param:Parameter),
+              (param)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(injectType:Type)
+            WHERE
+              injectType.fqn = "jakarta.enterprise.event.Observes"
+            SET
+              a:CDI:EventConsumer
+            RETURN
+              DISTINCT a.fqn AS cdiEventConsumer
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:Named">
+        <providesConcept refId="cdi:Named"/>
+        <description>Labels all types or methods annotated by "jakarta.inject.Named" with "CDI" and "Named".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (e)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(namedType:Type)
+            WHERE
+              namedType.fqn = "jakarta.inject.Named"
+            SET
+              e:CDI:Named
+            RETURN
+              e AS Named
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:Default">
+        <providesConcept refId="cdi:Default"/>
+        <description>Labels all elements annotated by "jakarta.enterprise.inject.Default" with "CDI" and "Default".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (e)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(defaultType:Type)
+            WHERE
+              defaultType.fqn = "jakarta.enterprise.inject.Default"
+            SET
+              e:CDI:Default
+            RETURN
+              e AS Default
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:Any">
+        <providesConcept refId="cdi:Any"/>
+        <description>Labels all elements annotated by "jakarta.enterprise.inject.Any" with "CDI" and "Any".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (e)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(anyType:Type)
+            WHERE
+              anyType.fqn = "jakarta.enterprise.inject.Any"
+            SET
+              e:CDI:Any
+            RETURN
+              e AS Any
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakarta-cdi:New">
+        <providesConcept refId="cdi:New"/>
+        <description>Labels all elements annotated by "jakarta.enterprise.inject.New" with "CDI" and "New".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (e)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(newType:Type)
+            WHERE
+              newType.fqn = "jakarta.enterprise.inject.New"
+            SET
+              e:CDI:New
+            RETURN
+              e AS New
+        ]]></cypher>
+    </concept>
+
+</jqassistant-rules>

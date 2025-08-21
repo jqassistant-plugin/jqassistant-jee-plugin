@@ -1,26 +1,26 @@
-package org.jqassistant.plugin.jee.injection.test.set;
+package org.jqassistant.plugin.jee.injection.test.set.jakarta;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
 
-public class BeanProducerWithConstraintViolations {
+public class JakartaBeanProducerWithConstraintViolations {
 
     @Inject
     private Object injectionPointField;
 
     @Inject
-    private LocalEjb ejb;
+    private JakartaLocalEjb ejb;
 
     @Inject
     public void test() {}
 
     @Produces
-    public InjectableA beanProducerA(){
-        return new InjectableA();
+    public JakartaInjectableA beanProducerA(){
+        return new JakartaInjectableA();
     }
 
     @Produces
-    public InjectableB beanProducerB(){
+    public JakartaInjectableB beanProducerB(){
         return null;
     }
 

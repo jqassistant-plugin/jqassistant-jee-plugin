@@ -3,15 +3,11 @@
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
 
     <concept id="decorator:Delegate">
-        <description>Labels all fields annotated annotated by @javax.decorator.Delegate with "Decorator" and "Delegate".
+        <description>Returns all fields labeled with "Decorator" and "Delegate".
         </description>
         <cypher><![CDATA[
             MATCH
-              (delegate:Field)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(delegateType:Type)
-            WHERE
-              delegateType.fqn="javax.decorator.Delegate"
-            SET
-              delegate:Decorator:Delegate
+              (delegate:Field:Decorator:Delegate)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(delegateType:Type)
             RETURN
               delegate AS Delegate
         ]]></cypher>
@@ -19,15 +15,11 @@
 
     <concept id="decorator:Decorator">
         <requiresConcept refId="decorator:Delegate"/>
-        <description>Labels all types annotated by @javax.decorator.Decorator with "Decorator".
+        <description>Returns all types labeled with "Decorator".
         </description>
         <cypher><![CDATA[
             MATCH
-              (decorator:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(decoratorType:Type)
-            WHERE
-              decoratorType.fqn="javax.decorator.Decorator"
-            SET
-              decorator:Decorator
+              (decorator:Type:Decorator)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(decoratorType:Type)
             RETURN
               decorator AS Decorator
         ]]></cypher>

@@ -3,7 +3,7 @@ package org.jqassistant.plugin.jee.cdi.test;
 import com.buschmais.jqassistant.core.report.api.model.Result;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
 
-import org.jqassistant.plugin.jee.cdi.test.set.beans.decorator.DecoratorBean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.decorator.javax.JavaxDecoratorBean;
 import org.junit.jupiter.api.Test;
 
 import static com.buschmais.jqassistant.plugin.java.test.matcher.FieldDescriptorMatcher.fieldDescriptor;
@@ -25,11 +25,11 @@ class DecoratorIT extends AbstractJavaPluginIT {
      */
     @Test
     void decorator() throws Exception {
-        scanClasses(DecoratorBean.class);
+        scanClasses(JavaxDecoratorBean.class);
         assertThat(applyConcept("decorator:Decorator").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
-        assertThat(query("MATCH (e:Decorator) RETURN e").getColumn("e"), hasItem(typeDescriptor(DecoratorBean.class)));
-        assertThat(query("MATCH (e:Field:Decorator:Delegate) RETURN e").getColumn("e"), hasItem(fieldDescriptor(DecoratorBean.class, "delegate")));
+        assertThat(query("MATCH (e:Decorator) RETURN e").getColumn("e"), hasItem(typeDescriptor(JavaxDecoratorBean.class)));
+        assertThat(query("MATCH (e:Field:Decorator:Delegate) RETURN e").getColumn("e"), hasItem(fieldDescriptor(JavaxDecoratorBean.class, "delegate")));
         store.commitTransaction();
     }
 }

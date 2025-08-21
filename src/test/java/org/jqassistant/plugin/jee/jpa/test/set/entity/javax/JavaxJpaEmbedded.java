@@ -1,6 +1,6 @@
-package org.jqassistant.plugin.jee.jpa.test.set.entity;
+package org.jqassistant.plugin.jee.jpa.test.set.entity.javax;
 
-public class JpaEmbedded {
+public class JavaxJpaEmbedded {
 
     private String stringValue;
 

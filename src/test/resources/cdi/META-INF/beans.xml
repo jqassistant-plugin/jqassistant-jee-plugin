@@ -2,11 +2,11 @@
 <beans xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd" version="1.1" bean-discovery-mode="annotated">
 <alternatives>
-        <class>org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.AlternativeBean</class>
-        <stereotype>org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.AlternativeStereotype</stereotype>
+        <class>org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.javax.JavaxAlternativeBean</class>
+        <stereotype>org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.javax.JavaxAlternativeStereotype</stereotype>
     </alternatives>
     <decorators>
-        <class>org.jqassistant.plugin.jee.cdi.test.set.beans.decorator.DecoratorBean</class>
+        <class>org.jqassistant.plugin.jee.cdi.test.set.beans.decorator.javax.JavaxDecoratorBean</class>
     </decorators>
     <interceptors>
         <class>org.jqassistant.plugin.jee.cdi.test.set.beans.interceptor.CustomInterceptor</class>

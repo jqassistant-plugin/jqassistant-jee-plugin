@@ -1,6 +1,6 @@
-package org.jqassistant.plugin.jee.injection.test.set;
+package org.jqassistant.plugin.jee.injection.test.set.jakarta;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.jqassistant.plugin.jee.cdi.test.set.beans.Bean;
 
@@ -9,12 +9,12 @@ import org.jqassistant.plugin.jee.cdi.test.set.beans.Bean;
  *
  * @author Aparna Chaudhary
  */
-public class BeanWithConstructorInjection {
+public class JakartaBeanWithConstructorInjection {
 
     private Bean bean;
 
     @Inject
-    public BeanWithConstructorInjection(Bean bean) {
+    public JakartaBeanWithConstructorInjection(Bean bean) {
         this.bean = bean;
     }
 

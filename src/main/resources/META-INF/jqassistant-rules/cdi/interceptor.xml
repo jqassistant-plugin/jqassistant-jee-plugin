@@ -4,30 +4,22 @@
 
     <concept id="interceptor:Interceptor">
         <providesConcept refId="jee-injection:Injectable"/>
-        <description>Labels all classes annotated by "javax.interceptor.Interceptor" with "Interceptor", "JEE" and "Injectable".
+        <description>Returns all classes labeled with "Interceptor", "JEE" and "Injectable".
         </description>
         <cypher><![CDATA[
             MATCH
-              (interceptor:Type:Class)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(interceptorType:Type)
-            WHERE
-              interceptorType.fqn = "javax.interceptor.Interceptor"
-            SET
-              interceptor:Interceptor:JEE:Injectable
+              (interceptor:Type:Class:Interceptor:JEE:Injectable)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(:Type)
             RETURN
               interceptor AS Interceptor
         ]]></cypher>
     </concept>
 
     <concept id="interceptor:InterceptorBinding">
-        <description>Labels all annotations annotated by "javax.interceptor.InterceptorBinding" with "InterceptorBinding".
+        <description>Returns all annotations labeled with "InterceptorBinding".
         </description>
         <cypher><![CDATA[
             MATCH
-              (binding:Type:Annotation)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(bindingType:Type)
-            WHERE
-              bindingType.fqn = "javax.interceptor.InterceptorBinding"
-            SET
-              binding:InterceptorBinding
+              (binding:Type:Annotation:InterceptorBinding)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(:Type)
             RETURN
               binding AS InterceptorBinding
         ]]></cypher>

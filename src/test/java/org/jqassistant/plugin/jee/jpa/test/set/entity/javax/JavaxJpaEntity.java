@@ -1,4 +1,4 @@
-package org.jqassistant.plugin.jee.jpa.test.set.entity;
+package org.jqassistant.plugin.jee.jpa.test.set.entity.javax;
 
 import javax.persistence.*;
 
@@ -6,8 +6,8 @@ import javax.persistence.*;
  * A JPA entity.
  */
 @Entity
-@NamedQueries(@NamedQuery(name = JpaEntity.TESTQUERY_NAME, query = JpaEntity.TESTQUERY_QUERY))
-public class JpaEntity {
+@NamedQueries(@NamedQuery(name = JavaxJpaEntity.TESTQUERY_NAME, query = JavaxJpaEntity.TESTQUERY_QUERY))
+public class JavaxJpaEntity {
 
     public static final String TESTQUERY_NAME = "namedQueries";
     public static final String TESTQUERY_QUERY = "SELECT e FROM JpaEntity e";
@@ -16,10 +16,10 @@ public class JpaEntity {
     @EmbeddedId
     private int id;
 
-    private JpaEmbeddable embeddable;
+    private JavaxJpaEmbeddable embeddable;
 
     @Embedded
-    private JpaEmbedded embedded;
+    private JavaxJpaEmbedded embedded;
 
     @EmbeddedId
     public int getId() {
@@ -30,20 +30,20 @@ public class JpaEntity {
         this.id = id;
     }
 
-    public JpaEmbeddable getEmbeddable() {
+    public JavaxJpaEmbeddable getEmbeddable() {
         return embeddable;
     }
 
-    public void setEmbeddable(JpaEmbeddable embeddable) {
+    public void setEmbeddable(JavaxJpaEmbeddable embeddable) {
         this.embeddable = embeddable;
     }
 
     @Embedded
-    public JpaEmbedded getEmbedded() {
+    public JavaxJpaEmbedded getEmbedded() {
         return embedded;
     }
 
-    public void setEmbedded(JpaEmbedded embedded) {
+    public void setEmbedded(JavaxJpaEmbedded embedded) {
         this.embedded = embedded;
     }
 }

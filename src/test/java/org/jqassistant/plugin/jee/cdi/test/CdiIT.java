@@ -14,8 +14,8 @@ import com.buschmais.jqassistant.plugin.java.api.model.MethodDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
 
-import org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.AlternativeBean;
-import org.jqassistant.plugin.jee.cdi.test.set.beans.decorator.DecoratorBean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.javax.JavaxAlternativeBean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.decorator.javax.JavaxDecoratorBean;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.inject.DefaultBean;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.inject.NewBean;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.qualifier.CustomQualifier;
@@ -185,11 +185,11 @@ class CdiIT extends AbstractJavaPluginIT {
      */
     @Test
     void alternative() throws Exception {
-        scanClasses(AlternativeBean.class);
+        scanClasses(JavaxAlternativeBean.class);
         assertThat(applyConcept("cdi:Alternative").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<TypeDescriptor> column = query("MATCH (a:CDI:Alternative) RETURN a").getColumn("a");
-        assertThat(column).haveExactly(1, typeDescriptor(AlternativeBean.class));
+        assertThat(column).haveExactly(1, typeDescriptor(JavaxAlternativeBean.class));
         store.commitTransaction();
     }
 
@@ -339,11 +339,11 @@ class CdiIT extends AbstractJavaPluginIT {
 
     @Test
     void decorator() throws Exception {
-        scanClasses(DecoratorBean.class);
+        scanClasses(JavaxDecoratorBean.class);
         assertThat(applyConcept("cdi:Decorator").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<TypeDescriptor> column = query("MATCH (e:CDI:Decorator:JEE:Injectable) RETURN e").getColumn("e");
-        assertThat(column).haveExactly(1, typeDescriptor(DecoratorBean.class));
+        assertThat(column).haveExactly(1, typeDescriptor(JavaxDecoratorBean.class));
         store.commitTransaction();
     }
 
@@ -354,11 +354,11 @@ class CdiIT extends AbstractJavaPluginIT {
      */
     @Test
     void any() throws Exception {
-        scanClasses(DecoratorBean.class);
+        scanClasses(JavaxDecoratorBean.class);
         assertThat(applyConcept("cdi:Any").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<FieldDescriptor> column = query("MATCH (e:CDI:Any) RETURN e").getColumn("e");
-        assertThat(column).haveExactly(1, fieldDescriptor(DecoratorBean.class, "delegate"));
+        assertThat(column).haveExactly(1, fieldDescriptor(JavaxDecoratorBean.class, "delegate"));
         store.commitTransaction();
     }
 
@@ -456,7 +456,7 @@ class CdiIT extends AbstractJavaPluginIT {
     @Test
     void providedConceptJeeInjectable() throws RuleException {
         scanClasses(DependentBean.class, RequestScopedBean.class, SessionScopedBean.class, ConversationScopedBean.class,
-                ApplicationScopedBean.class, JavaxSingletonBean.class, DecoratorBean.class,
+                ApplicationScopedBean.class, JavaxSingletonBean.class, JavaxDecoratorBean.class,
                 ProducedBean.class, TypeWithApplicationScopedField.class, TypeWithConversationScopedField.class,
                 TypeWithDependentField.class, TypeWithRequestScopedField.class, TypeWithSessionScopedField.class,
                 TypeWithApplicationScopedMethod.class, TypeWithConversationScopedMethod.class,
@@ -487,7 +487,7 @@ class CdiIT extends AbstractJavaPluginIT {
         assertThat(actualTypes).haveExactly(1, typeDescriptor(ConversationScopedBean.class));
         assertThat(actualTypes).haveExactly(1, typeDescriptor(ApplicationScopedBean.class));
         assertThat(actualTypes).haveExactly(1, typeDescriptor(JavaxSingletonBean.class));
-        assertThat(actualTypes).haveExactly(1, typeDescriptor(DecoratorBean.class));
+        assertThat(actualTypes).haveExactly(1, typeDescriptor(JavaxDecoratorBean.class));
         assertThat(actualTypes).haveExactly(1, typeDescriptor(ProducedBean.class));
         assertThat(actualTypes).haveExactly(1, typeDescriptor(StereotypeAnnotatedBean.class));
         assertThat(actualTypes).haveExactly(1, typeDescriptor(String.class)); // Caused by @Produces

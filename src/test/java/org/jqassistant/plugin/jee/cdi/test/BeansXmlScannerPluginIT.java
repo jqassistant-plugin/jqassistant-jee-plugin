@@ -7,9 +7,9 @@ import java.util.List;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
 
 import org.jqassistant.plugin.jee.cdi.api.model.BeansXmlDescriptor;
-import org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.AlternativeBean;
-import org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.AlternativeStereotype;
-import org.jqassistant.plugin.jee.cdi.test.set.beans.decorator.DecoratorBean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.javax.JavaxAlternativeBean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.javax.JavaxAlternativeStereotype;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.decorator.javax.JavaxDecoratorBean;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.interceptor.CustomInterceptor;
 import org.junit.jupiter.api.Test;
 
@@ -40,8 +40,8 @@ class BeansXmlScannerPluginIT extends AbstractJavaPluginIT {
         assertThat(beansXmlDescriptor.getFileName(), equalTo("/META-INF/beans.xml"));
         assertThat(beansXmlDescriptor.getVersion(), equalTo("1.1"));
         assertThat(beansXmlDescriptor.getBeanDiscoveryMode(), equalTo("annotated"));
-        assertThat(beansXmlDescriptor.getAlternatives(), hasItems(typeDescriptor(AlternativeBean.class), typeDescriptor(AlternativeStereotype.class)));
-        assertThat(beansXmlDescriptor.getDecorators(), hasItem(typeDescriptor(DecoratorBean.class)));
+        assertThat(beansXmlDescriptor.getAlternatives(), hasItems(typeDescriptor(JavaxAlternativeBean.class), typeDescriptor(JavaxAlternativeStereotype.class)));
+        assertThat(beansXmlDescriptor.getDecorators(), hasItem(typeDescriptor(JavaxDecoratorBean.class)));
         assertThat(beansXmlDescriptor.getInterceptors(), hasItem(typeDescriptor(CustomInterceptor.class)));
         store.commitTransaction();
     }

@@ -1,11 +1,11 @@
-package org.jqassistant.plugin.jee.jpa.test.set.entity;
+package org.jqassistant.plugin.jee.jpa.test.set.entity.javax;
 
 import javax.persistence.Entity;
 import javax.persistence.NamedQuery;
 
 @Entity
-@NamedQuery(name = SingleNamedQueryEntity.TESTQUERY_NAME, query = SingleNamedQueryEntity.TESTQUERY_QUERY)
-public class SingleNamedQueryEntity {
+@NamedQuery(name = JavaxSingleNamedQueryEntity.TESTQUERY_NAME, query = JavaxSingleNamedQueryEntity.TESTQUERY_QUERY)
+public class JavaxSingleNamedQueryEntity {
 
     public static final String TESTQUERY_NAME = "namedQuery";
     public static final String TESTQUERY_QUERY = "SELECT e FROM SingleNamedQueryEntity e";

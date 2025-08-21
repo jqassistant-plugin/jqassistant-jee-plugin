@@ -17,9 +17,9 @@ import org.hamcrest.Matcher;
 import org.jqassistant.plugin.jee.jpa.model.PersistenceUnitDescriptor;
 import org.jqassistant.plugin.jee.jpa.model.PersistenceXmlDescriptor;
 import org.jqassistant.plugin.jee.jpa.test.matcher.PersistenceUnitMatcher;
-import org.jqassistant.plugin.jee.jpa.test.set.entity.JpaEmbeddable;
-import org.jqassistant.plugin.jee.jpa.test.set.entity.JpaEntity;
-import org.jqassistant.plugin.jee.jpa.test.set.entity.SingleNamedQueryEntity;
+import org.jqassistant.plugin.jee.jpa.test.set.entity.javax.JavaxJpaEmbeddable;
+import org.jqassistant.plugin.jee.jpa.test.set.entity.javax.JavaxJpaEntity;
+import org.jqassistant.plugin.jee.jpa.test.set.entity.javax.JavaxSingleNamedQueryEntity;
 import org.junit.jupiter.api.Test;
 
 import static com.buschmais.jqassistant.core.report.api.model.Result.Status.FAILURE;
@@ -52,10 +52,10 @@ class JpaIT extends AbstractJavaPluginIT {
      */
     @Test
     void entity() throws Exception {
-        scanClasses(JpaEntity.class);
+        scanClasses(JavaxJpaEntity.class);
         assertThat(applyConcept("jpa2:Entity").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
-        assertThat(query("MATCH (e:Type:Jpa:Entity) RETURN e").getColumn("e"), hasItem(typeDescriptor(JpaEntity.class)));
+        assertThat(query("MATCH (e:Type:Jpa:Entity) RETURN e").getColumn("e"), hasItem(typeDescriptor(JavaxJpaEntity.class)));
         store.commitTransaction();
     }
 
@@ -67,10 +67,10 @@ class JpaIT extends AbstractJavaPluginIT {
      */
     @Test
     void embeddable() throws Exception {
-        scanClasses(JpaEmbeddable.class);
+        scanClasses(JavaxJpaEmbeddable.class);
         assertThat(applyConcept("jpa2:Embeddable").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
-        assertThat(query("MATCH (e:Type:Jpa:Embeddable) RETURN e").getColumn("e"), hasItem(typeDescriptor(JpaEmbeddable.class)));
+        assertThat(query("MATCH (e:Type:Jpa:Embeddable) RETURN e").getColumn("e"), hasItem(typeDescriptor(JavaxJpaEmbeddable.class)));
         store.commitTransaction();
     }
 
@@ -82,12 +82,12 @@ class JpaIT extends AbstractJavaPluginIT {
      */
     @Test
     void embedded() throws Exception {
-        scanClasses(JpaEntity.class);
+        scanClasses(JavaxJpaEntity.class);
         assertThat(applyConcept("jpa2:Embedded").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         List<Object> members = query("MATCH (e:Jpa:Embedded) RETURN e").getColumn("e");
-        assertThat(members, hasItem(fieldDescriptor(JpaEntity.class, "embedded")));
-        assertThat(members, hasItem(methodDescriptor(JpaEntity.class, "getEmbedded")));
+        assertThat(members, hasItem(fieldDescriptor(JavaxJpaEntity.class, "embedded")));
+        assertThat(members, hasItem(methodDescriptor(JavaxJpaEntity.class, "getEmbedded")));
         store.commitTransaction();
     }
 
@@ -99,12 +99,12 @@ class JpaIT extends AbstractJavaPluginIT {
      */
     @Test
     void embeddedId() throws Exception {
-        scanClasses(JpaEntity.class);
+        scanClasses(JavaxJpaEntity.class);
         assertThat(applyConcept("jpa2:EmbeddedId").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         List<Object> members = query("MATCH (e:Jpa:EmbeddedId) RETURN e").getColumn("e");
-        assertThat(members, hasItem(fieldDescriptor(JpaEntity.class, "id")));
-        assertThat(members, hasItem(methodDescriptor(JpaEntity.class, "getId")));
+        assertThat(members, hasItem(fieldDescriptor(JavaxJpaEntity.class, "id")));
+        assertThat(members, hasItem(methodDescriptor(JavaxJpaEntity.class, "getId")));
         store.commitTransaction();
     }
 
@@ -116,11 +116,11 @@ class JpaIT extends AbstractJavaPluginIT {
      */
     @Test
     void namedQueries() throws Exception {
-        scanClasses(JpaEntity.class, SingleNamedQueryEntity.class);
+        scanClasses(JavaxJpaEntity.class, JavaxSingleNamedQueryEntity.class);
         assertThat(applyConcept("jpa2:NamedQuery").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
-        verifyNamedQuery(JpaEntity.class, JpaEntity.TESTQUERY_NAME, JpaEntity.TESTQUERY_QUERY);
-        verifyNamedQuery(SingleNamedQueryEntity.class, SingleNamedQueryEntity.TESTQUERY_NAME, SingleNamedQueryEntity.TESTQUERY_QUERY);
+        verifyNamedQuery(JavaxJpaEntity.class, JavaxJpaEntity.TESTQUERY_NAME, JavaxJpaEntity.TESTQUERY_QUERY);
+        verifyNamedQuery(JavaxSingleNamedQueryEntity.class, JavaxSingleNamedQueryEntity.TESTQUERY_NAME, JavaxSingleNamedQueryEntity.TESTQUERY_QUERY);
         store.commitTransaction();
     }
 
@@ -153,7 +153,7 @@ class JpaIT extends AbstractJavaPluginIT {
      */
     @Test
     void namedQueryUniqueDifferentQuery() throws Exception {
-        scanClasses(JpaEntity.class, SingleNamedQueryEntity.class);
+        scanClasses(JavaxJpaEntity.class, JavaxSingleNamedQueryEntity.class);
         assertThat(applyConcept("jpa2:Entity").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         assertThat(
@@ -166,13 +166,13 @@ class JpaIT extends AbstractJavaPluginIT {
                         .size(), equalTo(1));
         assertThat(query("CREATE (n:Jpa:NamedQuery {name: 'otherQuery', query: 'SELECT e'}) RETURN n").getColumn("n")
                 .size(), equalTo(1));
-        verifyUniqueRelation(JpaEntity.TESTQUERY_NAME, JpaEntity.TESTQUERY_QUERY, 0, 0);
-        verifyUniqueRelation(SingleNamedQueryEntity.TESTQUERY_NAME, SingleNamedQueryEntity.TESTQUERY_QUERY, 0, 0);
+        verifyUniqueRelation(JavaxJpaEntity.TESTQUERY_NAME, JavaxJpaEntity.TESTQUERY_QUERY, 0, 0);
+        verifyUniqueRelation(JavaxSingleNamedQueryEntity.TESTQUERY_NAME, JavaxSingleNamedQueryEntity.TESTQUERY_QUERY, 0, 0);
         store.commitTransaction();
         assertThat(applyConcept("jpa2:NamedQuery").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
-        verifyUniqueRelation(JpaEntity.TESTQUERY_NAME, JpaEntity.TESTQUERY_QUERY, 1, 0);
-        verifyUniqueRelation(SingleNamedQueryEntity.TESTQUERY_NAME, SingleNamedQueryEntity.TESTQUERY_QUERY, 1, 0);
+        verifyUniqueRelation(JavaxJpaEntity.TESTQUERY_NAME, JavaxJpaEntity.TESTQUERY_QUERY, 1, 0);
+        verifyUniqueRelation(JavaxSingleNamedQueryEntity.TESTQUERY_NAME, JavaxSingleNamedQueryEntity.TESTQUERY_QUERY, 1, 0);
         store.commitTransaction();
     }
 
@@ -184,7 +184,7 @@ class JpaIT extends AbstractJavaPluginIT {
      */
     @Test
     void namedQueryUniqueSameQuery() throws Exception {
-        scanClasses(JpaEntity.class, SingleNamedQueryEntity.class);
+        scanClasses(JavaxJpaEntity.class, JavaxSingleNamedQueryEntity.class);
         assertThat(applyConcept("jpa2:Entity").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         assertThat(
@@ -197,13 +197,13 @@ class JpaIT extends AbstractJavaPluginIT {
                         .size(), equalTo(1));
         assertThat(query("CREATE (n:Jpa:NamedQuery {name: 'otherQuery', query: 'SELECT e'}) RETURN n").getColumn("n")
                 .size(), equalTo(1));
-        verifyUniqueRelation(JpaEntity.TESTQUERY_NAME, JpaEntity.TESTQUERY_QUERY, 1, 0);
-        verifyUniqueRelation(SingleNamedQueryEntity.TESTQUERY_NAME, SingleNamedQueryEntity.TESTQUERY_QUERY, 1, 0);
+        verifyUniqueRelation(JavaxJpaEntity.TESTQUERY_NAME, JavaxJpaEntity.TESTQUERY_QUERY, 1, 0);
+        verifyUniqueRelation(JavaxSingleNamedQueryEntity.TESTQUERY_NAME, JavaxSingleNamedQueryEntity.TESTQUERY_QUERY, 1, 0);
         store.commitTransaction();
         assertThat(applyConcept("jpa2:NamedQuery").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
-        verifyUniqueRelation(JpaEntity.TESTQUERY_NAME, JpaEntity.TESTQUERY_QUERY, 1, 0);
-        verifyUniqueRelation(SingleNamedQueryEntity.TESTQUERY_NAME, SingleNamedQueryEntity.TESTQUERY_QUERY, 1, 0);
+        verifyUniqueRelation(JavaxJpaEntity.TESTQUERY_NAME, JavaxJpaEntity.TESTQUERY_QUERY, 1, 0);
+        verifyUniqueRelation(JavaxSingleNamedQueryEntity.TESTQUERY_NAME, JavaxSingleNamedQueryEntity.TESTQUERY_QUERY, 1, 0);
         store.commitTransaction();
     }
 
@@ -215,7 +215,7 @@ class JpaIT extends AbstractJavaPluginIT {
      */
     @Test
     void namedQueryUniqueWithoutQuery() throws Exception {
-        scanClasses(JpaEntity.class, SingleNamedQueryEntity.class);
+        scanClasses(JavaxJpaEntity.class, JavaxSingleNamedQueryEntity.class);
         assertThat(applyConcept("jpa2:Entity").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         assertThat(
@@ -228,13 +228,13 @@ class JpaIT extends AbstractJavaPluginIT {
                         .size(), equalTo(1));
         assertThat(query("CREATE (n:Jpa:NamedQuery {name: 'otherQuery', query: 'SELECT e'}) RETURN n").getColumn("n")
                 .size(), equalTo(1));
-        verifyUniqueRelation(JpaEntity.TESTQUERY_NAME, JpaEntity.TESTQUERY_QUERY, 0, 1);
-        verifyUniqueRelation(SingleNamedQueryEntity.TESTQUERY_NAME, SingleNamedQueryEntity.TESTQUERY_QUERY, 0, 1);
+        verifyUniqueRelation(JavaxJpaEntity.TESTQUERY_NAME, JavaxJpaEntity.TESTQUERY_QUERY, 0, 1);
+        verifyUniqueRelation(JavaxSingleNamedQueryEntity.TESTQUERY_NAME, JavaxSingleNamedQueryEntity.TESTQUERY_QUERY, 0, 1);
         store.commitTransaction();
         assertThat(applyConcept("jpa2:NamedQuery").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
-        verifyUniqueRelation(JpaEntity.TESTQUERY_NAME, JpaEntity.TESTQUERY_QUERY, 1, 0);
-        verifyUniqueRelation(SingleNamedQueryEntity.TESTQUERY_NAME, SingleNamedQueryEntity.TESTQUERY_QUERY, 1, 0);
+        verifyUniqueRelation(JavaxJpaEntity.TESTQUERY_NAME, JavaxJpaEntity.TESTQUERY_QUERY, 1, 0);
+        verifyUniqueRelation(JavaxSingleNamedQueryEntity.TESTQUERY_NAME, JavaxSingleNamedQueryEntity.TESTQUERY_QUERY, 1, 0);
         store.commitTransaction();
     }
 
@@ -270,7 +270,7 @@ class JpaIT extends AbstractJavaPluginIT {
     }
 
     private void persistenceDescriptor(String path, String schema) {
-        scanClassPathDirectory(new File(getClassesDirectory(JpaEntity.class), path));
+        scanClassPathDirectory(new File(getClassesDirectory(JavaxJpaEntity.class), path));
         store.beginTransaction();
         TestResult testResult = query("MATCH (p:Jpa:Persistence:Xml) RETURN p");
         assertThat(testResult.getRows()
@@ -305,7 +305,7 @@ class JpaIT extends AbstractJavaPluginIT {
     }
 
     private void fullPersistenceUnitDescriptor(String path) {
-        scanClassPathDirectory(new File(getClassesDirectory(JpaEntity.class), path));
+        scanClassPathDirectory(new File(getClassesDirectory(JavaxJpaEntity.class), path));
         store.beginTransaction();
         TestResult testResult = query("MATCH (pu:Jpa:PersistenceUnit) RETURN pu");
         assertThat(testResult.getRows()
@@ -320,7 +320,7 @@ class JpaIT extends AbstractJavaPluginIT {
         assertThat(persistenceUnitDescriptor.getProvider(), equalTo("provider"));
         assertThat(persistenceUnitDescriptor.getValidationMode(), equalTo("AUTO"));
         assertThat(persistenceUnitDescriptor.getSharedCacheMode(), equalTo("ENABLE_SELECTIVE"));
-        assertThat(persistenceUnitDescriptor.getContains(), hasItem(typeDescriptor(JpaEntity.class)));
+        assertThat(persistenceUnitDescriptor.getContains(), hasItem(typeDescriptor(JavaxJpaEntity.class)));
         Matcher<? super PropertyDescriptor> valueMatcher = valueDescriptor("stringProperty", equalTo("stringValue"));
         assertThat(persistenceUnitDescriptor.getProperties(), hasItem(valueMatcher));
         store.commitTransaction();
@@ -366,7 +366,7 @@ class JpaIT extends AbstractJavaPluginIT {
     }
 
     private void validationModeMustBeExplicitlySpecified(String path) throws RuleException {
-        scanClassPathDirectory(new File(getClassesDirectory(JpaEntity.class), path));
+        scanClassPathDirectory(new File(getClassesDirectory(JavaxJpaEntity.class), path));
         assertThat(validateConstraint("jpa2:ValidationModeMustBeExplicitlySpecified").getStatus(), equalTo(FAILURE));
         store.beginTransaction();
         List<Result<Constraint>> constraintViolations = new ArrayList<>(reportPlugin.getConstraintResults()
@@ -397,7 +397,7 @@ class JpaIT extends AbstractJavaPluginIT {
     }
 
     private void validationModeSpecified(String path) throws RuleException {
-        scanClassPathDirectory(new File(getClassesDirectory(JpaEntity.class), path));
+        scanClassPathDirectory(new File(getClassesDirectory(JavaxJpaEntity.class), path));
         assertThat(validateConstraint("jpa2:ValidationModeMustBeExplicitlySpecified").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         List<Result<Constraint>> constraintViolations = new ArrayList<>(reportPlugin.getConstraintResults()

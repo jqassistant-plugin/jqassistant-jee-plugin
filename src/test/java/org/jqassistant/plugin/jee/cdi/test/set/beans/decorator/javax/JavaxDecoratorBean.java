@@ -1,4 +1,4 @@
-package org.jqassistant.plugin.jee.cdi.test.set.beans.decorator;
+package org.jqassistant.plugin.jee.cdi.test.set.beans.decorator.javax;
 
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.Bean;
 
 @Decorator
-public class DecoratorBean extends Bean {
+public class JavaxDecoratorBean extends Bean {
 
     @Inject
     @Delegate

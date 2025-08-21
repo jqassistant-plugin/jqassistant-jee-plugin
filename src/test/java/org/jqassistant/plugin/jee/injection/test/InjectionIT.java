@@ -9,16 +9,24 @@ import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
-import org.jqassistant.plugin.jee.injection.test.set.BeanWithConstructorInjection;
-import org.jqassistant.plugin.jee.injection.test.set.BeanWithSetterInjection;
-import org.jqassistant.plugin.jee.injection.test.set.*;
+import org.jqassistant.plugin.jee.ejb.test.set.beans.jakarta.JakartaStatelessLocalBean;
+import org.jqassistant.plugin.jee.ejb.test.set.beans.javax.JavaxStatelessLocalBean;
+import org.jqassistant.plugin.jee.injection.test.set.jakarta.JakartaBeanProducerWithConstraintViolations;
+import org.jqassistant.plugin.jee.injection.test.set.jakarta.JakartaInjectableA;
+import org.jqassistant.plugin.jee.injection.test.set.jakarta.JakartaInjectableB;
+import org.jqassistant.plugin.jee.injection.test.set.javax.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.buschmais.jqassistant.core.report.api.model.Result.Status.SUCCESS;
 import static com.buschmais.jqassistant.plugin.java.test.assertj.FieldDescriptorCondition.fieldDescriptor;
@@ -33,9 +41,10 @@ public class InjectionIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void injectionPointIdentification() throws Exception {
-        scanClasses(BeanProducerWithConstraintViolations.class);
+    @ParameterizedTest
+    @ValueSource(classes = { JavaxBeanProducerWithConstraintViolations.class, JakartaBeanProducerWithConstraintViolations.class})
+    void injectionPointIdentification(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         Result<Concept> conceptResult = applyConcept("jee-injection:InjectionPoint");
         store.beginTransaction();
         assertThat(conceptResult.getStatus()).isEqualTo(Result.Status.SUCCESS);
@@ -51,16 +60,24 @@ public class InjectionIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void beanProducerAccess() throws Exception {
-        scanClasses(BeanProducerWithConstraintViolations.class);
+    @ParameterizedTest
+    @MethodSource("beanProducerClasses")
+    void beanProducerAccess(Class<?> classToScan, String expectedTypeEnding) throws Exception {
+        scanClasses(classToScan);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:BeanProducerMustNotBeInvokedDirectly");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
         assertThat(constraintResult.getRows()).hasSize(1);
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Type").getLabel()).endsWith("test.set.BeanProducerWithConstraintViolations");
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Type").getLabel()).endsWith(expectedTypeEnding);
         assertThat(constraintResult.getRows().get(0).getColumns().get("Invocation").getLabel()).endsWith("void beanProducerAccessor()");
         store.commitTransaction();
+    }
+
+    private static Stream<Arguments> beanProducerClasses() {
+        return Stream.of(
+                Arguments.of(JavaxBeanProducerWithConstraintViolations.class, "test.set.javax.JavaxBeanProducerWithConstraintViolations"),
+                Arguments.of(JakartaBeanProducerWithConstraintViolations.class,  "test.set.jakarta.JakartaBeanProducerWithConstraintViolations")
+        );
     }
 
     /**
@@ -68,20 +85,32 @@ public class InjectionIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void injectableFieldManipulation() throws Exception {
-        scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, InjectableB.class);
+    @ParameterizedTest
+    @MethodSource("finalFieldsForInjectablesClasses")
+    void injectableFieldManipulation(Class<?> classToScan, String expectedTypeEndingInjectableA) throws Exception {
+        scanClasses(classToScan);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:FieldsOfInjectablesMustNotBeManipulated");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
         assertThat(constraintResult.getRows()).hasSize(2);
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Injectable").getLabel()).endsWith("test.set.InjectableA");
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Injectable").getLabel()).endsWith(expectedTypeEndingInjectableA);
         assertThat(constraintResult.getRows().get(0).getColumns().get("WriteToInjectableField").getLabel()).endsWith("void manipulateField()");
         assertThat(constraintResult.getRows().get(0).getColumns().get("Field").getLabel()).endsWith("InjectableB fieldOfInjectable1");
-        assertThat(constraintResult.getRows().get(1).getColumns().get("Injectable").getLabel()).endsWith("test.set.InjectableA");
+        assertThat(constraintResult.getRows().get(1).getColumns().get("Injectable").getLabel()).endsWith(expectedTypeEndingInjectableA);
         assertThat(constraintResult.getRows().get(1).getColumns().get("WriteToInjectableField").getLabel()).endsWith("void accessFieldStatically()");
         assertThat(constraintResult.getRows().get(1).getColumns().get("Field").getLabel()).endsWith("InjectableB fieldOfInjectable2");
         store.commitTransaction();
+    }
+
+    private static Stream<Arguments>  finalFieldsForInjectablesClasses() {
+        return Stream.of(
+                Arguments.of(JavaxBeanProducerWithConstraintViolations.class, "test.set.javax.JavaxInjectableA"),
+                Arguments.of(JakartaBeanProducerWithConstraintViolations.class,  "test.set.jakarta.JakartaInjectableA"),
+                Arguments.of(JavaxInjectableA.class,  "test.set.javax.JavaxInjectableA"),
+                Arguments.of(JakartaInjectableA.class,  "test.set.jakarta.JakartaInjectableA"),
+                Arguments.of(JavaxInjectableB.class,  "test.set.javax.JavaxInjectableA"),
+                Arguments.of(JakartaInjectableB.class,  "test.set.jakarta.JakartaInjectableA")
+        );
     }
 
     /**
@@ -89,9 +118,10 @@ public class InjectionIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void finalFieldsForInjectables() throws Exception {
-        scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, InjectableB.class);
+    @ParameterizedTest
+    @ValueSource(classes = { JavaxBeanProducerWithConstraintViolations.class, JakartaBeanProducerWithConstraintViolations.class, JavaxInjectableA.class, JakartaInjectableA.class, JavaxInjectableB.class, JakartaInjectableB.class})
+    void finalFieldsForInjectables(Class<?> classToScan) throws Exception {
+        scanClasses(JavaxBeanProducerWithConstraintViolations.class, JavaxInjectableA.class, JavaxInjectableB.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesShouldBeHeldInFinalFields");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
@@ -103,14 +133,17 @@ public class InjectionIT extends AbstractJavaPluginIT {
         store.commitTransaction();
     }
 
+
+
     /**
      * Verifies the constraint "jee-injection:InjectablesMustNotBeAccessedStatically".
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void staticAccessOfInjectables() throws Exception {
-        scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, InjectableB.class);
+    @ParameterizedTest
+    @ValueSource(classes = { JavaxBeanProducerWithConstraintViolations.class, JakartaBeanProducerWithConstraintViolations.class})
+    void staticAccessOfInjectables(Class<?> classToScan) throws Exception {
+        scanClasses(JavaxBeanProducerWithConstraintViolations.class, JavaxInjectableA.class, JavaxInjectableB.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesMustNotBeAccessedStatically");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
@@ -126,9 +159,10 @@ public class InjectionIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void staticVariablesForInjectables() throws Exception {
-        scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, InjectableB.class);
+    @ParameterizedTest
+    @ValueSource(classes = { JavaxBeanProducerWithConstraintViolations.class, JakartaBeanProducerWithConstraintViolations.class})
+    void staticVariablesForInjectables(Class<?> classToScan) throws Exception {
+        scanClasses(JavaxBeanProducerWithConstraintViolations.class, JavaxInjectableA.class, JavaxInjectableB.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesMustNotBeHeldInStaticVariables");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
@@ -143,9 +177,10 @@ public class InjectionIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void injectableInstantiation() throws Exception {
-        scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, InjectableB.class);
+    @ParameterizedTest
+    @ValueSource(classes = { JavaxBeanProducerWithConstraintViolations.class, JakartaBeanProducerWithConstraintViolations.class})
+    void injectableInstantiation(Class<?> classToScan) throws Exception {
+        scanClasses(JavaxBeanProducerWithConstraintViolations.class, JavaxInjectableA.class, JavaxInjectableB.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesMustNotBeInstantiated");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
@@ -161,9 +196,10 @@ public class InjectionIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void injectableOfNonInjectable() throws Exception {
-        scanClasses(BeanProducerWithConstraintViolations.class, InjectableA.class, NonInjectableType.class, LocalEjb.class);
+    @ParameterizedTest
+    @ValueSource(classes = { JavaxBeanProducerWithConstraintViolations.class, JakartaBeanProducerWithConstraintViolations.class})
+    void injectableOfNonInjectable(Class<?> classToScan) throws Exception {
+        scanClasses(JavaxBeanProducerWithConstraintViolations.class, JavaxInjectableA.class, JavaxNonInjectableType.class, JavaxLocalEjb.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesMustOnlyBeHeldInInjectables");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
@@ -176,11 +212,11 @@ public class InjectionIT extends AbstractJavaPluginIT {
                         map -> (List<?>)  map.get("Fields").getValue()
                 ));
 
-        Assertions.assertThat(violations.keySet()).containsExactlyInAnyOrder(NonInjectableType.class.getName(), BeanProducerWithConstraintViolations.class.getName());
-        Assertions.assertThat(violations.get(NonInjectableType.class.getName()))
-                .asInstanceOf(InstanceOfAssertFactories.LIST).containsExactly(InjectableA.class.getName());
-        Assertions.assertThat(violations.get(BeanProducerWithConstraintViolations.class.getName()))
-                .asInstanceOf(InstanceOfAssertFactories.LIST).containsExactly(LocalEjb.class.getName());
+        Assertions.assertThat(violations.keySet()).containsExactlyInAnyOrder(JavaxNonInjectableType.class.getName(), JavaxBeanProducerWithConstraintViolations.class.getName());
+        Assertions.assertThat(violations.get(JavaxNonInjectableType.class.getName()))
+                .asInstanceOf(InstanceOfAssertFactories.LIST).containsExactly(JavaxInjectableA.class.getName());
+        Assertions.assertThat(violations.get(JavaxBeanProducerWithConstraintViolations.class.getName()))
+                .asInstanceOf(InstanceOfAssertFactories.LIST).containsExactly(JavaxLocalEjb.class.getName());
 
         store.commitTransaction();
     }
@@ -190,9 +226,10 @@ public class InjectionIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void jdkClassesAsInjectables() throws Exception {
-        scanClasses(BeanProducerWithConstraintViolations.class);
+    @ParameterizedTest
+    @ValueSource(classes = { JavaxBeanProducerWithConstraintViolations.class, JakartaBeanProducerWithConstraintViolations.class})
+    void jdkClassesAsInjectables(Class<?> classToScan) throws Exception {
+        scanClasses(JavaxBeanProducerWithConstraintViolations.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:JdkClassesMustNotBeInjectables");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
@@ -206,9 +243,10 @@ public class InjectionIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void clockAsInjectable() throws Exception {
-        scanClasses(BeanWithInjectedClock.class, BeanWithInjectedClock.ClockProducer.class);
+    @ParameterizedTest
+    @ValueSource(classes = { JavaxBeanProducerWithConstraintViolations.class, JakartaBeanProducerWithConstraintViolations.class})
+    void clockAsInjectable(Class<?> classToScan) throws Exception {
+        scanClasses(JavaxBeanWithInjectedClock.class, JavaxBeanWithInjectedClock.ClockProducer.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:JdkClassesMustNotBeInjectables");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(SUCCESS);
@@ -221,9 +259,10 @@ public class InjectionIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void combinationOfBeanProducersAndApplicationCodeWithViolation() throws Exception {
-        scanClasses(BeanProducerWithConstraintViolations.class);
+    @ParameterizedTest
+    @ValueSource(classes = { JavaxBeanProducerWithConstraintViolations.class, JakartaBeanProducerWithConstraintViolations.class})
+    void combinationOfBeanProducersAndApplicationCodeWithViolation(Class<?> classToScan) throws Exception {
+        scanClasses(JavaxBeanProducerWithConstraintViolations.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:NoCombinationOfBeanProducersAndApplicationCode");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
@@ -237,9 +276,10 @@ public class InjectionIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void combinationOfBeanProducersAndApplicationCodeWithoutViolation() throws Exception {
-        scanClasses(BeanProducerWithoutConstraintViolations.class);
+    @ParameterizedTest
+    @ValueSource(classes = { JavaxBeanProducerWithConstraintViolations.class, JakartaBeanProducerWithConstraintViolations.class})
+    void combinationOfBeanProducersAndApplicationCodeWithoutViolation(Class<?> classToScan) throws Exception {
+        scanClasses(JavaxBeanProducerWithoutConstraintViolations.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:NoCombinationOfBeanProducersAndApplicationCode");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(SUCCESS);
@@ -250,9 +290,10 @@ public class InjectionIT extends AbstractJavaPluginIT {
     /**
      * Verifies the constraint "jee-injection:BeansMustNotUseFieldInjection.
      */
-    @Test
-    void fieldInjectionWithEjb_Violation() throws Exception {
-        scanClasses(BeanProducerWithConstraintViolations.class, LocalEjb.class);
+    @ParameterizedTest
+    @ValueSource(classes = { JavaxBeanProducerWithConstraintViolations.class, JakartaBeanProducerWithConstraintViolations.class})
+    void fieldInjectionWithEjb_Violation(Class<?> classToScan) throws Exception {
+        scanClasses(JavaxBeanProducerWithConstraintViolations.class, JavaxLocalEjb.class);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:BeansMustNotUseFieldInjection");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
@@ -263,15 +304,15 @@ public class InjectionIT extends AbstractJavaPluginIT {
                 .map(row -> row.get("Type").getValue())
                 .map(TypeDescriptor.class::cast)
                 .collect(Collectors.toList());
-        assertThat(types).haveExactly(2, typeDescriptor(BeanProducerWithConstraintViolations.class));
+        assertThat(types).haveExactly(2, typeDescriptor(JavaxBeanProducerWithConstraintViolations.class));
 
         final List<FieldDescriptor> fields = constraintResult.getRows().stream()
                 .map(Row::getColumns)
                 .map(row -> row.get("Field").getValue())
                 .map(FieldDescriptor.class::cast)
                 .collect(Collectors.toList());
-        assertThat(fields).haveExactly(1, fieldDescriptor(BeanProducerWithConstraintViolations.class, "injectionPointField"));
-        assertThat(fields).haveExactly(1, fieldDescriptor(BeanProducerWithConstraintViolations.class, "ejb"));
+        assertThat(fields).haveExactly(1, fieldDescriptor(JavaxBeanProducerWithConstraintViolations.class, "injectionPointField"));
+        assertThat(fields).haveExactly(1, fieldDescriptor(JavaxBeanProducerWithConstraintViolations.class, "ejb"));
 
         assertThat(constraintResult.getRows().get(0).getColumns().get("Field").getLabel()).endsWith("Object injectionPointField");
         store.commitTransaction();
@@ -281,9 +322,10 @@ public class InjectionIT extends AbstractJavaPluginIT {
      * Verifies the constraint "jee-injection:BeansMustNotUseFieldInjection results in no
      * violations when applied to beans with setter or constructor injection.
      */
-    @Test
-    void fieldInjectionWithEjb_No_Violation() throws Exception {
-        scanClasses(BeanWithConstructorInjection.class, BeanWithSetterInjection.class);
+    @ParameterizedTest
+    @ValueSource(classes = { JavaxBeanProducerWithConstraintViolations.class, JakartaBeanProducerWithConstraintViolations.class})
+    void fieldInjectionWithEjb_No_Violation(Class<?> classToScan) throws Exception {
+        scanClasses(JavaxBeanWithConstructorInjection.class, JavaxBeanWithSetterInjection.class);
         String ruleName = "jee-injection:BeansMustNotUseFieldInjection";
         assertThat(validateConstraint(ruleName).getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
