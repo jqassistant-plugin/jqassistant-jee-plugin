@@ -2,7 +2,7 @@ package org.jqassistant.plugin.jee.injection.test.set.javax;
 
 import javax.inject.Inject;
 
-import org.jqassistant.plugin.jee.cdi.test.set.beans.Bean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.javax.JavaxBean;
 
 /**
  * Example bean using constructor injection.
@@ -11,15 +11,15 @@ import org.jqassistant.plugin.jee.cdi.test.set.beans.Bean;
  */
 public class JavaxBeanWithConstructorInjection {
 
-    private Bean bean;
+    private JavaxBean javaxBean;
 
     @Inject
-    public JavaxBeanWithConstructorInjection(Bean bean) {
-        this.bean = bean;
+    public JavaxBeanWithConstructorInjection(JavaxBean javaxBean) {
+        this.javaxBean = javaxBean;
     }
 
     public void performTask() {
-        bean.doSomething();
+        javaxBean.doSomething();
     }
 
 

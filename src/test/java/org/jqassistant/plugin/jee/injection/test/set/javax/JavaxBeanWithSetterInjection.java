@@ -2,7 +2,7 @@ package org.jqassistant.plugin.jee.injection.test.set.javax;
 
 import javax.inject.Inject;
 
-import org.jqassistant.plugin.jee.cdi.test.set.beans.Bean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.javax.JavaxBean;
 
 /**
  * Example bean using setter injection.
@@ -11,15 +11,15 @@ import org.jqassistant.plugin.jee.cdi.test.set.beans.Bean;
  */
 public class JavaxBeanWithSetterInjection {
 
-    private Bean bean;
+    private JavaxBean javaxBean;
 
     @Inject
-    public void setBean(Bean bean) {
-        this.bean = bean;
+    public void setBean(JavaxBean javaxBean) {
+        this.javaxBean = javaxBean;
     }
 
     public void performTask() {
-        bean.doSomething();
+        javaxBean.doSomething();
     }
 
 }

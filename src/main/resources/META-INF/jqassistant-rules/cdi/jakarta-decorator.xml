@@ -3,6 +3,7 @@
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
 
     <concept id="jakarta-decorator:Delegate">
+        <providesConcept refId="decorator:Delegate"/>
         <description>Labels all fields annotated by @jakarta.decorator.Delegate with "Decorator" and "Delegate".
         </description>
         <cypher><![CDATA[
@@ -18,7 +19,7 @@
     </concept>
 
     <concept id="jakarta-decorator:Decorator">
-        <requiresConcept refId="decorator:Delegate"/>
+        <providesConcept refId="decorator:Decorator"/>
         <description>Labels all types annotated by @jakarta.decorator.Decorator with "Decorator".
         </description>
         <cypher><![CDATA[

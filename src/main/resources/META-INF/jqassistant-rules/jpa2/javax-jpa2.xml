@@ -17,7 +17,8 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jpa2:Embeddable">
+    <concept id="javax-jpa2:Embeddable">
+        <providesConcept refId="jpa2:Embeddable"/>
         <description>Labels all types annotated with @javax.persistence.Embeddable with "Jpa" and "Embeddable".</description>
         <cypher><![CDATA[
             MATCH
@@ -31,7 +32,8 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jpa2:Embedded">
+    <concept id="javax-jpa2:Embedded">
+        <providesConcept refId="jpa2:Embedded"/>
         <description>Labels all fields or methods annotated with @javax.persistence.Embedded with "Jpa" and "Embedded".</description>
         <cypher><![CDATA[
             MATCH
@@ -47,7 +49,8 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jpa2:EmbeddedId">
+    <concept id="javax-jpa2:EmbeddedId">
+        <providesConcept refId="jpa2:EmbeddedId"/>
         <description>Labels all fields or methods annotated with @javax.persistence.EmbeddedId with "Jpa" and "Embedded".</description>
         <cypher><![CDATA[
             MATCH
@@ -63,8 +66,8 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jpa2:NamedQuery">
-        <requiresConcept refId="jpa2:Entity"/>
+    <concept id="javax-jpa2:NamedQuery">
+        <providesConcept refId="jpa2:NamedQuery"/>
         <description>Creates a node labeled with "Jpa" and "NamedQuery" for each @NamedQuery defined for an entity.
             Furthermore a relation DEFINES is created between the entity and the named query.
         </description>
@@ -96,21 +99,5 @@
               entity as Entity, n.name as Name, n.query as Query
         ]]></cypher>
     </concept>
-
-    <constraint id="jpa2:ValidationModeMustBeExplicitlySpecified">
-        <description>The validation mode of all persistence units must be explicitly specified and either set to CALLBACK or NONE.</description>
-        <cypher><![CDATA[
-            MATCH
-              (pu:PersistenceUnit)
-            WHERE
-              pu.validationMode IS NULL
-              OR NOT (
-                pu.validationMode='CALLBACK'
-                OR pu.validationMode='NONE'
-              )
-            RETURN
-              pu AS PersistenceUnit
-        ]]></cypher>
-    </constraint>
 
 </jqassistant-rules>

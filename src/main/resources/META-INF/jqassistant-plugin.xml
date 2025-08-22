@@ -68,12 +68,20 @@
     </scanner>
     <rules>
         <resource>cdi/cdi.xml</resource>
+        <resource>cdi/jakarta-cdi.xml</resource>
+        <resource>cdi/javax-cdi.xml</resource>
         <resource>cdi/decorator.xml</resource>
+        <resource>cdi/jakarta-decorator.xml</resource>
+        <resource>cdi/javax-decorator.xml</resource>
         <resource>cdi/interceptor.xml</resource>
+        <resource>cdi/jakarta-interceptor.xml</resource>
+        <resource>cdi/javax-interceptor.xml</resource>
         <resource>ejb/ejb.xml</resource>
         <resource>ejb/jakarta-ejb.xml</resource>
         <resource>ejb/javax-ejb.xml</resource>
         <resource>jpa2/jpa2.xml</resource>
+        <resource>jpa2/jakarta-jpa2.xml</resource>
+        <resource>jpa2/javax-jpa2.xml</resource>
         <resource>injection/jee-injection.xml</resource>
         <resource>injection/jakarta-jee-injection.xml</resource>
         <resource>injection/javax-jee-injection.xml</resource>

@@ -3,6 +3,7 @@ package org.jqassistant.plugin.jee.cdi.test;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.buschmais.jqassistant.core.report.api.model.Column;
 import com.buschmais.jqassistant.core.report.api.model.Result;
@@ -14,21 +15,36 @@ import com.buschmais.jqassistant.plugin.java.api.model.MethodDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
 
+import org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.jakarta.JakartaAlternativeBean;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.javax.JavaxAlternativeBean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.decorator.jakarta.JakartaDecoratorBean;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.decorator.javax.JavaxDecoratorBean;
-import org.jqassistant.plugin.jee.cdi.test.set.beans.inject.DefaultBean;
-import org.jqassistant.plugin.jee.cdi.test.set.beans.inject.NewBean;
-import org.jqassistant.plugin.jee.cdi.test.set.beans.qualifier.CustomQualifier;
-import org.jqassistant.plugin.jee.cdi.test.set.beans.qualifier.NamedBean;
-import org.jqassistant.plugin.jee.cdi.test.set.beans.scope.*;
-import org.jqassistant.plugin.jee.cdi.test.set.beans.specializes.SpecializesBean;
-import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.CustomStereotype;
-import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.StereotypeAnnotatedBean;
-import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.TypeWithStereotypeAnnotatedField;
-import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.TypeWithStereotypeAnnotatedMethod;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.inject.jakarta.JakartaDefaultBean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.inject.javax.JavaxDefaultBean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.inject.javax.JavaxNewBean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.qualifier.jakarta.JakartaCustomQualifier;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.qualifier.jakarta.JakartaNamedBean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.qualifier.javax.JavaxCustomQualifier;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.qualifier.javax.JavaxNamedBean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.scope.ProducedBean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.scope.jakarta.*;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.scope.javax.*;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.specializes.jakarta.JakartaSpecializesJakartaBean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.specializes.javax.JavaxSpecializesJavaxBean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.jakarta.JakartaCustomStereotype;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.jakarta.JakartaStereotypeAnnotatedBean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.jakarta.JakartaTypeWithStereotypeAnnotatedField;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.jakarta.JakartaTypeWithStereotypeAnnotatedMethod;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.javax.JavaxCustomStereotype;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.javax.JavaxStereotypeAnnotatedBean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.javax.JavaxTypeWithStereotypeAnnotatedField;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.javax.JavaxTypeWithStereotypeAnnotatedMethod;
+import org.jqassistant.plugin.jee.ejb.test.set.beans.jakarta.JakartaSingletonBean;
 import org.jqassistant.plugin.jee.ejb.test.set.beans.javax.JavaxSingletonBean;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static com.buschmais.jqassistant.core.report.api.model.Result.Status.SUCCESS;
@@ -48,19 +64,20 @@ class CdiIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void dependent() throws Exception {
-        scanClasses(DependentBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxDependentBean.class, JakartaDependentBean.class})
+    void dependent(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         assertThat(applyConcept("cdi:Dependent").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         final List<Object> column = query("MATCH (e:CDI:Dependent) RETURN e").getColumn("e");
         assertThat(column).hasSize(3);
         assertThat(column.stream().filter(TypeDescriptor.class::isInstance).map(TypeDescriptor.class::cast))
-                .haveExactly(1, typeDescriptor(DependentBean.class));
+                .haveExactly(1, typeDescriptor(classToScan));
         assertThat(column.stream().filter(MethodDescriptor.class::isInstance).map(MethodDescriptor.class::cast))
-                .haveExactly(1, methodDescriptor(DependentBean.class, "producerMethod"));
+                .haveExactly(1, methodDescriptor(classToScan, "producerMethod"));
         assertThat(column.stream().filter(FieldDescriptor.class::isInstance).map(FieldDescriptor.class::cast))
-                .haveExactly(1, fieldDescriptor(DependentBean.class, "producerField"));
+                .haveExactly(1, fieldDescriptor(classToScan, "producerField"));
         store.commitTransaction();
     }
 
@@ -69,19 +86,20 @@ class CdiIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void requestScoped() throws Exception {
-        scanClasses(RequestScopedBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxRequestScopedBean.class, JakartaRequestScopedBean.class})
+    void requestScoped(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         assertThat(applyConcept("cdi:RequestScoped").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<Object> column = query("MATCH (e:CDI:RequestScoped) RETURN e").getColumn("e");
         assertThat(column).hasSize(3);
         assertThat(column.stream().filter(TypeDescriptor.class::isInstance).map(TypeDescriptor.class::cast))
-                .haveExactly(1, typeDescriptor(RequestScopedBean.class));
+                .haveExactly(1, typeDescriptor(classToScan));
         assertThat(column.stream().filter(MethodDescriptor.class::isInstance).map(MethodDescriptor.class::cast))
-                .haveExactly(1, methodDescriptor(RequestScopedBean.class, "producerMethod"));
+                .haveExactly(1, methodDescriptor(classToScan, "producerMethod"));
         assertThat(column.stream().filter(FieldDescriptor.class::isInstance).map(FieldDescriptor.class::cast))
-                .haveExactly(1, fieldDescriptor(RequestScopedBean.class, "producerField"));
+                .haveExactly(1, fieldDescriptor(classToScan, "producerField"));
         store.commitTransaction();
     }
 
@@ -90,19 +108,20 @@ class CdiIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void sessionScoped() throws Exception {
-        scanClasses(SessionScopedBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxSessionScopedBean.class, JakartaSessionScopedBean.class})
+    void sessionScoped(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         assertThat(applyConcept("cdi:SessionScoped").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<Object> column = query("MATCH (e:CDI:SessionScoped) RETURN e").getColumn("e");
         assertThat(column).hasSize(3);
         assertThat(column.stream().filter(TypeDescriptor.class::isInstance).map(TypeDescriptor.class::cast))
-                .haveExactly(1, typeDescriptor(SessionScopedBean.class));
+                .haveExactly(1, typeDescriptor(classToScan));
         assertThat(column.stream().filter(MethodDescriptor.class::isInstance).map(MethodDescriptor.class::cast))
-                .haveExactly(1, methodDescriptor(SessionScopedBean.class, "producerMethod"));
+                .haveExactly(1, methodDescriptor(classToScan, "producerMethod"));
         assertThat(column.stream().filter(FieldDescriptor.class::isInstance).map(FieldDescriptor.class::cast))
-                .haveExactly(1, fieldDescriptor(SessionScopedBean.class, "producerField"));
+                .haveExactly(1, fieldDescriptor(classToScan, "producerField"));
         store.commitTransaction();
     }
 
@@ -111,19 +130,20 @@ class CdiIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void conversationScoped() throws Exception {
-        scanClasses(ConversationScopedBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxConversationScopedBean.class, JakartaConversationScopedBean.class})
+    void conversationScoped(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         assertThat(applyConcept("cdi:ConversationScoped").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<Object> column = query("MATCH (e:CDI:ConversationScoped) RETURN e").getColumn("e");
         assertThat(column).hasSize(3);
         assertThat(column.stream().filter(TypeDescriptor.class::isInstance).map(TypeDescriptor.class::cast))
-                .haveExactly(1, typeDescriptor(ConversationScopedBean.class));
+                .haveExactly(1, typeDescriptor(classToScan));
         assertThat(column.stream().filter(MethodDescriptor.class::isInstance).map(MethodDescriptor.class::cast))
-                .haveExactly(1, methodDescriptor(ConversationScopedBean.class, "producerMethod"));
+                .haveExactly(1, methodDescriptor(classToScan, "producerMethod"));
         assertThat(column.stream().filter(FieldDescriptor.class::isInstance).map(FieldDescriptor.class::cast))
-                .haveExactly(1, fieldDescriptor(ConversationScopedBean.class, "producerField"));
+                .haveExactly(1, fieldDescriptor(classToScan, "producerField"));
         store.commitTransaction();
     }
 
@@ -132,19 +152,20 @@ class CdiIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void applicationScoped() throws Exception {
-        scanClasses(ApplicationScopedBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxApplicationScopedBean.class, JakartaApplicationScopedBean.class})
+    void applicationScoped(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         assertThat(applyConcept("cdi:ApplicationScoped").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<Object> column = query("MATCH (e:CDI:ApplicationScoped) RETURN e").getColumn("e");
         assertThat(column).hasSize(3);
         assertThat(column.stream().filter(TypeDescriptor.class::isInstance).map(TypeDescriptor.class::cast))
-                .haveExactly(1, typeDescriptor(ApplicationScopedBean.class));
+                .haveExactly(1, typeDescriptor(classToScan));
         assertThat(column.stream().filter(MethodDescriptor.class::isInstance).map(MethodDescriptor.class::cast))
-                .haveExactly(1, methodDescriptor(ApplicationScopedBean.class, "producerMethod"));
+                .haveExactly(1, methodDescriptor(classToScan, "producerMethod"));
         assertThat(column.stream().filter(FieldDescriptor.class::isInstance).map(FieldDescriptor.class::cast))
-                .haveExactly(1, fieldDescriptor(ApplicationScopedBean.class, "producerField"));
+                .haveExactly(1, fieldDescriptor(classToScan, "producerField"));
         store.commitTransaction();
     }
 
@@ -153,13 +174,14 @@ class CdiIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void singletonScoped() throws Exception {
-        scanClasses(SingletonScopedBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxSingletonScopedBean.class, JakartaSingletonScopedBean.class})
+    void singletonScoped(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         assertThat(applyConcept("cdi:SingletonScoped").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<TypeDescriptor> column = query("MATCH (e:CDI:SingletonScoped:JEE:Injectable) RETURN e").getColumn("e");
-        assertThat(column).haveExactly(1, typeDescriptor(SingletonScopedBean.class));
+        assertThat(column).haveExactly(1, typeDescriptor(classToScan));
         store.commitTransaction();
     }
 
@@ -168,13 +190,14 @@ class CdiIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void stereotype() throws Exception {
-        scanClasses(CustomStereotype.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxCustomStereotype.class, JakartaCustomStereotype.class})
+    void stereotype(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         assertThat(applyConcept("cdi:Stereotype").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<TypeDescriptor> column = query("MATCH (s:CDI:Stereotype) RETURN s").getColumn("s");
-        assertThat(column).haveExactly(1, typeDescriptor(CustomStereotype.class));
+        assertThat(column).haveExactly(1, typeDescriptor(classToScan));
         store.commitTransaction();
     }
 
@@ -183,13 +206,14 @@ class CdiIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void alternative() throws Exception {
-        scanClasses(JavaxAlternativeBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = { JavaxAlternativeBean.class, JakartaAlternativeBean.class})
+    void alternative(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         assertThat(applyConcept("cdi:Alternative").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<TypeDescriptor> column = query("MATCH (a:CDI:Alternative) RETURN a").getColumn("a");
-        assertThat(column).haveExactly(1, typeDescriptor(JavaxAlternativeBean.class));
+        assertThat(column).haveExactly(1, typeDescriptor(classToScan));
         store.commitTransaction();
     }
 
@@ -198,17 +222,18 @@ class CdiIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void specializes() throws Exception {
-        scanClasses(SpecializesBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxSpecializesJavaxBean.class, JakartaSpecializesJakartaBean.class})
+    void specializes(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         assertThat(applyConcept("cdi:Specializes").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<Object> column = query("MATCH (e:CDI:Specializes) RETURN e").getColumn("e");
         assertThat(column).hasSize(2);
         assertThat(column.stream().filter(TypeDescriptor.class::isInstance).map(TypeDescriptor.class::cast))
-                .haveExactly(1, typeDescriptor(SpecializesBean.class));
+                .haveExactly(1, typeDescriptor(classToScan));
         assertThat(column.stream().filter(MethodDescriptor.class::isInstance).map(MethodDescriptor.class::cast))
-                .haveExactly(1, methodDescriptor(SpecializesBean.class, "doSomething"));
+                .haveExactly(1, methodDescriptor(classToScan, "doSomething"));
         store.commitTransaction();
     }
 
@@ -217,15 +242,16 @@ class CdiIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void qualifier() throws Exception {
-        scanClasses(CustomQualifier.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxCustomQualifier.class, JakartaCustomQualifier.class})
+    void qualifier(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         assertThat(applyConcept("cdi:Qualifier").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         final List<TypeDescriptor> types = query("MATCH (e:Type:CDI:Qualifier) RETURN e").getColumn("e");
-        assertThat(types).haveExactly(1, typeDescriptor(CustomQualifier.class));
+        assertThat(types).haveExactly(1, typeDescriptor(classToScan));
         final List<MethodDescriptor> methods = query("MATCH (q:Qualifier)-[:DECLARES]->(a:CDI:Method:Nonbinding) RETURN a").getColumn("a");
-        assertThat(methods).haveExactly(1, methodDescriptor(CustomQualifier.class, "nonBindingValue"));
+        assertThat(methods).haveExactly(1, methodDescriptor(classToScan, "nonBindingValue"));
         store.commitTransaction();
     }
 
@@ -234,28 +260,36 @@ class CdiIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void produces() throws Exception {
-        scanClasses(ApplicationScopedBean.class, ConversationScopedBean.class, DependentBean.class, RequestScopedBean.class, SessionScopedBean.class);
+    @ParameterizedTest
+    @MethodSource("scopedBeans")
+    void produces(Class<?>[] classesToScan) throws Exception {
+        scanClasses(classesToScan);
         assertThat(applyConcept("cdi:Produces").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<Object> column = query("MATCH (p)-[:PRODUCES]->({fqn:'java.lang.String'}) RETURN p").getColumn("p");
         assertThat(column).hasSize(10);
 
         final List<FieldDescriptor> fields = column.stream().filter(FieldDescriptor.class::isInstance).map(FieldDescriptor.class::cast).collect(Collectors.toList());
-        assertThat(fields).haveExactly(1, fieldDescriptor(ApplicationScopedBean.class, "producerField"));
-        assertThat(fields).haveExactly(1, fieldDescriptor(ConversationScopedBean.class, "producerField"));
-        assertThat(fields).haveExactly(1, fieldDescriptor(DependentBean.class, "producerField"));
-        assertThat(fields).haveExactly(1, fieldDescriptor(RequestScopedBean.class, "producerField"));
-        assertThat(fields).haveExactly(1, fieldDescriptor(SessionScopedBean.class, "producerField"));
+        assertThat(fields).haveExactly(1, fieldDescriptor(classesToScan[0], "producerField"));
+        assertThat(fields).haveExactly(1, fieldDescriptor(classesToScan[1], "producerField"));
+        assertThat(fields).haveExactly(1, fieldDescriptor(classesToScan[2], "producerField"));
+        assertThat(fields).haveExactly(1, fieldDescriptor(classesToScan[3], "producerField"));
+        assertThat(fields).haveExactly(1, fieldDescriptor(classesToScan[4], "producerField"));
 
         final List<MethodDescriptor> methods = column.stream().filter(MethodDescriptor.class::isInstance).map(MethodDescriptor.class::cast).collect(Collectors.toList());
-        assertThat(methods).haveExactly(1, methodDescriptor(ApplicationScopedBean.class, "producerMethod"));
-        assertThat(methods).haveExactly(1, methodDescriptor(ConversationScopedBean.class, "producerMethod"));
-        assertThat(methods).haveExactly(1, methodDescriptor(DependentBean.class, "producerMethod"));
-        assertThat(methods).haveExactly(1, methodDescriptor(RequestScopedBean.class, "producerMethod"));
-        assertThat(methods).haveExactly(1, methodDescriptor(SessionScopedBean.class, "producerMethod"));
+        assertThat(methods).haveExactly(1, methodDescriptor(classesToScan[0], "producerMethod"));
+        assertThat(methods).haveExactly(1, methodDescriptor(classesToScan[1], "producerMethod"));
+        assertThat(methods).haveExactly(1, methodDescriptor(classesToScan[2], "producerMethod"));
+        assertThat(methods).haveExactly(1, methodDescriptor(classesToScan[3], "producerMethod"));
+        assertThat(methods).haveExactly(1, methodDescriptor(classesToScan[4], "producerMethod"));
         store.commitTransaction();
+    }
+
+    private static Stream<Arguments> scopedBeans() {
+        return Stream.of(Arguments.of((Object) new Class[] { JavaxApplicationScopedBean.class, JavaxConversationScopedBean.class, JavaxDependentBean.class,
+                JavaxRequestScopedBean.class, JavaxSessionScopedBean.class }), Arguments.of(
+                (Object) new Class[] { JakartaApplicationScopedBean.class, JakartaConversationScopedBean.class, JakartaDependentBean.class,
+                        JakartaRequestScopedBean.class, JakartaSessionScopedBean.class }));
     }
 
     /**
@@ -264,9 +298,10 @@ class CdiIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void producesUnique() throws Exception {
-        scanClasses(ApplicationScopedBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxApplicationScopedBean.class, JakartaApplicationScopedBean.class})
+    void producesUnique(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         store.beginTransaction();
         // create existing relations with and without properties
         assertThat(query("MATCH (m:Method {name: 'producerMethod'}), (t {fqn:'java.lang.String'}) MERGE (m)-[r:PRODUCES {prop: 'value'}]->(t) RETURN r")
@@ -286,9 +321,10 @@ class CdiIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void disposes() throws Exception {
-        scanClasses(DisposesBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxDisposesBean.class, JakartaDisposesBean.class})
+    void disposes(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         assertThat(applyConcept("cdi:Disposes").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         final List<TypeDescriptor> column = query("MATCH (p:Parameter)-[:DISPOSES]->(disposedType:Type) RETURN disposedType")
@@ -303,9 +339,10 @@ class CdiIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void disposesUnique() throws Exception {
-        scanClasses(DisposesBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxDisposesBean.class, JakartaDisposesBean.class})
+    void disposesUnique(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         store.beginTransaction();
         // create existing relation with property
         assertThat(query("MATCH (p:Parameter), (t {fqn:'java.lang.String'}) MERGE (p)-[r:DISPOSES {prop: 'value'}]->(t) RETURN r")
@@ -323,27 +360,29 @@ class CdiIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void named() throws Exception {
-        scanClasses(NamedBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxNamedBean.class, JakartaNamedBean.class})
+    void named(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         assertThat(applyConcept("cdi:Named").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<Object> column = query("MATCH (e:CDI:Named) RETURN e").getColumn("e");
         assertThat(column).hasSize(2);
         assertThat(column.stream().filter(TypeDescriptor.class::isInstance).map(TypeDescriptor.class::cast))
-                .haveExactly(1, typeDescriptor(NamedBean.class));
+                .haveExactly(1, typeDescriptor(classToScan));
         assertThat(column.stream().filter(MethodDescriptor.class::isInstance).map(MethodDescriptor.class::cast))
-                .haveExactly(1, methodDescriptor(NamedBean.class, "getValue"));
+                .haveExactly(1, methodDescriptor(classToScan, "getValue"));
         store.commitTransaction();
     }
 
-    @Test
-    void decorator() throws Exception {
-        scanClasses(JavaxDecoratorBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = { JavaxDecoratorBean.class, JakartaDecoratorBean.class})
+    void decorator(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         assertThat(applyConcept("cdi:Decorator").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<TypeDescriptor> column = query("MATCH (e:CDI:Decorator:JEE:Injectable) RETURN e").getColumn("e");
-        assertThat(column).haveExactly(1, typeDescriptor(JavaxDecoratorBean.class));
+        assertThat(column).haveExactly(1, typeDescriptor(classToScan));
         store.commitTransaction();
     }
 
@@ -352,28 +391,31 @@ class CdiIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void any() throws Exception {
-        scanClasses(JavaxDecoratorBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = { JavaxDecoratorBean.class, JakartaDecoratorBean.class})
+    void any(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         assertThat(applyConcept("cdi:Any").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<FieldDescriptor> column = query("MATCH (e:CDI:Any) RETURN e").getColumn("e");
-        assertThat(column).haveExactly(1, fieldDescriptor(JavaxDecoratorBean.class, "delegate"));
+        assertThat(column).haveExactly(1, fieldDescriptor(classToScan, "delegate"));
         store.commitTransaction();
     }
 
     /**
      * Verifies the concept "cdi:New".
-     *
+     * Only checks for {@link JavaxNewBean} because "cdi:New" is not supported anymore by jakarta.cdi. v4.0.
      * @throws IOException If the test fails.
+     *
      */
     @Test
     void newQualifier() throws Exception {
-        scanClasses(NewBean.class);
+        scanClasses(JavaxNewBean.class);
         assertThat(applyConcept("cdi:New").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<FieldDescriptor> column = query("MATCH (e:CDI:New) RETURN e").getColumn("e");
-        assertThat(column).haveExactly(1, fieldDescriptor(NewBean.class, "bean"));
+        assertThat(column)
+                .haveExactly(1, fieldDescriptor(JavaxNewBean.class, "bean"));
         store.commitTransaction();
     }
 
@@ -382,23 +424,21 @@ class CdiIT extends AbstractJavaPluginIT {
      *
      * @throws IOException If the test fails.
      */
-    @Test
-    void defaultQualifier() throws Exception {
-        scanClasses(DefaultBean.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxDefaultBean.class, JakartaDefaultBean.class})
+    void defaultQualifier(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         assertThat(applyConcept("cdi:Default").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<FieldDescriptor> column = query("MATCH (e:CDI:Default) RETURN e").getColumn("e");
-        assertThat(column).haveExactly(1, fieldDescriptor(DefaultBean.class, "bean"));
+        assertThat(column).haveExactly(1, fieldDescriptor(classToScan, "bean"));
         store.commitTransaction();
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {
-            DependentBean.class, RequestScopedBean.class, SessionScopedBean.class, ConversationScopedBean.class,
-            ApplicationScopedBean.class, StereotypeAnnotatedBean.class
-    })
-    void injectableClassType(Class<?> clazz) throws RuleException {
-        scanClasses(CustomStereotype.class, clazz);
+    @MethodSource("customStereotypeAndBeanForClassTypesClasses")
+    void injectableClassType(Class<?> classToScan,  Class<?> clazz) throws RuleException {
+        scanClasses(classToScan, clazz);
         final Result<Concept> conceptResult = applyConcept("cdi:InjectableClassType");
         assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
@@ -412,13 +452,25 @@ class CdiIT extends AbstractJavaPluginIT {
         store.commitTransaction();
     }
 
+    private static Stream<Arguments> customStereotypeAndBeanForClassTypesClasses() {
+        return Stream.of(Arguments.of(JavaxCustomStereotype.class, JavaxDependentBean.class),
+                Arguments.of(JavaxCustomStereotype.class, JavaxRequestScopedBean.class),
+                Arguments.of(JavaxCustomStereotype.class, JavaxSessionScopedBean.class),
+                Arguments.of(JavaxCustomStereotype.class, JavaxConversationScopedBean.class),
+                Arguments.of(JavaxCustomStereotype.class, JavaxApplicationScopedBean.class),
+                Arguments.of(JavaxCustomStereotype.class, JavaxStereotypeAnnotatedBean.class),
+                Arguments.of(JakartaCustomStereotype.class, JakartaDependentBean.class),
+                Arguments.of(JakartaCustomStereotype.class, JakartaRequestScopedBean.class),
+                Arguments.of(JakartaCustomStereotype.class, JakartaSessionScopedBean.class),
+                Arguments.of(JakartaCustomStereotype.class, JakartaConversationScopedBean.class),
+                Arguments.of(JakartaCustomStereotype.class, JakartaApplicationScopedBean.class),
+                Arguments.of(JakartaCustomStereotype.class, JakartaStereotypeAnnotatedBean.class));
+    }
+
     @ParameterizedTest
-    @ValueSource(classes = {
-            TypeWithApplicationScopedField.class, TypeWithConversationScopedField.class, TypeWithDependentField.class,
-            TypeWithRequestScopedField.class, TypeWithSessionScopedField.class, TypeWithStereotypeAnnotatedField.class
-    })
-    void injectableFieldType(Class<?> clazz) throws RuleException {
-        scanClasses(CustomStereotype.class,  ProducedBean.class, clazz);
+    @MethodSource("customStereotypeAndBeanForFieldTypesClasses")
+    void injectableFieldType(Class<?> classToScan,  Class<?> clazz) throws RuleException {
+        scanClasses(classToScan, ProducedBean.class, clazz);
         final Result<Concept> conceptResult = applyConcept("cdi:InjectableFieldType");
         assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
@@ -432,14 +484,25 @@ class CdiIT extends AbstractJavaPluginIT {
         store.commitTransaction();
     }
 
+    private static Stream<Arguments> customStereotypeAndBeanForFieldTypesClasses() {
+        return Stream.of(Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithApplicationScopedField.class),
+                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithConversationScopedField.class),
+                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithDependentField.class),
+                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithRequestScopedField.class),
+                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithSessionScopedField.class),
+                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithStereotypeAnnotatedField.class),
+                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithApplicationScopedField.class),
+                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithConversationScopedField.class),
+                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithDependentField.class),
+                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithRequestScopedField.class),
+                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithSessionScopedField.class),
+                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithStereotypeAnnotatedField.class));
+    }
+
     @ParameterizedTest
-    @ValueSource(classes = {
-            TypeWithApplicationScopedMethod.class, TypeWithConversationScopedMethod.class,
-            TypeWithDependentMethod.class, TypeWithRequestScopedMethod.class, TypeWithSessionScopedMethod.class,
-            TypeWithStereotypeAnnotatedMethod.class
-    })
-    void injectableReturnType(Class<?> clazz) throws RuleException {
-        scanClasses(CustomStereotype.class,  ProducedBean.class, clazz);
+    @MethodSource("customStereotypeAndBeanForReturnTypesClasses")
+    void injectableReturnType(Class<?> classToScan,  Class<?> clazz) throws RuleException {
+        scanClasses(classToScan, ProducedBean.class, clazz);
         final Result<Concept> conceptResult = applyConcept("cdi:InjectableReturnType");
         assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
@@ -453,15 +516,25 @@ class CdiIT extends AbstractJavaPluginIT {
         store.commitTransaction();
     }
 
-    @Test
-    void providedConceptJeeInjectable() throws RuleException {
-        scanClasses(DependentBean.class, RequestScopedBean.class, SessionScopedBean.class, ConversationScopedBean.class,
-                ApplicationScopedBean.class, JavaxSingletonBean.class, JavaxDecoratorBean.class,
-                ProducedBean.class, TypeWithApplicationScopedField.class, TypeWithConversationScopedField.class,
-                TypeWithDependentField.class, TypeWithRequestScopedField.class, TypeWithSessionScopedField.class,
-                TypeWithApplicationScopedMethod.class, TypeWithConversationScopedMethod.class,
-                TypeWithDependentMethod.class, TypeWithRequestScopedMethod.class, TypeWithSessionScopedMethod.class,
-                StereotypeAnnotatedBean.class, CustomStereotype.class);
+    private static Stream<Arguments> customStereotypeAndBeanForReturnTypesClasses() {
+        return Stream.of(Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithApplicationScopedMethod.class),
+                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithConversationScopedMethod.class),
+                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithDependentMethod.class),
+                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithRequestScopedMethod.class),
+                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithSessionScopedMethod.class),
+                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithStereotypeAnnotatedMethod.class),
+                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithApplicationScopedMethod.class),
+                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithConversationScopedMethod.class),
+                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithDependentMethod.class),
+                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithRequestScopedMethod.class),
+                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithSessionScopedMethod.class),
+                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithStereotypeAnnotatedMethod.class));
+    }
+
+    @ParameterizedTest
+    @MethodSource("classesToScanForprovidedConceptJeeInjectable")
+    void providedConceptJeeInjectable(Class<?>[] classesToScan) throws RuleException {
+        scanClasses(classesToScan);
         final Result<Concept> conceptResult = applyConcept("jee-injection:Injectable");
         assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
@@ -479,17 +552,34 @@ class CdiIT extends AbstractJavaPluginIT {
         store.commitTransaction();
     }
 
+    private static Stream<Arguments> classesToScanForprovidedConceptJeeInjectable() {
+        return Stream.of(Arguments.of(
+                (Object) new Class[] { JavaxDependentBean.class, JavaxRequestScopedBean.class, JavaxSessionScopedBean.class, JavaxConversationScopedBean.class,
+                        JavaxApplicationScopedBean.class, JavaxSingletonBean.class, JavaxDecoratorBean.class, ProducedBean.class,
+                        JavaxTypeWithApplicationScopedField.class, JavaxTypeWithConversationScopedField.class, JavaxTypeWithDependentField.class,
+                        JavaxTypeWithRequestScopedField.class, JavaxTypeWithSessionScopedField.class, JavaxTypeWithApplicationScopedMethod.class,
+                        JavaxTypeWithConversationScopedMethod.class, JavaxTypeWithDependentMethod.class, JavaxTypeWithRequestScopedMethod.class,
+                        JavaxTypeWithSessionScopedMethod.class, JavaxStereotypeAnnotatedBean.class, JavaxCustomStereotype.class }), Arguments.of(
+                (Object) new Class[] { JakartaDependentBean.class, JakartaRequestScopedBean.class, JakartaSessionScopedBean.class,
+                        JakartaConversationScopedBean.class, JakartaApplicationScopedBean.class, JakartaSingletonBean.class, JakartaDecoratorBean.class,
+                        ProducedBean.class, JakartaTypeWithApplicationScopedField.class, JakartaTypeWithConversationScopedField.class,
+                        JakartaTypeWithDependentField.class, JakartaTypeWithRequestScopedField.class, JakartaTypeWithSessionScopedField.class,
+                        JakartaTypeWithApplicationScopedMethod.class, JakartaTypeWithConversationScopedMethod.class, JakartaTypeWithDependentMethod.class,
+                        JakartaTypeWithRequestScopedMethod.class, JakartaTypeWithSessionScopedMethod.class, JakartaStereotypeAnnotatedBean.class,
+                        JakartaCustomStereotype.class }));
+    }
+
     private static void assertCdiInjectables(List<TypeDescriptor> actualTypes) {
         assertThat(actualTypes).hasSize(10);
-        assertThat(actualTypes).haveExactly(1, typeDescriptor(DependentBean.class));
-        assertThat(actualTypes).haveExactly(1, typeDescriptor(RequestScopedBean.class));
-        assertThat(actualTypes).haveExactly(1, typeDescriptor(SessionScopedBean.class));
-        assertThat(actualTypes).haveExactly(1, typeDescriptor(ConversationScopedBean.class));
-        assertThat(actualTypes).haveExactly(1, typeDescriptor(ApplicationScopedBean.class));
+        assertThat(actualTypes).haveExactly(1, typeDescriptor(JavaxDependentBean.class));
+        assertThat(actualTypes).haveExactly(1, typeDescriptor(JavaxRequestScopedBean.class));
+        assertThat(actualTypes).haveExactly(1, typeDescriptor(JavaxSessionScopedBean.class));
+        assertThat(actualTypes).haveExactly(1, typeDescriptor(JavaxConversationScopedBean.class));
+        assertThat(actualTypes).haveExactly(1, typeDescriptor(JavaxApplicationScopedBean.class));
         assertThat(actualTypes).haveExactly(1, typeDescriptor(JavaxSingletonBean.class));
         assertThat(actualTypes).haveExactly(1, typeDescriptor(JavaxDecoratorBean.class));
         assertThat(actualTypes).haveExactly(1, typeDescriptor(ProducedBean.class));
-        assertThat(actualTypes).haveExactly(1, typeDescriptor(StereotypeAnnotatedBean.class));
+        assertThat(actualTypes).haveExactly(1, typeDescriptor(JavaxStereotypeAnnotatedBean.class));
         assertThat(actualTypes).haveExactly(1, typeDescriptor(String.class)); // Caused by @Produces
     }
 

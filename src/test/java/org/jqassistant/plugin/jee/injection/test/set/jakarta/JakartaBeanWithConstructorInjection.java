@@ -2,7 +2,7 @@ package org.jqassistant.plugin.jee.injection.test.set.jakarta;
 
 import jakarta.inject.Inject;
 
-import org.jqassistant.plugin.jee.cdi.test.set.beans.Bean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.jakarta.JakartaBean;
 
 /**
  * Example bean using constructor injection.
@@ -11,15 +11,15 @@ import org.jqassistant.plugin.jee.cdi.test.set.beans.Bean;
  */
 public class JakartaBeanWithConstructorInjection {
 
-    private Bean bean;
+    private JakartaBean jakartaBean;
 
     @Inject
-    public JakartaBeanWithConstructorInjection(Bean bean) {
-        this.bean = bean;
+    public JakartaBeanWithConstructorInjection(JakartaBean jakartaBean) {
+        this.jakartaBean = jakartaBean;
     }
 
     public void performTask() {
-        bean.doSomething();
+        jakartaBean.doSomething();
     }
 
 

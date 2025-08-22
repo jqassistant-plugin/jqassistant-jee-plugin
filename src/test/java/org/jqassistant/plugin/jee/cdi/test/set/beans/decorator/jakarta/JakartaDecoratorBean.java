@@ -5,14 +5,15 @@ import jakarta.decorator.Delegate;
 import jakarta.enterprise.inject.Any;
 import jakarta.inject.Inject;
 
-import org.jqassistant.plugin.jee.cdi.test.set.beans.Bean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.jakarta.JakartaBean;
+
 
 @Decorator
-public class JakartaDecoratorBean extends Bean {
+public class JakartaDecoratorBean extends JakartaBean {
 
     @Inject
     @Delegate
     @Any
-    private Bean delegate;
+    private JakartaBean delegate;
 
 }

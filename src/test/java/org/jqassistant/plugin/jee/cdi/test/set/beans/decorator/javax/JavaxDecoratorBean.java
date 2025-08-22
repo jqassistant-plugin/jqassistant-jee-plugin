@@ -5,14 +5,14 @@ import javax.decorator.Delegate;
 import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
-import org.jqassistant.plugin.jee.cdi.test.set.beans.Bean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.javax.JavaxBean;
 
 @Decorator
-public class JavaxDecoratorBean extends Bean {
+public class JavaxDecoratorBean extends JavaxBean {
 
     @Inject
     @Delegate
     @Any
-    private Bean delegate;
+    private JavaxBean delegate;
 
 }

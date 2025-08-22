@@ -31,6 +31,7 @@
         </description>
         <cypher><![CDATA[
             MATCH
+              (:Type)-[:DECLARES]->(disposeMethod:Method)-[:HAS]->(parameter:Parameter),
               (parameter)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(disposesType:Type),
               (parameter)-[:OF_TYPE]->(type)
             WHERE
@@ -413,22 +414,6 @@
               e:CDI:Any
             RETURN
               e AS Any
-        ]]></cypher>
-    </concept>
-
-    <concept id="javax-cdi:New">
-        <providesConcept refId="cdi:New"/>
-        <description>Labels all elements annotated by "javax.enterprise.inject.New" with "CDI" and "New".
-        </description>
-        <cypher><![CDATA[
-            MATCH
-              (e)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(newType:Type)
-            WHERE
-              newType.fqn = "javax.enterprise.inject.New"
-            SET
-              e:CDI:New
-            RETURN
-              e AS New
         ]]></cypher>
     </concept>
 

@@ -2,7 +2,7 @@ package org.jqassistant.plugin.jee.injection.test.set.jakarta;
 
 import jakarta.inject.Inject;
 
-import org.jqassistant.plugin.jee.cdi.test.set.beans.Bean;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.jakarta.JakartaBean;
 
 /**
  * Example bean using setter injection.
@@ -11,15 +11,15 @@ import org.jqassistant.plugin.jee.cdi.test.set.beans.Bean;
  */
 public class JakartaBeanWithSetterInjection {
 
-    private Bean bean;
+    private JakartaBean jakartaBean;
 
     @Inject
-    public void setBean(Bean bean) {
-        this.bean = bean;
+    public void setBean(JakartaBean jakartaBean) {
+        this.jakartaBean = jakartaBean;
     }
 
     public void performTask() {
-        bean.doSomething();
+        jakartaBean.doSomething();
     }
 
 }
