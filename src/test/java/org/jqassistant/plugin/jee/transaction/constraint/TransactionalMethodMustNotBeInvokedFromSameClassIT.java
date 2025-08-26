@@ -23,8 +23,8 @@ class TransactionalMethodMustNotBeInvokedFromSameClassIT extends AbstractJavaPlu
 
     @ParameterizedTest
     @ValueSource(classes = {JavaxTransactionalMethod.class, JakartaTransactionalMethod.class,
-            JakartaTransactionalClass.class, JavaxTransactionalClass.class, MessageDrivenEjb.class,
-            SingletonEjb.class, StatefulEjb.class, StatelessEjb.class})
+            JakartaTransactionalClass.class, JavaxTransactionalClass.class, JavaxMessageDrivenEjb.class, JakartaMessageDrivenEjb.class,
+            JavaxSingletonEjb.class, JakartaSingletonEjb.class, JavaxStatefulEjb.class, JakartaStatefulEjb.class, JavaxStatelessEjb.class, JakartaStatelessEjb.class})
     void transactionMethodsMustNotBeCalledDirectlyWithViolations(Class<?> clazz) throws Exception {
         scanClasses(clazz);
         assertThat(validateConstraint("jee-transaction:TransactionalMethodMustNotBeInvokedFromSameClass")

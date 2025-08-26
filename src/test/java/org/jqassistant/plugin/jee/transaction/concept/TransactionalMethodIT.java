@@ -16,14 +16,15 @@ class TransactionalMethodIT extends AbstractJavaPluginIT {
     @Test
     void transactionalMethod() throws Exception {
         scanClasses(
-                JakartaTransactionalClass.class, JakartaTransactionalMethod.class,
                 JavaxTransactionalClass.class, JavaxTransactionalMethod.class,
-                StatelessEjb.class, StatefulEjb.class, SingletonEjb.class, MessageDrivenEjb.class
+                JavaxStatelessEjb.class, JavaxStatefulEjb.class, JavaxSingletonEjb.class, JavaxMessageDrivenEjb.class,
+                JakartaTransactionalClass.class, JakartaTransactionalMethod.class, JakartaStatelessEjb.class,
+                JakartaStatefulEjb.class, JakartaSingletonEjb.class, JakartaMessageDrivenEjb.class
                 );
         assertThat(applyConcept("jee-transaction:TransactionalMethod").getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
         final List<MethodDescriptor> methods = query("MATCH (m:JEE:Method:Transactional) RETURN m").getColumn("m");
-        assertThat(methods).hasSize(8);
+        assertThat(methods).hasSize(12);
 
         // method level annotations
         assertThat(methods).haveExactly(1, methodDescriptor(JavaxTransactionalMethod.class, "transactionalMethod"));
@@ -32,10 +33,14 @@ class TransactionalMethodIT extends AbstractJavaPluginIT {
         // class level annotations
         assertThat(methods).haveExactly(1, methodDescriptor(JavaxTransactionalClass.class, "transactionalMethod"));
         assertThat(methods).haveExactly(1, methodDescriptor(JakartaTransactionalClass.class, "transactionalMethod"));
-        assertThat(methods).haveExactly(1, methodDescriptor(StatelessEjb.class, "transactionalMethod"));
-        assertThat(methods).haveExactly(1, methodDescriptor(StatefulEjb.class, "transactionalMethod"));
-        assertThat(methods).haveExactly(1, methodDescriptor(SingletonEjb.class, "transactionalMethod"));
-        assertThat(methods).haveExactly(1, methodDescriptor(MessageDrivenEjb.class, "transactionalMethod"));
+        assertThat(methods).haveExactly(1, methodDescriptor(JavaxStatelessEjb.class, "transactionalMethod"));
+        assertThat(methods).haveExactly(1, methodDescriptor(JakartaStatelessEjb.class, "transactionalMethod"));
+        assertThat(methods).haveExactly(1, methodDescriptor(JavaxStatefulEjb.class, "transactionalMethod"));
+        assertThat(methods).haveExactly(1, methodDescriptor(JakartaStatefulEjb.class, "transactionalMethod"));
+        assertThat(methods).haveExactly(1, methodDescriptor(JavaxSingletonEjb.class, "transactionalMethod"));
+        assertThat(methods).haveExactly(1, methodDescriptor(JakartaSingletonEjb.class, "transactionalMethod"));
+        assertThat(methods).haveExactly(1, methodDescriptor(JavaxMessageDrivenEjb.class, "transactionalMethod"));
+        assertThat(methods).haveExactly(1, methodDescriptor(JakartaMessageDrivenEjb.class, "transactionalMethod"));
         store.commitTransaction();
     }
 }

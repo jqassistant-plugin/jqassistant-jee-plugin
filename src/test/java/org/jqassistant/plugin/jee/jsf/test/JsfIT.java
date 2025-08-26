@@ -4,7 +4,7 @@ import com.buschmais.jqassistant.core.report.api.model.Result;
 import com.buschmais.jqassistant.core.rule.api.model.Concept;
 import com.buschmais.jqassistant.core.rule.api.model.Constraint;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
-import org.jqassistant.plugin.jee.jsf.test.set.beans.JsfManagedBean;
+
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

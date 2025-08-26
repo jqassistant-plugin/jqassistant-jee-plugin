@@ -1,4 +1,4 @@
-package org.jqassistant.plugin.jee.jsf.test.set.beans;
+package org.jqassistant.plugin.jee.jsf.test;
 
 import javax.faces.bean.ManagedBean;
 
