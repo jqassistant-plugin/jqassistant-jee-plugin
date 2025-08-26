@@ -1,12 +1,12 @@
 package org.jqassistant.plugin.jee.transaction.set;
 
-import javax.ejb.MessageDriven;
+import javax.ejb.Stateless;
 
 /**
- * A message-driven EJB.
+ * A stateless EJB.
  */
-@MessageDriven
-public class MessageDrivenEjb {
+@Stateless
+public class JavaxStatelessEjb {
 
     public void transactionalMethod(){
     }
@@ -21,5 +21,4 @@ public class MessageDrivenEjb {
     private void callingPrivateMethod() {
         privateMethod(); // Private methods are not transactional and may be called.
     }
-
 }

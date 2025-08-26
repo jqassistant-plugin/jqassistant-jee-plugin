@@ -340,7 +340,7 @@ public class InjectionIT extends AbstractJavaPluginIT {
      * violations when applied to beans with setter or constructor injection.
      */
     @ParameterizedTest
-    @MethodSource("BeansWithConstructorAndSetterInjectionClasses")
+    @MethodSource("beansWithConstructorAndSetterInjectionClasses")
     void fieldInjectionWithEjb_No_Violation(Class<?>[] classesToScan) throws Exception {
         scanClasses(classesToScan);
         String ruleName = "jee-injection:BeansMustNotUseFieldInjection";
@@ -357,7 +357,7 @@ public class InjectionIT extends AbstractJavaPluginIT {
         store.commitTransaction();
     }
 
-    private static Stream<Arguments> BeansWithConstructorAndSetterInjectionClasses() {
+    private static Stream<Arguments> beansWithConstructorAndSetterInjectionClasses() {
         return Stream.of(Arguments.of((Object) new Class[] { JavaxBeanWithConstructorInjection.class, JavaxBeanWithSetterInjection.class }),
                 Arguments.of((Object) new Class[] { JakartaBeanWithConstructorInjection.class, JakartaBeanWithSetterInjection.class }));
     }

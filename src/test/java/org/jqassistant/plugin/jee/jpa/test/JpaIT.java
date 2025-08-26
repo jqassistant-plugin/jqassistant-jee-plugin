@@ -179,11 +179,11 @@ class JpaIT extends AbstractJavaPluginIT {
         assertThat(applyConcept("jpa2:Entity").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         assertThat(
-                query("MATCH (e:Jpa:Entity {name: 'JpaEntity'}) CREATE (e)-[:DEFINES]->(n:Jpa:NamedQuery {name: 'namedQueries', prop: 'value', query: 'foo'}) RETURN n").getColumn(
+                query("MATCH (e:Jpa:Entity {name: '"+classesToScan[0].getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:Jpa:NamedQuery {name: 'namedQueries', prop: 'value', query: 'foo'}) RETURN n").getColumn(
                                 "n")
                         .size(), equalTo(1));
         assertThat(
-                query("MATCH (e:Jpa:Entity {name: 'SingleNamedQueryEntity'}) CREATE (e)-[:DEFINES]->(n:Jpa:NamedQuery {name: 'namedQuery', prop: 'value', query: 'foo'}) RETURN n").getColumn(
+                query("MATCH (e:Jpa:Entity {name: '"+classesToScan[1].getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:Jpa:NamedQuery {name: 'namedQuery', prop: 'value', query: 'foo'}) RETURN n").getColumn(
                                 "n")
                         .size(), equalTo(1));
         assertThat(query("CREATE (n:Jpa:NamedQuery {name: 'otherQuery', query: 'SELECT e'}) RETURN n").getColumn("n")
@@ -211,11 +211,11 @@ class JpaIT extends AbstractJavaPluginIT {
         assertThat(applyConcept("jpa2:Entity").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         assertThat(
-                query("MATCH (e:Jpa:Entity {name: 'JpaEntity'}) CREATE (e)-[:DEFINES]->(n:Jpa:NamedQuery {name: 'namedQueries', prop: 'value', query: 'SELECT e FROM JpaEntity e'}) RETURN n").getColumn(
+                query("MATCH (e:Jpa:Entity {name: '"+classesToScan[0].getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:Jpa:NamedQuery {name: 'namedQueries', prop: 'value', query: 'SELECT e FROM JpaEntity e'}) RETURN n").getColumn(
                                 "n")
                         .size(), equalTo(1));
         assertThat(
-                query("MATCH (e:Jpa:Entity {name: 'SingleNamedQueryEntity'}) CREATE (e)-[:DEFINES]->(n:Jpa:NamedQuery {name: 'namedQuery', prop: 'value', query: 'SELECT e FROM SingleNamedQueryEntity e'}) RETURN n").getColumn(
+                query("MATCH (e:Jpa:Entity {name: '"+classesToScan[1].getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:Jpa:NamedQuery {name: 'namedQuery', prop: 'value', query: 'SELECT e FROM SingleNamedQueryEntity e'}) RETURN n").getColumn(
                                 "n")
                         .size(), equalTo(1));
         assertThat(query("CREATE (n:Jpa:NamedQuery {name: 'otherQuery', query: 'SELECT e'}) RETURN n").getColumn("n")
@@ -243,11 +243,11 @@ class JpaIT extends AbstractJavaPluginIT {
         assertThat(applyConcept("jpa2:Entity").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         assertThat(
-                query("MATCH (e:Jpa:Entity {name: 'JpaEntity'}) CREATE (e)-[:DEFINES]->(n:Jpa:NamedQuery {name: 'namedQueries', prop: 'value'}) RETURN n").getColumn(
+                query("MATCH (e:Jpa:Entity {name: '"+classesToScan[0].getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:Jpa:NamedQuery {name: 'namedQueries', prop: 'value'}) RETURN n").getColumn(
                                 "n")
                         .size(), equalTo(1));
         assertThat(
-                query("MATCH (e:Jpa:Entity {name: 'SingleNamedQueryEntity'}) CREATE (e)-[:DEFINES]->(n:Jpa:NamedQuery {name: 'namedQuery', prop: 'value'}) RETURN n").getColumn(
+                query("MATCH (e:Jpa:Entity {name: '"+classesToScan[1].getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:Jpa:NamedQuery {name: 'namedQuery', prop: 'value'}) RETURN n").getColumn(
                                 "n")
                         .size(), equalTo(1));
         assertThat(query("CREATE (n:Jpa:NamedQuery {name: 'otherQuery', query: 'SELECT e'}) RETURN n").getColumn("n")
@@ -267,34 +267,35 @@ class JpaIT extends AbstractJavaPluginIT {
      */
     @Test
     void fullPersistenceDescriptorV20() {
-        persistenceDescriptor("jpa/2_0/full", SCHEMA_2_0);
+        persistenceDescriptor("jpa/2_0/full", SCHEMA_2_0, JavaxJpaEntity.class);
     }
 
     @Test
     void fullPersistenceDescriptorV21() {
-        persistenceDescriptor("jpa/2_1/full", SCHEMA_2_1);
+        persistenceDescriptor("jpa/2_1/full", SCHEMA_2_1, JavaxJpaEntity.class);
     }
 
     @Test
     void fullPersistenceDescriptorV32() {
-        persistenceDescriptor("jpa/3_2/full", SCHEMA_3_2);
+        persistenceDescriptor("jpa/3_2/full", SCHEMA_3_2, JakartaJpaEntity.class);
     }
 
     @Test
     void minimalPersistenceDescriptorV20() {
-        persistenceDescriptor("jpa/2_0/minimal", SCHEMA_2_0);
+        persistenceDescriptor("jpa/2_0/minimal", SCHEMA_2_0, JavaxJpaEntity.class);
     }
 
     /**
      * Verifies scanning of persistence descriptors.
      */
-    @Test
-    void minimalPersistenceDescriptorV21() {
-        persistenceDescriptor("jpa/2_1/minimal", SCHEMA_2_1);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxJpaEntity.class, JakartaJpaEntity.class})
+    void minimalPersistenceDescriptorV21(Class<?> entityClass) {
+        persistenceDescriptor("jpa/2_1/minimal", SCHEMA_2_1, entityClass);
     }
 
-    private void persistenceDescriptor(String path, String schema) {
-        scanClassPathDirectory(new File(getClassesDirectory(JavaxJpaEntity.class), path));
+    private void persistenceDescriptor(String path, String schema, Class<?> entityClass) {
+        scanClassPathDirectory(new File(getClassesDirectory(entityClass), path));
         store.beginTransaction();
         TestResult testResult = query("MATCH (p:Jpa:Persistence:Xml) RETURN p");
         assertThat(testResult.getRows()
@@ -307,32 +308,29 @@ class JpaIT extends AbstractJavaPluginIT {
         store.commitTransaction();
     }
 
-    @ParameterizedTest
-    @ValueSource(classes = {JavaxJpaEntity.class, JakartaJpaEntity.class})
-    void fullPersistenceUnitDescriptorV20(Class<?> entityClass) {
-        fullPersistenceUnitDescriptor("jpa/2_0/full", entityClass);
+    @Test
+    void fullPersistenceUnitDescriptorV20() {
+        fullPersistenceUnitDescriptor("jpa/2_0/full", JavaxJpaEntity.class);
     }
 
     /**
      * Verifies scanning of persistence unit descriptors.
      */
-    @ParameterizedTest
-    @ValueSource(classes = {JavaxJpaEntity.class, JakartaJpaEntity.class})
-    void fullPersistenceUnitDescriptorV21(Class<?> entityClass) {
-        fullPersistenceUnitDescriptor("jpa/2_1/full", entityClass);
+    @Test
+    void fullPersistenceUnitDescriptorV21() {
+        fullPersistenceUnitDescriptor("jpa/2_1/full", JavaxJpaEntity.class);
     }
 
     /**
      * Verifies scanning of persistence unit descriptors.
      */
-    @ParameterizedTest
-    @ValueSource(classes = {JavaxJpaEntity.class, JakartaJpaEntity.class})
-    void fullPersistenceUnitDescriptorV32(Class<?> entityClass) {
-        fullPersistenceUnitDescriptor("jpa/3_2/full", entityClass);
+    @Test
+    void fullPersistenceUnitDescriptorV32() {
+        fullPersistenceUnitDescriptor("jpa/3_2/full", JakartaJpaEntity.class);
     }
 
     private void fullPersistenceUnitDescriptor(String path, Class<?> entityClass) {
-        scanClassPathDirectory(new File(getClassesDirectory( entityClass), path));
+        scanClassPathDirectory(new File(getClassesDirectory(entityClass), path));
         store.beginTransaction();
         TestResult testResult = query("MATCH (pu:Jpa:PersistenceUnit) RETURN pu");
         assertThat(testResult.getRows()
@@ -379,22 +377,19 @@ class JpaIT extends AbstractJavaPluginIT {
      * @throws IOException
      *         If the test fails.
      */
-    @ParameterizedTest
-    @ValueSource(classes = {JavaxJpaEntity.class, JakartaJpaEntity.class})
-    void validationModeAutoV20(Class<?> entityClass) throws Exception {
-        validationModeMustBeExplicitlySpecified("jpa/2_0/full",  entityClass);
+    @Test
+    void validationModeAutoV20() throws Exception {
+        validationModeMustBeExplicitlySpecified("jpa/2_0/full",  JavaxJpaEntity.class);
     }
 
-    @ParameterizedTest
-    @ValueSource(classes = {JavaxJpaEntity.class, JakartaJpaEntity.class})
-    void validationModeAutoV21(Class<?> entityClass) throws Exception {
-        validationModeMustBeExplicitlySpecified("jpa/2_1/full",  entityClass);
+    @Test
+    void validationModeAutoV21() throws Exception {
+        validationModeMustBeExplicitlySpecified("jpa/2_1/full",  JavaxJpaEntity.class);
     }
 
-    @ParameterizedTest
-    @ValueSource(classes = {JavaxJpaEntity.class, JakartaJpaEntity.class})
-    void validationModeAutoV32(Class<?> entityClass) throws Exception {
-        validationModeMustBeExplicitlySpecified("jpa/3_2/full",  entityClass);
+    @Test
+    void validationModeAutoV32() throws Exception {
+        validationModeMustBeExplicitlySpecified("jpa/3_2/full",  JakartaJpaEntity.class);
     }
 
     private void validationModeMustBeExplicitlySpecified(String path, Class<?> entityClass) throws RuleException {

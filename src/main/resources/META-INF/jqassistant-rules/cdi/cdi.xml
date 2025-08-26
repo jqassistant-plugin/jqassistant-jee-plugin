@@ -94,6 +94,7 @@
 
     <concept id="cdi:InjectableClassType">
         <providesConcept refId="jee-injection:Injectable"/>
+        <requiresConcept refId="cdi:Stereotype" />
         <description>Returns all classes labeled with "CDI", "JEE" and "Injectable".
         </description>
         <cypher><![CDATA[
@@ -111,7 +112,7 @@
         </description>
         <cypher><![CDATA[
             MATCH
-              (field:Java:Field)-[:OF_TYPE]->(fieldType:Java:TypeCDI:JEE:Injectable)
+              (field:Java:Field)-[:OF_TYPE]->(fieldType:Java:CDI:JEE:Injectable)
             RETURN
               fieldType AS Injectable
         ]]></cypher>
@@ -124,7 +125,7 @@
         </description>
         <cypher><![CDATA[
             MATCH
-              (method:Java:Method)-[:RETURNS]->(returnType:Java:TypeCDI:JEE:Injectable)
+              (method:Java:Method)-[:RETURNS]->(returnType:Java:CDI:JEE:Injectable)
             RETURN
               returnType AS Injectable
         ]]></cypher>

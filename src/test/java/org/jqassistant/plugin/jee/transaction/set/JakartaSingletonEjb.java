@@ -1,12 +1,12 @@
 package org.jqassistant.plugin.jee.transaction.set;
 
-import javax.ejb.Stateless;
+import jakarta.ejb.Singleton;
 
 /**
- * A stateless EJB.
+ * A singleton EJB.
  */
-@Stateless
-public class StatelessEjb {
+@Singleton
+public class JakartaSingletonEjb {
 
     public void transactionalMethod(){
     }
@@ -21,4 +21,5 @@ public class StatelessEjb {
     private void callingPrivateMethod() {
         privateMethod(); // Private methods are not transactional and may be called.
     }
+
 }
