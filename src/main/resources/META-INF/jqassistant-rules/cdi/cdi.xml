@@ -3,7 +3,6 @@
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
 
     <concept id="cdi:Produces">
-        <providesConcept refId="jee-injection:Injectable"/>
         <description>Abstract concept that returns the types of Producer fields and the return types of Producer methods as Producers.
         </description>
         <cypher><![CDATA[
@@ -93,7 +92,6 @@
     </concept>
 
     <concept id="cdi:InjectableClassType">
-        <providesConcept refId="jee-injection:Injectable"/>
         <description>Abstract concept that returns all classes labeled with "CDI", "JEE" and "Injectable".
         </description>
         <cypher><![CDATA[
@@ -105,7 +103,6 @@
     </concept>
 
     <concept id="cdi:InjectableFieldType">
-        <providesConcept refId="jee-injection:Injectable"/>
         <description>Abstract concept that returns all types of fields labeled with "CDI", "JEE" and "Injectable".
         </description>
         <cypher><![CDATA[
@@ -117,7 +114,6 @@
     </concept>
 
     <concept id="cdi:InjectableReturnType">
-        <providesConcept refId="jee-injection:Injectable"/>
         <description>Returns all return types of methods if these types are labeled with "CDI", "JEE" and "Injectable".
         </description>
         <cypher><![CDATA[
@@ -130,7 +126,6 @@
 
 
     <concept id="cdi:SingletonScoped">
-        <providesConcept refId="jee-injection:Injectable"/>
         <description>Abstract concept that returns all beans labeled with "CDI", "SingletonScoped", "JEE" and "Injectable".
         </description>
         <cypher><![CDATA[
@@ -186,7 +181,6 @@
     </concept>
 
     <concept id="cdi:Decorator">
-        <providesConcept refId="jee-injection:Injectable"/>
         <description>Abstract concept that returns all types labeled with "CDI", "Decorator", "JEE" and "Injectable".
         </description>
         <cypher><![CDATA[

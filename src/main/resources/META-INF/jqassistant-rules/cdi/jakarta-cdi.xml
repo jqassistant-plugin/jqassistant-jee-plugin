@@ -3,6 +3,7 @@
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
 
     <concept id="jakarta-cdi:Produces">
+        <providesConcept refId="jee-injection:Injectable"/>
         <providesConcept refId="cdi:Produces"/>
         <description>Creates a relation PRODUCES between a field and its type or a method and its return type if the parameter is annotated by
             @jakarta.enterprise.inject.Disposes.
@@ -157,6 +158,7 @@
     </concept>
 
     <concept id="jakarta-cdi:InjectableClassType">
+        <providesConcept refId="jee-injection:Injectable"/>
         <providesConcept refId="cdi:InjectableClassType"/>
         <requiresConcept refId="cdi:Stereotype" />
         <description>Labels all classes annotated with @jakarta.enterprise.context.Dependent,
@@ -184,6 +186,7 @@
     </concept>
 
     <concept id="jakarta-cdi:InjectableFieldType">
+        <providesConcept refId="jee-injection:Injectable"/>
         <providesConcept refId="cdi:InjectableFieldType"/>
         <requiresConcept refId="cdi:Stereotype" />
         <description>Labels all types of fields annotated with @jakarta.enterprise.context.Dependent,
@@ -212,6 +215,7 @@
     </concept>
 
     <concept id="jakarta-cdi:InjectableReturnType">
+        <providesConcept refId="jee-injection:Injectable"/>
         <providesConcept refId="cdi:InjectableReturnType"/>
         <requiresConcept refId="cdi:Stereotype" />
         <description>Labels all return types of methods annotated with @jakarta.enterprise.context.Dependent,
@@ -242,6 +246,7 @@
 
 
     <concept id="jakarta-cdi:SingletonScoped">
+        <providesConcept refId="jee-injection:Injectable"/>
         <providesConcept refId="cdi:SingletonScoped"/>
         <description>Labels all beans annotated by @jakarta.inject.Singleton with "CDI", "SingletonScoped", "JEE" and "Injectable".
         </description>
@@ -323,6 +328,7 @@
     </concept>
 
     <concept id="jakarta-cdi:Decorator">
+        <providesConcept refId="jee-injection:Injectable"/>
         <providesConcept refId="cdi:Decorator"/>
         <description>Labels all types annotated by @jakarta.decorator.Decorator with "CDI", "Decorator", "JEE" and "Injectable".
         </description>
