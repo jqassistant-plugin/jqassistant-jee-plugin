@@ -94,7 +94,6 @@
 
     <concept id="cdi:InjectableClassType">
         <providesConcept refId="jee-injection:Injectable"/>
-        <requiresConcept refId="cdi:Stereotype" />
         <description>Abstract concept that returns all classes labeled with "CDI", "JEE" and "Injectable".
         </description>
         <cypher><![CDATA[
@@ -107,7 +106,6 @@
 
     <concept id="cdi:InjectableFieldType">
         <providesConcept refId="jee-injection:Injectable"/>
-        <requiresConcept refId="cdi:Stereotype" />
         <description>Abstract concept that returns all types of fields labeled with "CDI", "JEE" and "Injectable".
         </description>
         <cypher><![CDATA[
@@ -120,7 +118,6 @@
 
     <concept id="cdi:InjectableReturnType">
         <providesConcept refId="jee-injection:Injectable"/>
-        <requiresConcept refId="cdi:Stereotype" />
         <description>Returns all return types of methods if these types are labeled with "CDI", "JEE" and "Injectable".
         </description>
         <cypher><![CDATA[
@@ -190,7 +187,6 @@
 
     <concept id="cdi:Decorator">
         <providesConcept refId="jee-injection:Injectable"/>
-        <requiresConcept refId="cdi:Delegate"/>
         <description>Abstract concept that returns all types labeled with "CDI", "Decorator", "JEE" and "Injectable".
         </description>
         <cypher><![CDATA[
@@ -202,7 +198,6 @@
     </concept>
 
     <concept id="cdi:EventProducer">
-        <requiresConcept refId="jee-injection:InjectionPoint"/>
         <description>Abstract concept that returns all beans labeled with "CDI" and "EventProducer".
         </description>
         <cypher><![CDATA[
@@ -214,7 +209,6 @@
     </concept>
 
     <concept id="cdi:EventConsumer">
-        <requiresConcept refId="jee-injection:InjectionPoint"/>
         <description>Abstract concept that returns all beans labeled with "CDI" and "EventConsumer".
         </description>
         <cypher><![CDATA[

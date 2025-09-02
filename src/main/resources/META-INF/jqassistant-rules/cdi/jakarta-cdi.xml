@@ -158,6 +158,7 @@
 
     <concept id="jakarta-cdi:InjectableClassType">
         <providesConcept refId="cdi:InjectableClassType"/>
+        <requiresConcept refId="cdi:Stereotype" />
         <description>Labels all classes annotated with @jakarta.enterprise.context.Dependent,
             @jakarta.enterprise.context.RequestScoped, @jakarta.enterprise.context.SessionScoped,
             @jakarta.enterprise.context.ConversationScoped, @jakarta.enterprise.context.ApplicationScoped or a stereotype
@@ -184,6 +185,7 @@
 
     <concept id="jakarta-cdi:InjectableFieldType">
         <providesConcept refId="cdi:InjectableFieldType"/>
+        <requiresConcept refId="cdi:Stereotype" />
         <description>Labels all types of fields annotated with @jakarta.enterprise.context.Dependent,
             @jakarta.enterprise.context.RequestScoped, @jakarta.enterprise.context.SessionScoped,
             @jakarta.enterprise.context.ConversationScoped, @jakarta.enterprise.context.ApplicationScoped or a stereotype
@@ -211,6 +213,7 @@
 
     <concept id="jakarta-cdi:InjectableReturnType">
         <providesConcept refId="cdi:InjectableReturnType"/>
+        <requiresConcept refId="cdi:Stereotype" />
         <description>Labels all return types of methods annotated with @jakarta.enterprise.context.Dependent,
             @jakarta.enterprise.context.RequestScoped, @jakarta.enterprise.context.SessionScoped,
             @jakarta.enterprise.context.ConversationScoped, @jakarta.enterprise.context.ApplicationScoped or a stereotype
@@ -337,6 +340,7 @@
 
     <concept id="jakarta-cdi:EventProducer">
         <providesConcept refId="cdi:EventProducer"/>
+        <requiresConcept refId="jee-injection:InjectionPoint"/>
         <description>Labels all beans declaring "InjectionPoint" of type "jakarta.enterprise.event.Event" with "CDI" and "EventProducer".
         </description>
         <cypher><![CDATA[
@@ -354,6 +358,7 @@
 
     <concept id="jakarta-cdi:EventConsumer">
         <providesConcept refId="cdi:EventConsumer"/>
+        <requiresConcept refId="jee-injection:InjectionPoint"/>
         <description>Labels all beans declaring method that has parameter of type "jakarta.enterprise.event.Observes" with "CDI" and "EventConsumer".
         </description>
         <cypher><![CDATA[
