@@ -3,23 +3,22 @@
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
 
     <concept id="decorator:Delegate">
-        <description>Returns all fields labeled with "Decorator" and "Delegate".
+        <description>Abstract concept that returns all fields labeled with "Decorator" and "Delegate".
         </description>
         <cypher><![CDATA[
             MATCH
-              (delegate:Field:Decorator:Delegate)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(delegateType:Type)
+              (delegate:Field:Decorator:Delegate)
             RETURN
               delegate AS Delegate
         ]]></cypher>
     </concept>
 
     <concept id="decorator:Decorator">
-        <requiresConcept refId="decorator:Delegate"/>
-        <description>Returns all types labeled with "Decorator".
+        <description>Abstract concept that returns all types labeled with "Decorator".
         </description>
         <cypher><![CDATA[
             MATCH
-              (decorator:Type:Decorator)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(decoratorType:Type)
+              (decorator:Type:Decorator)
             RETURN
               decorator AS Decorator
         ]]></cypher>
