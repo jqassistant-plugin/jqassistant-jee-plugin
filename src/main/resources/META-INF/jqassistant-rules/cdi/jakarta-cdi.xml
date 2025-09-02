@@ -417,4 +417,19 @@
         ]]></cypher>
     </concept>
 
+    <concept id="jakarta-cdi:New">
+        <providesConcept refId="cdi:New"/>
+        <description>Labels all elements annotated by "jakarta.enterprise.inject.New" with "CDI" and "New".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (e)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(newType:Type)
+            WHERE
+              newType.fqn = "jakarta.enterprise.inject.New"
+            SET
+              e:CDI:New
+            RETURN
+              e AS New
+        ]]></cypher>
+    </concept>
 </jqassistant-rules>
