@@ -1,5 +1,7 @@
 package org.jqassistant.plugin.jee.cdi.test.set.beans.scope.javax;
 
+import org.jqassistant.plugin.jee.cdi.test.set.beans.scope.ProducedBean;
+
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 
@@ -8,11 +10,11 @@ public class JavaxRequestScopedBean {
 
     @Produces
     @RequestScoped
-    private String producerField;
+    private ProducedBean producerField;
 
     @Produces
     @RequestScoped
-    public String producerMethod() {
-        return "value";
+    public ProducedBean producerMethod() {
+        return new ProducedBean();
     }
 }

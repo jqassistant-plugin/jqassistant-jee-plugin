@@ -1,5 +1,7 @@
 package org.jqassistant.plugin.jee.cdi.test.set.beans.scope.javax;
 
+import org.jqassistant.plugin.jee.cdi.test.set.beans.scope.ProducedBean;
+
 import java.io.Serializable;
 
 import javax.enterprise.context.SessionScoped;
@@ -10,11 +12,11 @@ public class JavaxSessionScopedBean implements Serializable {
 
     @Produces
     @SessionScoped
-    private String producerField;
+    private ProducedBean producerField;
 
     @Produces
     @SessionScoped
-    public String producerMethod() {
-        return "value";
+    public ProducedBean producerMethod() {
+        return new ProducedBean();
     }
 }

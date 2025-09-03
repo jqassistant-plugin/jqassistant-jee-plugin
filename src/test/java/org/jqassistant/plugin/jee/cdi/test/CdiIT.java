@@ -15,6 +15,8 @@ import com.buschmais.jqassistant.plugin.java.api.model.MethodDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
 
+import com.buschmais.jqassistant.plugin.java.test.assertj.TypeDescriptorCondition;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.jakarta.JakartaAlternativeBean;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.javax.JavaxAlternativeBean;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.decorator.jakarta.JakartaDecoratorBean;
@@ -519,9 +521,29 @@ class CdiIT extends AbstractJavaPluginIT {
                 Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithStereotypeAnnotatedMethod.class));
     }
 
+    private static Stream<Arguments> classesToScanForprovidedConceptJeeInjectable() {
+        return Stream.of(Arguments.of(
+                new Class[] { JavaxDependentBean.class, JavaxRequestScopedBean.class, JavaxSessionScopedBean.class,
+                        JavaxConversationScopedBean.class, JavaxApplicationScopedBean.class, JavaxSingletonBean.class,
+                        JavaxDecoratorBean.class, ProducedBean.class, JavaxStereotypeAnnotatedBean.class },
+                        new Class[] { JavaxTypeWithApplicationScopedField.class, JavaxTypeWithConversationScopedField.class,
+                                JavaxTypeWithDependentField.class, JavaxTypeWithRequestScopedField.class, JavaxTypeWithSessionScopedField.class,
+                                JavaxTypeWithApplicationScopedMethod.class, JavaxTypeWithConversationScopedMethod.class, JavaxTypeWithDependentMethod.class,
+                                JavaxTypeWithRequestScopedMethod.class, JavaxTypeWithSessionScopedMethod.class, JavaxCustomStereotype.class }),
+                Arguments.of(
+                    new Class[] { JakartaDependentBean.class, JakartaRequestScopedBean.class, JakartaSessionScopedBean.class,
+                        JakartaConversationScopedBean.class, JakartaApplicationScopedBean.class, JakartaSingletonBean.class,
+                            JakartaDecoratorBean.class, ProducedBean.class, JakartaStereotypeAnnotatedBean.class },
+                        new Class[] { JakartaTypeWithApplicationScopedField.class, JakartaTypeWithConversationScopedField.class,
+                                JakartaTypeWithDependentField.class, JakartaTypeWithRequestScopedField.class, JakartaTypeWithSessionScopedField.class,
+                                JakartaTypeWithApplicationScopedMethod.class, JakartaTypeWithConversationScopedMethod.class, JakartaTypeWithDependentMethod.class,
+                                JakartaTypeWithRequestScopedMethod.class, JakartaTypeWithSessionScopedMethod.class, JakartaCustomStereotype.class}));
+    }
+
     @ParameterizedTest
     @MethodSource("classesToScanForprovidedConceptJeeInjectable")
-    void providedConceptJeeInjectable(Class<?>[] classesToScan, String jCase) throws RuleException {
+    void providedConceptJeeInjectable(Class<?>[] injectables, Class<?>[] additionalClassesToScan) throws RuleException {
+        final Class<?>[] classesToScan = ArrayUtils.addAll(injectables, additionalClassesToScan);
         scanClasses(classesToScan);
         final Result<Concept> conceptResult = applyConcept("jee-injection:Injectable");
         assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
@@ -532,59 +554,17 @@ class CdiIT extends AbstractJavaPluginIT {
                 .map(Column::getValue)
                 .map(TypeDescriptor.class::cast)
                 .collect(Collectors.toList());
-        assertCdiInjectables(conceptResultTypes, jCase);
+        assertThat(conceptResultTypes).hasSize(injectables.length);
+        Stream.of(injectables)
+                .map(TypeDescriptorCondition::typeDescriptor)
+                .forEach(injectable -> assertThat(conceptResultTypes).haveExactly(1, injectable));
 
         final List<TypeDescriptor> injectableTypes =
                 query("MATCH (injectableType:Java:Type:Injectable) RETURN injectableType").getColumn("injectableType");
-        assertCdiInjectables(injectableTypes, jCase);
-        store.commitTransaction();
-    }
-
-    private static Stream<Arguments> classesToScanForprovidedConceptJeeInjectable() {
-        return Stream.of(Arguments.of(
-                new Class[] { JavaxDependentBean.class, JavaxRequestScopedBean.class, JavaxSessionScopedBean.class, JavaxConversationScopedBean.class,
-                        JavaxApplicationScopedBean.class, JavaxSingletonBean.class, JavaxDecoratorBean.class, ProducedBean.class,
-                        JavaxTypeWithApplicationScopedField.class, JavaxTypeWithConversationScopedField.class, JavaxTypeWithDependentField.class,
-                        JavaxTypeWithRequestScopedField.class, JavaxTypeWithSessionScopedField.class, JavaxTypeWithApplicationScopedMethod.class,
-                        JavaxTypeWithConversationScopedMethod.class, JavaxTypeWithDependentMethod.class, JavaxTypeWithRequestScopedMethod.class,
-                        JavaxTypeWithSessionScopedMethod.class, JavaxStereotypeAnnotatedBean.class, JavaxCustomStereotype.class }, "javax"), Arguments.of(
-                new Class[] { JakartaDependentBean.class, JakartaRequestScopedBean.class, JakartaSessionScopedBean.class,
-                        JakartaConversationScopedBean.class, JakartaApplicationScopedBean.class, JakartaSingletonBean.class, JakartaDecoratorBean.class,
-                        ProducedBean.class, JakartaTypeWithApplicationScopedField.class, JakartaTypeWithConversationScopedField.class,
-                        JakartaTypeWithDependentField.class, JakartaTypeWithRequestScopedField.class, JakartaTypeWithSessionScopedField.class,
-                        JakartaTypeWithApplicationScopedMethod.class, JakartaTypeWithConversationScopedMethod.class, JakartaTypeWithDependentMethod.class,
-                        JakartaTypeWithRequestScopedMethod.class, JakartaTypeWithSessionScopedMethod.class, JakartaStereotypeAnnotatedBean.class,
-                        JakartaCustomStereotype.class }, "jakarta"));
-    }
-
-    private static void assertCdiInjectables(List<TypeDescriptor> actualTypes, String jCase) {
-        assertThat(actualTypes).hasSize(10);
-        assertThat(actualTypes).haveExactly(1, typeDescriptor(String.class)); // Caused by @Produces
-        assertThat(actualTypes).haveExactly(1, typeDescriptor(ProducedBean.class));
-
-        switch (jCase) {
-        case "javax":
-            assertThat(actualTypes).haveExactly(1, typeDescriptor(JavaxDependentBean.class));
-            assertThat(actualTypes).haveExactly(1, typeDescriptor(JavaxRequestScopedBean.class));
-            assertThat(actualTypes).haveExactly(1, typeDescriptor(JavaxSessionScopedBean.class));
-            assertThat(actualTypes).haveExactly(1, typeDescriptor(JavaxConversationScopedBean.class));
-            assertThat(actualTypes).haveExactly(1, typeDescriptor(JavaxApplicationScopedBean.class));
-            assertThat(actualTypes).haveExactly(1, typeDescriptor(JavaxSingletonBean.class));
-            assertThat(actualTypes).haveExactly(1, typeDescriptor(JavaxDecoratorBean.class));
-            assertThat(actualTypes).haveExactly(1, typeDescriptor(JavaxStereotypeAnnotatedBean.class));
-            break;
-
-        case "jakarta":
-            assertThat(actualTypes).haveExactly(1, typeDescriptor(JakartaDependentBean.class));
-            assertThat(actualTypes).haveExactly(1, typeDescriptor(JakartaRequestScopedBean.class));
-            assertThat(actualTypes).haveExactly(1, typeDescriptor(JakartaSessionScopedBean.class));
-            assertThat(actualTypes).haveExactly(1, typeDescriptor(JakartaConversationScopedBean.class));
-            assertThat(actualTypes).haveExactly(1, typeDescriptor(JakartaApplicationScopedBean.class));
-            assertThat(actualTypes).haveExactly(1, typeDescriptor(JakartaSingletonBean.class));
-            assertThat(actualTypes).haveExactly(1, typeDescriptor(JakartaDecoratorBean.class));
-            assertThat(actualTypes).haveExactly(1, typeDescriptor(JakartaStereotypeAnnotatedBean.class));
-            break;
-        }
+        assertThat(injectableTypes).hasSize(injectables.length);
+        Stream.of(injectables)
+                .map(TypeDescriptorCondition::typeDescriptor)
+                .forEach(injectable -> assertThat(injectableTypes).haveExactly(1, injectable));
     }
 
     /**

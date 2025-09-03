@@ -4,17 +4,18 @@ import java.io.Serializable;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.enterprise.inject.Produces;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.scope.ProducedBean;
 
 @SessionScoped
 public class JakartaSessionScopedBean implements Serializable {
 
     @Produces
     @SessionScoped
-    private String producerField;
+    private ProducedBean producerField;
 
     @Produces
     @SessionScoped
-    public String producerMethod() {
-        return "value";
+    public ProducedBean producerMethod() {
+        return new ProducedBean();
     }
 }

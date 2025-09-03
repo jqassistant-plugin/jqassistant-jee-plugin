@@ -4,17 +4,18 @@ import java.io.Serializable;
 
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Produces;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.scope.ProducedBean;
 
 @Dependent
 public class JakartaDependentBean implements Serializable {
 
     @Produces
     @Dependent
-    private String producerField;
+    private ProducedBean producerField;
 
     @Produces
     @Dependent
-    public String producerMethod() {
-        return "value";
+    public ProducedBean producerMethod() {
+        return new ProducedBean();
     }
 }
