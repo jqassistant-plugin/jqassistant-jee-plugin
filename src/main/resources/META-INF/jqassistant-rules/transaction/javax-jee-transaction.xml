@@ -4,7 +4,7 @@
 
 
     <concept id="javax-jee-transaction:TransactionalMethodByAnnotatedMethod">
-        <providesConcept refId="jee-transaction:TransactionalMethodByAnnotatedMethod" />
+        <providesConcept refId="jee-transaction:TransactionalMethod" />
         <description>
             Labels all methods which are annotated with "javax.transaction.Transactional", with "JEE" and "Transactional".
         </description>
@@ -24,7 +24,7 @@
     </concept>
 
     <concept id="javax-jee-transaction:TransactionalMethodByAnnotatedClass">
-        <providesConcept refId="jee-transaction:TransactionalMethodByAnnotatedClass" />
+        <providesConcept refId="jee-transaction:TransactionalMethod" />
         <description>
             Labels methods of classes which are directly or indirectly annotated with "javax.transaction.Transactional" with "JEE" and "Transactional".
         </description>

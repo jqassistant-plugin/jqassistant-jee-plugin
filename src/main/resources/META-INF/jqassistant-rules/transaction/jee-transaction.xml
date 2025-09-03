@@ -61,32 +61,4 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jee-transaction:TransactionalMethodByAnnotatedMethod">
-        <providesConcept refId="jee-transaction:TransactionalMethod"/>
-        <description>
-            Returns all methods that are labeled with "JEE" and "Transactional".
-        </description>
-        <cypher><![CDATA[
-           MATCH
-             (type:Type)-[:DECLARES]->(transactionalMethod:Method:JEE:Transactional)
-           RETURN
-             type as Type, transactionalMethod as TransactionalMethod
-        ]]></cypher>
-    </concept>
-
-    <concept id="jee-transaction:TransactionalMethodByAnnotatedClass">
-        <providesConcept refId="jee-transaction:TransactionalMethod"/>
-        <description>
-            Returns methods that are labeled with "JEE" and "Transactional" and part of classes which are directly or indirectly annotated with
-            "jakarta.transaction.Transactional", or "javax.transaction.Transactional" .
-        </description>
-        <cypher><![CDATA[
-           MATCH
-             (transactionalClass:Type)-[:EXTENDS|IMPLEMENTS*0..]->(:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotationType:Type),
-             (transactionalClass)-[:DECLARES]->(transactionalMethod:Method:JEE:Transactional)
-           RETURN
-             transactionalClass as TransactionalClass, collect(transactionalMethod) as TransactionalMethods
-        ]]></cypher>
-    </concept>
-
 </jqassistant-rules>
