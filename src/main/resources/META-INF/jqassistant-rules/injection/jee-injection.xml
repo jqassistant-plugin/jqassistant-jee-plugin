@@ -17,7 +17,7 @@
     </group>
 
     <concept id="jee-injection:Injectable">
-        <description>Returns all injectables.</description>
+        <description>Abstract concept that returns all injectables.</description>
         <cypher><![CDATA[
             MATCH
               (injectable:JEE:Injectable)
@@ -27,7 +27,7 @@
     </concept>
 
     <concept id="jee-injection:InjectionPoint">
-        <description>Returns all fields and methods that have been labeled with "InjectionPoint" and "CDI".</description>
+        <description>Abstract concept that returns all fields and methods that have been labeled with "InjectionPoint" and "CDI".</description>
         <cypher><![CDATA[
             MATCH
               (:Type)-[:DECLARES]->(member:InjectionPoint:CDI)
