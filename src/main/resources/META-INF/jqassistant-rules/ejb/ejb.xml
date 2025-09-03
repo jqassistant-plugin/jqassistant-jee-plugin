@@ -2,10 +2,6 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
 
-    <!-- Hier werden abstrakte EJB-Konzepte definiert, die von konkreten Namespace-spezifischen Konzepten provided werden.
-        KONSEQUENZ: Sämtliche Regeln dürfen nur von abstrakten Konzepten abhängen.
-     -->
-
     <concept id="ejb:EJB">
         <description>Provides EJB types as ":EJB".</description>
         <cypher><![CDATA[
@@ -18,17 +14,8 @@
         ]]></cypher>
     </concept>
 
-    <concept id="ejb:Schedule">
-        <description>Returns all Schedule-Methods.</description>
-        <cypher><![CDATA[
-            MATCH (m:Method:JEE:Schedule)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
-            RETURN m AS ScheduledMethod
-        ]]></cypher>
-    </concept>
-
     <concept id="ejb:StatelessSessionBean">
-        <providesConcept refId="ejb:EJB" />
-        <description>Returns all Stateless Session Beans.</description>
+        <description>Abstract concept that returns all Stateless Session Beans.</description>
         <cypher><![CDATA[
             MATCH (t:Type:JEE:EJB:Stateless)
             RETURN t AS EJB
@@ -36,8 +23,7 @@
     </concept>
 
     <concept id="ejb:StatefulSessionBean">
-        <providesConcept refId="ejb:EJB" />
-        <description>Returns all Stateful Session Beans.</description>
+        <description>Abstract concept that returns all Stateful Session Beans.</description>
         <cypher><![CDATA[
             MATCH (t:Type:JEE:EJB:Stateful)
             RETURN t AS EJB
@@ -45,8 +31,7 @@
     </concept>
 
     <concept id="ejb:SingletonBean">
-        <providesConcept refId="ejb:EJB" />
-        <description>Returns all Singleton Beans.</description>
+        <description>Abstract concept that returns all Singleton Beans.</description>
         <cypher><![CDATA[
             MATCH (t:Type:JEE:EJB:Singleton)
             RETURN t AS EJB
@@ -54,8 +39,7 @@
     </concept>
 
     <concept id="ejb:MessageDrivenBean">
-        <providesConcept refId="ejb:EJB" />
-        <description>Returns all Message Driven Beans.</description>
+        <description>Abstract concept that returns all Message Driven Beans.</description>
         <cypher><![CDATA[
             MATCH (t:Type:JEE:EJB:MessageDriven)
             RETURN t AS EJB
@@ -63,7 +47,7 @@
     </concept>
 
     <concept id="ejb:Local">
-        <description>Returns all local beans.</description>
+        <description>Abstract concept that returns all local beans.</description>
         <cypher><![CDATA[
             MATCH (t:Type:JEE:Local)
             RETURN t AS LocalBean
@@ -71,10 +55,18 @@
     </concept>
 
     <concept id="ejb:Remote">
-        <description>Returns all remote beans.</description>
+        <description>Abstract concept that returns all remote beans.</description>
         <cypher><![CDATA[
             MATCH (t:Type:JEE:Remote)
             RETURN t AS RemoteBean
+        ]]></cypher>
+    </concept>
+
+    <concept id="ejb:Schedule">
+        <description>Abstract concept that returns all Schedule-Methods.</description>
+        <cypher><![CDATA[
+            MATCH (m:Method:JEE:Schedule)
+            RETURN m AS ScheduledMethod
         ]]></cypher>
     </concept>
 

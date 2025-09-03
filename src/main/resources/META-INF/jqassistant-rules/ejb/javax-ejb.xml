@@ -2,9 +2,8 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
 
-    <!-- Hier werden konkrete EJB-Konzepte für den Javax-Namespace definiert. -->
-
     <concept id="javax-ejb:StatelessSessionBean">
+        <providesConcept refId="ejb:EJB" />
         <providesConcept refId="ejb:StatelessSessionBean" />
         <description>Labels all types annotated with @javax.ejb.Stateless with "EJB" and "Stateless".</description>
         <cypher><![CDATA[
@@ -16,6 +15,7 @@
     </concept>
 
     <concept id="javax-ejb:StatefulSessionBean">
+        <providesConcept refId="ejb:EJB" />
         <providesConcept refId="ejb:StatefulSessionBean" />
         <description>Labels all types annotated with @javax.ejb.Stateful with "EJB" and "Stateful".</description>
         <cypher><![CDATA[
@@ -27,6 +27,7 @@
     </concept>
 
     <concept id="javax-ejb:SingletonBean">
+        <providesConcept refId="ejb:EJB" />
         <providesConcept refId="ejb:SingletonBean" />
         <description>Labels all classes annotated with @javax.ejb.Singleton with "EJB" and "Singleton".</description>
         <cypher><![CDATA[
@@ -38,6 +39,7 @@
     </concept>
 
     <concept id="javax-ejb:MessageDrivenBean">
+        <providesConcept refId="ejb:EJB" />
         <providesConcept refId="ejb:MessageDrivenBean" />
         <description>Labels all types annotated with @javax.ejb.MessageDriven with "EJB" and "MessageDriven".
         </description>
