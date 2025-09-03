@@ -51,7 +51,7 @@
 
     <concept id="javax-jpa2:EmbeddedId">
         <providesConcept refId="jpa2:EmbeddedId"/>
-        <description>Labels all fields or methods annotated with @javax.persistence.EmbeddedId with "Jpa" and "Embedded".</description>
+        <description>Labels all fields or methods annotated with @javax.persistence.EmbeddedId with "Jpa" and "EmbeddedId".</description>
         <cypher><![CDATA[
             MATCH
               (t:Type)-[:DECLARES]->(member),
@@ -68,6 +68,7 @@
 
     <concept id="javax-jpa2:NamedQuery">
         <providesConcept refId="jpa2:NamedQuery"/>
+        <requiresConcept refId="jpa2:Entity"/>
         <description>Creates a node labeled with "Jpa" and "NamedQuery" for each @NamedQuery defined for an entity.
             Furthermore a relation DEFINES is created between the entity and the named query.
         </description>
