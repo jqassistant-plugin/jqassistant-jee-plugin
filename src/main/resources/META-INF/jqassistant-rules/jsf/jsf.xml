@@ -8,14 +8,10 @@
     </group>
 
     <concept id="jsf:JSFManagedBeans">
-        <description>Labels all types annotated with @javax.faces.bean.ManagedBean with "Jsf" and "ManagedBean".</description>
+        <description>Abstract concept that returns all types labeled with "Jsf" and "ManagedBean".</description>
         <cypher><![CDATA[
             MATCH
-              (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]-(a:Type)
-            WHERE
-              a.fqn="javax.faces.bean.ManagedBean"
-            SET
-              t:Jsf:ManagedBean
+              (t:Type:Jsf:ManagedBean)
             RETURN
               t AS `JSF Managed Bean`
     ]]></cypher>

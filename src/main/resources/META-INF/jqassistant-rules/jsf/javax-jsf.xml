@@ -1,0 +1,20 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+
+    <concept id="javax-jsf:JSFManagedBeans">
+        <providesConcept refId="jsf:JSFManagedBeans"/>
+        <description>Labels all types annotated with @javax.faces.bean.ManagedBean with "Jsf" and "ManagedBean".</description>
+        <cypher><![CDATA[
+            MATCH
+              (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]-(a:Type)
+            WHERE
+              a.fqn="javax.faces.bean.ManagedBean"
+            SET
+              t:Jsf:ManagedBean
+            RETURN
+              t AS `JSF Managed Bean`
+    ]]></cypher>
+    </concept>
+    
+</jqassistant-rules>
