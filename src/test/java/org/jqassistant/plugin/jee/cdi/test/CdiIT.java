@@ -261,35 +261,23 @@ class CdiIT extends AbstractJavaPluginIT {
      * @throws IOException If the test fails.
      */
     @ParameterizedTest
-    @MethodSource("scopedBeans")
-    void produces(Class<?>[] classesToScan) throws Exception {
-        scanClasses(classesToScan);
+    @ValueSource(classes = {JavaxApplicationScopedBean.class, JavaxConversationScopedBean.class, JavaxDependentBean.class,
+            JavaxRequestScopedBean.class, JavaxSessionScopedBean.class, JakartaApplicationScopedBean.class, JakartaConversationScopedBean.class, JakartaDependentBean.class,
+            JakartaRequestScopedBean.class, JakartaSessionScopedBean.class})
+    void produces(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         assertThat(applyConcept("cdi:Produces").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
         List<Object> column = query("MATCH (p)-[:PRODUCES]->({fqn:'java.lang.String'}) RETURN p").getColumn("p");
-        assertThat(column).hasSize(10);
+        assertThat(column).hasSize(2);
 
         final List<FieldDescriptor> fields = column.stream().filter(FieldDescriptor.class::isInstance).map(FieldDescriptor.class::cast).collect(Collectors.toList());
-        assertThat(fields).haveExactly(1, fieldDescriptor(classesToScan[0], "producerField"));
-        assertThat(fields).haveExactly(1, fieldDescriptor(classesToScan[1], "producerField"));
-        assertThat(fields).haveExactly(1, fieldDescriptor(classesToScan[2], "producerField"));
-        assertThat(fields).haveExactly(1, fieldDescriptor(classesToScan[3], "producerField"));
-        assertThat(fields).haveExactly(1, fieldDescriptor(classesToScan[4], "producerField"));
+        assertThat(fields).haveExactly(1, fieldDescriptor(classToScan, "producerField"));
 
         final List<MethodDescriptor> methods = column.stream().filter(MethodDescriptor.class::isInstance).map(MethodDescriptor.class::cast).collect(Collectors.toList());
-        assertThat(methods).haveExactly(1, methodDescriptor(classesToScan[0], "producerMethod"));
-        assertThat(methods).haveExactly(1, methodDescriptor(classesToScan[1], "producerMethod"));
-        assertThat(methods).haveExactly(1, methodDescriptor(classesToScan[2], "producerMethod"));
-        assertThat(methods).haveExactly(1, methodDescriptor(classesToScan[3], "producerMethod"));
-        assertThat(methods).haveExactly(1, methodDescriptor(classesToScan[4], "producerMethod"));
-        store.commitTransaction();
-    }
+        assertThat(methods).haveExactly(1, methodDescriptor(classToScan, "producerMethod"));
 
-    private static Stream<Arguments> scopedBeans() {
-        return Stream.of(Arguments.of((Object) new Class[] { JavaxApplicationScopedBean.class, JavaxConversationScopedBean.class, JavaxDependentBean.class,
-                JavaxRequestScopedBean.class, JavaxSessionScopedBean.class }), Arguments.of(
-                (Object) new Class[] { JakartaApplicationScopedBean.class, JakartaConversationScopedBean.class, JakartaDependentBean.class,
-                        JakartaRequestScopedBean.class, JakartaSessionScopedBean.class }));
+        store.commitTransaction();
     }
 
     /**
