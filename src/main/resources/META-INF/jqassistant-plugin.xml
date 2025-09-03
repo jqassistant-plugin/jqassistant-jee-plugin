@@ -86,6 +86,8 @@
         <resource>injection/jakarta-jee-injection.xml</resource>
         <resource>injection/javax-jee-injection.xml</resource>
         <resource>jsf/jsf.xml</resource>
+        <resource>jsf/jakarta-jsf.xml</resource>
+        <resource>jsf/javax-jsf.xml</resource>
         <resource>transaction/jee-transaction.xml</resource>
         <resource>transaction/jakarta-jee-transaction.xml</resource>
         <resource>transaction/javax-jee-transaction.xml</resource>
