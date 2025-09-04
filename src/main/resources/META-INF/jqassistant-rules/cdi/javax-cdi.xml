@@ -46,9 +46,7 @@
 
     <concept id="javax-cdi:Qualifier">
         <providesConcept refId="cdi:Qualifier"/>
-        <description>Labels all annotation types annotated by @javax.inject.Qualifier with "CDI" and "Qualifier" and adds the labels "CDI"
-            and "Nonbinding" to
-            all non-binding annotation values (i.e. which are annotated by @javax.enterprise.util.Nonbinding).
+        <description>Labels all annotation types annotated by @javax.inject.Qualifier with "CDI" and "Qualifier" and adds the labels "CDI" and "Nonbinding" to all non-binding annotation values (i.e. which are annotated by @javax.enterprise.util.Nonbinding).
         </description>
         <cypher><![CDATA[
             MATCH
