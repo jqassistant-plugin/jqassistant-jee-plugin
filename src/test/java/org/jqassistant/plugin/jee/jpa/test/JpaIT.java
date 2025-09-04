@@ -265,24 +265,28 @@ class JpaIT extends AbstractJavaPluginIT {
     /**
      * Verifies scanning of persistence descriptors.
      */
-    @Test
-    void fullPersistenceDescriptorV20() {
-        persistenceDescriptor("jpa/2_0/full", SCHEMA_2_0, JavaxJpaEntity.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxJpaEntity.class, JakartaJpaEntity.class})
+    void fullPersistenceDescriptorV20(Class<?> entityClass) {
+        persistenceDescriptor("jpa/2_0/full", SCHEMA_2_0, entityClass);
     }
 
-    @Test
-    void fullPersistenceDescriptorV21() {
-        persistenceDescriptor("jpa/2_1/full", SCHEMA_2_1, JavaxJpaEntity.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxJpaEntity.class, JakartaJpaEntity.class})
+    void fullPersistenceDescriptorV21(Class<?> entityClass) {
+        persistenceDescriptor("jpa/2_1/full", SCHEMA_2_1, entityClass);
     }
 
-    @Test
-    void fullPersistenceDescriptorV32() {
-        persistenceDescriptor("jpa/3_2/full", SCHEMA_3_2, JakartaJpaEntity.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxJpaEntity.class, JakartaJpaEntity.class})
+    void fullPersistenceDescriptorV32(Class<?> entityClass) {
+        persistenceDescriptor("jpa/3_2/full", SCHEMA_3_2, entityClass);
     }
 
-    @Test
-    void minimalPersistenceDescriptorV20() {
-        persistenceDescriptor("jpa/2_0/minimal", SCHEMA_2_0, JavaxJpaEntity.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxJpaEntity.class, JakartaJpaEntity.class})
+    void minimalPersistenceDescriptorV20(Class<?> entityClass) {
+        persistenceDescriptor("jpa/2_0/minimal", SCHEMA_2_0, entityClass);
     }
 
     /**
@@ -377,19 +381,22 @@ class JpaIT extends AbstractJavaPluginIT {
      * @throws IOException
      *         If the test fails.
      */
-    @Test
-    void validationModeAutoV20() throws Exception {
-        validationModeMustBeExplicitlySpecified("jpa/2_0/full",  JavaxJpaEntity.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxJpaEntity.class, JakartaJpaEntity.class})
+    void validationModeAutoV20(Class<?> entityClass) throws Exception {
+        validationModeMustBeExplicitlySpecified("jpa/2_0/full",  entityClass);
     }
 
-    @Test
-    void validationModeAutoV21() throws Exception {
-        validationModeMustBeExplicitlySpecified("jpa/2_1/full",  JavaxJpaEntity.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxJpaEntity.class, JakartaJpaEntity.class})
+    void validationModeAutoV21(Class<?> entityClass) throws Exception {
+        validationModeMustBeExplicitlySpecified("jpa/2_1/full",  entityClass);
     }
 
-    @Test
-    void validationModeAutoV32() throws Exception {
-        validationModeMustBeExplicitlySpecified("jpa/3_2/full",  JakartaJpaEntity.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxJpaEntity.class, JakartaJpaEntity.class})
+    void validationModeAutoV32(Class<?> entityClass) throws Exception {
+        validationModeMustBeExplicitlySpecified("jpa/3_2/full",  entityClass);
     }
 
     private void validationModeMustBeExplicitlySpecified(String path, Class<?> entityClass) throws RuleException {
