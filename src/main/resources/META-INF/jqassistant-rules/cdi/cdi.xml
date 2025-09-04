@@ -3,7 +3,7 @@
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
 
     <concept id="cdi:Produces">
-        <description>Abstract concept that returns the types of Producer fields and the return types of Producer methods as Producers.
+        <description>Abstract concept that returns Producer fields and Producer methods.
         </description>
         <cypher><![CDATA[
             MATCH
