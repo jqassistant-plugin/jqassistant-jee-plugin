@@ -157,7 +157,6 @@
 
     <concept id="javax-cdi:InjectableClassType">
         <providesConcept refId="jee-injection:Injectable"/>
-        <providesConcept refId="cdi:InjectableClassType"/>
         <requiresConcept refId="cdi:Stereotype" />
         <description>Labels all classes annotated with @javax.enterprise.context.Dependent,
             @javax.enterprise.context.RequestScoped, @javax.enterprise.context.SessionScoped,
@@ -185,7 +184,6 @@
 
     <concept id="javax-cdi:InjectableFieldType">
         <providesConcept refId="jee-injection:Injectable"/>
-        <providesConcept refId="cdi:InjectableFieldType"/>
         <requiresConcept refId="cdi:Stereotype" />
         <description>Labels all types of fields annotated with @javax.enterprise.context.Dependent,
             @javax.enterprise.context.RequestScoped, @javax.enterprise.context.SessionScoped,
@@ -208,13 +206,12 @@
             SET
               fieldType:CDI:JEE:Injectable
             RETURN
-              fieldType AS Injectable
+              DISTINCT fieldType AS Injectable
         ]]></cypher>
     </concept>
 
     <concept id="javax-cdi:InjectableReturnType">
         <providesConcept refId="jee-injection:Injectable"/>
-        <providesConcept refId="cdi:InjectableReturnType"/>
         <requiresConcept refId="cdi:Stereotype" />
         <description>Labels all return types of methods annotated with @javax.enterprise.context.Dependent,
             @javax.enterprise.context.RequestScoped, @javax.enterprise.context.SessionScoped,
@@ -237,7 +234,7 @@
             SET
               returnType:CDI:JEE:Injectable
             RETURN
-              returnType AS Injectable
+              DISTINCT returnType AS Injectable
         ]]></cypher>
     </concept>
 

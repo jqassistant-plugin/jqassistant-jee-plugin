@@ -91,40 +91,6 @@
         ]]></cypher>
     </concept>
 
-    <concept id="cdi:InjectableClassType">
-        <description>Abstract concept that returns all classes labeled with "CDI", "JEE" and "Injectable".
-        </description>
-        <cypher><![CDATA[
-            MATCH
-              (type:Java:Type:Class:CDI:JEE:Injectable)
-            RETURN
-              type AS Injectable
-        ]]></cypher>
-    </concept>
-
-    <concept id="cdi:InjectableFieldType">
-        <description>Abstract concept that returns all types of fields labeled with "CDI", "JEE" and "Injectable".
-        </description>
-        <cypher><![CDATA[
-            MATCH
-              (field:Java:Field)-[:OF_TYPE]->(fieldType:Java:CDI:JEE:Injectable)
-            RETURN
-              fieldType AS Injectable
-        ]]></cypher>
-    </concept>
-
-    <concept id="cdi:InjectableReturnType">
-        <description>Returns all return types of methods if these types are labeled with "CDI", "JEE" and "Injectable".
-        </description>
-        <cypher><![CDATA[
-            MATCH
-              (method:Java:Method)-[:RETURNS]->(returnType:Java:CDI:JEE:Injectable)
-            RETURN
-              returnType AS Injectable
-        ]]></cypher>
-    </concept>
-
-
     <concept id="cdi:SingletonScoped">
         <description>Abstract concept that returns all beans labeled with "CDI", "SingletonScoped", "JEE" and "Injectable".
         </description>

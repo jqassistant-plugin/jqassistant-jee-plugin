@@ -1,6 +1,7 @@
 package org.jqassistant.plugin.jee.cdi.test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -425,75 +426,101 @@ class CdiIT extends AbstractJavaPluginIT {
         store.commitTransaction();
     }
 
+    private static Stream<Arguments> customStereotypeAndBeanForClassTypesParameters() {
+        return Stream.of(
+                Arguments.of(
+                        List.of(JavaxDependentBean.class, JavaxRequestScopedBean.class, JavaxSessionScopedBean.class,
+                                JavaxConversationScopedBean.class, JavaxApplicationScopedBean.class, JavaxStereotypeAnnotatedBean.class),
+                        JavaxCustomStereotype.class, "javax-cdi:InjectableClassType"),
+                Arguments.of(
+                        List.of(JakartaDependentBean.class, JakartaRequestScopedBean.class, JakartaSessionScopedBean.class,
+                                JakartaConversationScopedBean.class, JakartaApplicationScopedBean.class, JakartaStereotypeAnnotatedBean.class),
+                        JakartaCustomStereotype.class, "jakarta-cdi:InjectableClassType")
+        );
+    }
+
     @ParameterizedTest
-    @MethodSource("customStereotypeAndBeanForClassTypesClasses")
-    void injectableClassType(Class<?> classToScan,  Class<?> clazz) throws RuleException {
-        scanClasses(classToScan, clazz);
-        final Result<Concept> conceptResult = applyConcept("cdi:InjectableClassType");
+    @MethodSource("customStereotypeAndBeanForClassTypesParameters")
+    void injectableClassType(List<Class<?>> injectables,  Class<?> additionalClassToScan, String concept) throws RuleException {
+        final List<Class<?>> classesToScan = new ArrayList<>(injectables);
+        classesToScan.add(additionalClassToScan);
+        scanClasses(classesToScan.toArray(new Class<?>[0]));
+        final Result<Concept> conceptResult = applyConcept(concept);
         assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
-        assertThat(conceptResult.getRows()).hasSize(1);
-        assertThat(conceptResult.getRows().get(0).getColumns().get("Injectable").getValue())
-                .asInstanceOf(type(TypeDescriptor.class)).is(typeDescriptor(clazz));
-        final List<TypeDescriptor> injectableTypes =
+        assertThat(conceptResult.getRows()).hasSize(injectables.size());
+        final List<TypeDescriptor> coneptResultInjectables = conceptResult.getRows().stream()
+                .map(Row::getColumns)
+                .map(column -> column.get("Injectable"))
+                .map(Column::getValue)
+                .map(TypeDescriptor.class::cast)
+                .collect(Collectors.toList());
+        injectables.forEach(
+                expectedInjectable -> assertThat(coneptResultInjectables).haveExactly(1, typeDescriptor(expectedInjectable))
+        );
+
+        final List<TypeDescriptor> queryResultInjectables =
                 query("MATCH (injectableType:Java:Type:Injectable) RETURN injectableType").getColumn("injectableType");
-        assertThat(injectableTypes).hasSize(1);
-        assertThat(injectableTypes.get(0)).is(typeDescriptor(clazz));
+        assertThat(queryResultInjectables).hasSize(injectables.size());
+        injectables.forEach(
+                expectedInjectable -> assertThat(queryResultInjectables).haveExactly(1, typeDescriptor(expectedInjectable))
+        );
         store.commitTransaction();
     }
 
-    private static Stream<Arguments> customStereotypeAndBeanForClassTypesClasses() {
-        return Stream.of(Arguments.of(JavaxCustomStereotype.class, JavaxDependentBean.class),
-                Arguments.of(JavaxCustomStereotype.class, JavaxRequestScopedBean.class),
-                Arguments.of(JavaxCustomStereotype.class, JavaxSessionScopedBean.class),
-                Arguments.of(JavaxCustomStereotype.class, JavaxConversationScopedBean.class),
-                Arguments.of(JavaxCustomStereotype.class, JavaxApplicationScopedBean.class),
-                Arguments.of(JavaxCustomStereotype.class, JavaxStereotypeAnnotatedBean.class),
-                Arguments.of(JakartaCustomStereotype.class, JakartaDependentBean.class),
-                Arguments.of(JakartaCustomStereotype.class, JakartaRequestScopedBean.class),
-                Arguments.of(JakartaCustomStereotype.class, JakartaSessionScopedBean.class),
-                Arguments.of(JakartaCustomStereotype.class, JakartaConversationScopedBean.class),
-                Arguments.of(JakartaCustomStereotype.class, JakartaApplicationScopedBean.class),
-                Arguments.of(JakartaCustomStereotype.class, JakartaStereotypeAnnotatedBean.class));
+    private static Stream<Arguments> customStereotypeAndBeanForFieldTypesParameters() {
+        return Stream.of(
+                Arguments.of(
+                        List.of(JavaxTypeWithApplicationScopedField.class, JavaxTypeWithConversationScopedField.class, JavaxTypeWithDependentField.class,
+                                JavaxTypeWithRequestScopedField.class, JavaxTypeWithSessionScopedField.class, JavaxTypeWithStereotypeAnnotatedField.class),
+                        JavaxCustomStereotype.class, "javax-cdi:InjectableFieldType"),
+                Arguments.of(
+                        List.of(JakartaTypeWithApplicationScopedField.class, JakartaTypeWithConversationScopedField.class, JakartaTypeWithDependentField.class,
+                                JakartaTypeWithRequestScopedField.class, JakartaTypeWithSessionScopedField.class, JakartaTypeWithStereotypeAnnotatedField.class),
+                        JakartaCustomStereotype.class, "jakarta-cdi:InjectableFieldType")
+        );
     }
 
     @ParameterizedTest
-    @MethodSource("customStereotypeAndBeanForFieldTypesClasses")
-    void injectableFieldType(Class<?> classToScan,  Class<?> clazz) throws RuleException {
-        scanClasses(classToScan, ProducedBean.class, clazz);
-        final Result<Concept> conceptResult = applyConcept("cdi:InjectableFieldType");
+    @MethodSource("customStereotypeAndBeanForFieldTypesParameters")
+    void injectableFieldType(List<Class<?>> injectables,  Class<?> additionalClassToScan, String concept) throws RuleException {
+        final List<Class<?>> classesToScan = new ArrayList<>(injectables);
+        classesToScan.add(additionalClassToScan);
+        scanClasses(classesToScan.toArray(new Class<?>[0]));
+        final Result<Concept> conceptResult = applyConcept(concept);
         assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
         assertThat(conceptResult.getRows()).hasSize(1);
         assertThat(conceptResult.getRows().get(0).getColumns().get("Injectable").getValue())
                 .asInstanceOf(type(TypeDescriptor.class)).is(typeDescriptor(ProducedBean.class));
-        final List<TypeDescriptor> injectableTypes =
+
+        final List<TypeDescriptor> queryResultInjectables =
                 query("MATCH (injectableType:Java:Type:Injectable) RETURN injectableType").getColumn("injectableType");
-        assertThat(injectableTypes).hasSize(1);
-        assertThat(injectableTypes.get(0)).is(typeDescriptor(ProducedBean.class));
+        assertThat(queryResultInjectables).hasSize(1);
+        assertThat(queryResultInjectables.get(0)).is(typeDescriptor(ProducedBean.class));
         store.commitTransaction();
     }
 
-    private static Stream<Arguments> customStereotypeAndBeanForFieldTypesClasses() {
-        return Stream.of(Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithApplicationScopedField.class),
-                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithConversationScopedField.class),
-                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithDependentField.class),
-                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithRequestScopedField.class),
-                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithSessionScopedField.class),
-                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithStereotypeAnnotatedField.class),
-                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithApplicationScopedField.class),
-                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithConversationScopedField.class),
-                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithDependentField.class),
-                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithRequestScopedField.class),
-                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithSessionScopedField.class),
-                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithStereotypeAnnotatedField.class));
+    private static Stream<Arguments> customStereotypeAndBeanForReturnTypesParameters() {
+        return Stream.of(
+                Arguments.of(
+                        List.of(JavaxTypeWithApplicationScopedMethod.class, JavaxTypeWithConversationScopedMethod.class, JavaxTypeWithDependentMethod.class,
+                                JavaxTypeWithRequestScopedMethod.class, JavaxTypeWithSessionScopedMethod.class, JavaxTypeWithStereotypeAnnotatedMethod.class),
+                        JavaxCustomStereotype.class, "javax-cdi:InjectableReturnType"),
+                Arguments.of(
+                        List.of(JakartaTypeWithApplicationScopedMethod.class, JakartaTypeWithConversationScopedMethod.class, JakartaTypeWithDependentMethod.class,
+                                JakartaTypeWithRequestScopedMethod.class, JakartaTypeWithSessionScopedMethod.class, JakartaTypeWithStereotypeAnnotatedMethod.class),
+                        JakartaCustomStereotype.class, "jakarta-cdi:InjectableReturnType")
+        );
     }
 
     @ParameterizedTest
-    @MethodSource("customStereotypeAndBeanForReturnTypesClasses")
-    void injectableReturnType(Class<?> classToScan,  Class<?> clazz) throws RuleException {
-        scanClasses(classToScan, ProducedBean.class, clazz);
-        final Result<Concept> conceptResult = applyConcept("cdi:InjectableReturnType");
+    @MethodSource("customStereotypeAndBeanForReturnTypesParameters")
+    void injectableReturnType(List<Class<?>> injectables,  Class<?> additionalClassToScan, String concept) throws RuleException {
+        final List<Class<?>> classesToScan = new ArrayList<>(injectables);
+        classesToScan.add(additionalClassToScan);
+        scanClasses(classesToScan.toArray(new Class<?>[0]));
+        final Result<Concept> conceptResult = applyConcept(concept);
         assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
         assertThat(conceptResult.getRows()).hasSize(1);
@@ -523,17 +550,17 @@ class CdiIT extends AbstractJavaPluginIT {
 
     private static Stream<Arguments> classesToScanForprovidedConceptJeeInjectable() {
         return Stream.of(Arguments.of(
-                new Class[] { JavaxDependentBean.class, JavaxRequestScopedBean.class, JavaxSessionScopedBean.class,
-                        JavaxConversationScopedBean.class, JavaxApplicationScopedBean.class, JavaxSingletonBean.class,
-                        JavaxDecoratorBean.class, ProducedBean.class, JavaxStereotypeAnnotatedBean.class },
+                        new Class[] { JavaxDependentBean.class, JavaxRequestScopedBean.class, JavaxSessionScopedBean.class,
+                                JavaxConversationScopedBean.class, JavaxApplicationScopedBean.class, JavaxSingletonBean.class,
+                                JavaxDecoratorBean.class, ProducedBean.class, JavaxStereotypeAnnotatedBean.class },
                         new Class[] { JavaxTypeWithApplicationScopedField.class, JavaxTypeWithConversationScopedField.class,
                                 JavaxTypeWithDependentField.class, JavaxTypeWithRequestScopedField.class, JavaxTypeWithSessionScopedField.class,
                                 JavaxTypeWithApplicationScopedMethod.class, JavaxTypeWithConversationScopedMethod.class, JavaxTypeWithDependentMethod.class,
                                 JavaxTypeWithRequestScopedMethod.class, JavaxTypeWithSessionScopedMethod.class, JavaxCustomStereotype.class }),
                 Arguments.of(
-                    new Class[] { JakartaDependentBean.class, JakartaRequestScopedBean.class, JakartaSessionScopedBean.class,
-                        JakartaConversationScopedBean.class, JakartaApplicationScopedBean.class, JakartaSingletonBean.class,
-                            JakartaDecoratorBean.class, ProducedBean.class, JakartaStereotypeAnnotatedBean.class },
+                        new Class[] { JakartaDependentBean.class, JakartaRequestScopedBean.class, JakartaSessionScopedBean.class,
+                                JakartaConversationScopedBean.class, JakartaApplicationScopedBean.class, JakartaSingletonBean.class,
+                                JakartaDecoratorBean.class, ProducedBean.class, JakartaStereotypeAnnotatedBean.class },
                         new Class[] { JakartaTypeWithApplicationScopedField.class, JakartaTypeWithConversationScopedField.class,
                                 JakartaTypeWithDependentField.class, JakartaTypeWithRequestScopedField.class, JakartaTypeWithSessionScopedField.class,
                                 JakartaTypeWithApplicationScopedMethod.class, JakartaTypeWithConversationScopedMethod.class, JakartaTypeWithDependentMethod.class,
