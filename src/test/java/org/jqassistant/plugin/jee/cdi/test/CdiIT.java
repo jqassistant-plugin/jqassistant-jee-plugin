@@ -270,7 +270,7 @@ class CdiIT extends AbstractJavaPluginIT {
         scanClasses(classToScan);
         assertThat(applyConcept("cdi:Produces").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
-        List<Object> column = query("MATCH (p)-[:PRODUCES]->({fqn:'java.lang.String'}) RETURN p").getColumn("p");
+        List<Object> column = query("MATCH (p)-[:PRODUCES]->({fqn:'org.jqassistant.plugin.jee.cdi.test.set.beans.scope.ProducedBean'}) RETURN p").getColumn("p");
         assertThat(column).hasSize(2);
 
         final List<FieldDescriptor> fields = column.stream().filter(FieldDescriptor.class::isInstance).map(FieldDescriptor.class::cast).collect(Collectors.toList());
@@ -294,9 +294,9 @@ class CdiIT extends AbstractJavaPluginIT {
         scanClasses(classToScan);
         store.beginTransaction();
         // create existing relations with and without properties
-        assertThat(query("MATCH (m:Method {name: 'producerMethod'}), (t {fqn:'java.lang.String'}) MERGE (m)-[r:PRODUCES {prop: 'value'}]->(t) RETURN r")
+        assertThat(query("MATCH (m:Method {name: 'producerMethod'}), (t {fqn:'org.jqassistant.plugin.jee.cdi.test.set.beans.scope.ProducedBean'}) MERGE (m)-[r:PRODUCES {prop: 'value'}]->(t) RETURN r")
                 .getColumn("r")).hasSize(1);
-        assertThat(query("MATCH (f:Field {name: 'producerField'}), (t {fqn:'java.lang.String'}) MERGE (f)-[r:PRODUCES]->(t) RETURN r")
+        assertThat(query("MATCH (f:Field {name: 'producerField'}), (t {fqn:'org.jqassistant.plugin.jee.cdi.test.set.beans.scope.ProducedBean'}) MERGE (f)-[r:PRODUCES]->(t) RETURN r")
                 .getColumn("r")).hasSize(1);
         verifyUniqueRelation("PRODUCES", 2);
         store.commitTransaction();
