@@ -23,7 +23,7 @@ public class JsfIT extends AbstractJavaPluginIT {
     @Test
     void JSFManagedBeanConcept() throws Exception {
         scanClasses(JsfManagedBean.class);
-        Result<Concept> conceptResult = applyConcept("jsf:JSFManagedBeans");
+        Result<Concept> conceptResult = applyConcept("jsf:ManagedBean");
         store.beginTransaction();
         assertThat(conceptResult.getStatus(), equalTo(Result.Status.SUCCESS));
         assertThat(conceptResult.getRows().size(), equalTo(1));

@@ -3,11 +3,11 @@
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
 
     <group id="jsf:Default">
-        <includeConcept refId="jsf:JSFManagedBeans"/>
+        <includeConcept refId="jsf:ManagedBean"/>
         <includeConstraint refId="jsf:CDIBeansInsteadOfJSFManagedBeans"/>
     </group>
 
-    <concept id="jsf:JSFManagedBeans">
+    <concept id="jsf:ManagedBean">
         <description>Abstract concept that returns all types labeled with "Jsf" and "ManagedBean".</description>
         <cypher><![CDATA[
             MATCH
@@ -18,7 +18,7 @@
     </concept>
 
     <constraint id="jsf:CDIBeansInsteadOfJSFManagedBeans">
-        <requiresConcept refId="jsf:JSFManagedBeans"/>
+        <requiresConcept refId="jsf:ManagedBean"/>
         <description>Anstelle von JSF Managed Beans sollen CDI Beans verwendet werden.</description>
         <cypher><![CDATA[
             MATCH

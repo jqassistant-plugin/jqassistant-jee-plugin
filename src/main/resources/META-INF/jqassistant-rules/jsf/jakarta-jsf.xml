@@ -2,8 +2,8 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
 
-    <concept id="jakarta-jsf:JSFManagedBeans">
-        <providesConcept refId="jsf:JSFManagedBeans"/>
+    <concept id="jakarta-jsf:ManagedBean">
+        <providesConcept refId="jsf:ManagedBean"/>
         <description>Labels all types annotated with @jakarta.faces.bean.ManagedBean with "Jsf" and "ManagedBean".</description>
         <cypher><![CDATA[
             MATCH
