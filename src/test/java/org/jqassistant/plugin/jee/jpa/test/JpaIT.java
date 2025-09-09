@@ -64,7 +64,7 @@ class JpaIT extends AbstractJavaPluginIT {
         scanClasses(classToScan);
         assertThat(applyConcept("jpa2:Entity").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
-        assertThat(query("MATCH (e:Type:Jpa:Entity) RETURN e").getColumn("e"), hasItem(typeDescriptor(classToScan)));
+        assertThat(query("MATCH (e:Type:JPA:Entity) RETURN e").getColumn("e"), hasItem(typeDescriptor(classToScan)));
         store.commitTransaction();
     }
 
@@ -80,7 +80,7 @@ class JpaIT extends AbstractJavaPluginIT {
         scanClasses(classToScan);
         assertThat(applyConcept("jpa2:Embeddable").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
-        assertThat(query("MATCH (e:Type:Jpa:Embeddable) RETURN e").getColumn("e"), hasItem(typeDescriptor(classToScan)));
+        assertThat(query("MATCH (e:Type:JPA:Embeddable) RETURN e").getColumn("e"), hasItem(typeDescriptor(classToScan)));
         store.commitTransaction();
     }
 
@@ -96,7 +96,7 @@ class JpaIT extends AbstractJavaPluginIT {
         scanClasses(classToScan);
         assertThat(applyConcept("jpa2:Embedded").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
-        List<Object> members = query("MATCH (e:Jpa:Embedded) RETURN e").getColumn("e");
+        List<Object> members = query("MATCH (e:JPA:Embedded) RETURN e").getColumn("e");
         assertThat(members, hasItem(fieldDescriptor(classToScan, "embedded")));
         assertThat(members, hasItem(methodDescriptor(classToScan, "getEmbedded")));
         store.commitTransaction();
@@ -114,7 +114,7 @@ class JpaIT extends AbstractJavaPluginIT {
         scanClasses(classToScan);
         assertThat(applyConcept("jpa2:EmbeddedId").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
-        List<Object> members = query("MATCH (e:Jpa:EmbeddedId) RETURN e").getColumn("e");
+        List<Object> members = query("MATCH (e:JPA:EmbeddedId) RETURN e").getColumn("e");
         assertThat(members, hasItem(fieldDescriptor(classToScan, "id")));
         assertThat(members, hasItem(methodDescriptor(classToScan, "getId")));
         store.commitTransaction();
@@ -158,7 +158,7 @@ class JpaIT extends AbstractJavaPluginIT {
     private void verifyNamedQuery(Class<?> entity, String name, String query) {
         Map<String, Object> params = new HashMap<>();
         params.put("entity", entity.getName());
-        TestResult result = query("MATCH (e:Entity {fqn:$entity})-[:DEFINES]->(n:Jpa:NamedQuery) RETURN n.name as name, n.query as query", params);
+        TestResult result = query("MATCH (e:Entity {fqn:$entity})-[:DEFINES]->(n:JPA:NamedQuery) RETURN n.name as name, n.query as query", params);
         List<Map<String, Object>> rows = result.getRows();
         assertThat(rows.size(), equalTo(1));
         Map<String, Object> row = rows.get(0);
@@ -179,14 +179,14 @@ class JpaIT extends AbstractJavaPluginIT {
         assertThat(applyConcept("jpa2:Entity").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         assertThat(
-                query("MATCH (e:Jpa:Entity {name: '"+jpaEntity.getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:Jpa:NamedQuery {name: 'namedQueries', prop: 'value', query: 'foo'}) RETURN n").getColumn(
+                query("MATCH (e:JPA:Entity {name: '"+jpaEntity.getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:JPA:NamedQuery {name: 'namedQueries', prop: 'value', query: 'foo'}) RETURN n").getColumn(
                                 "n")
                         .size(), equalTo(1));
         assertThat(
-                query("MATCH (e:Jpa:Entity {name: '"+namedQueryEntity.getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:Jpa:NamedQuery {name: 'namedQuery', prop: 'value', query: 'foo'}) RETURN n").getColumn(
+                query("MATCH (e:JPA:Entity {name: '"+namedQueryEntity.getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:JPA:NamedQuery {name: 'namedQuery', prop: 'value', query: 'foo'}) RETURN n").getColumn(
                                 "n")
                         .size(), equalTo(1));
-        assertThat(query("CREATE (n:Jpa:NamedQuery {name: 'otherQuery', query: 'SELECT e'}) RETURN n").getColumn("n")
+        assertThat(query("CREATE (n:JPA:NamedQuery {name: 'otherQuery', query: 'SELECT e'}) RETURN n").getColumn("n")
                 .size(), equalTo(1));
         verifyUniqueRelation(jpaTestQueryName, jpaTestQueryQuery, 0, 0);
         verifyUniqueRelation(singleNameQueryTestQueryName, singleNameQueryTestQueryQuery, 0, 0);
@@ -211,14 +211,14 @@ class JpaIT extends AbstractJavaPluginIT {
         assertThat(applyConcept("jpa2:Entity").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         assertThat(
-                query("MATCH (e:Jpa:Entity {name: '"+jpaEntity.getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:Jpa:NamedQuery {name: 'namedQueries', prop: 'value', query: 'SELECT e FROM JpaEntity e'}) RETURN n").getColumn(
+                query("MATCH (e:JPA:Entity {name: '"+jpaEntity.getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:JPA:NamedQuery {name: 'namedQueries', prop: 'value', query: 'SELECT e FROM JpaEntity e'}) RETURN n").getColumn(
                                 "n")
                         .size(), equalTo(1));
         assertThat(
-                query("MATCH (e:Jpa:Entity {name: '"+namedQueryEntity.getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:Jpa:NamedQuery {name: 'namedQuery', prop: 'value', query: 'SELECT e FROM SingleNamedQueryEntity e'}) RETURN n").getColumn(
+                query("MATCH (e:JPA:Entity {name: '"+namedQueryEntity.getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:JPA:NamedQuery {name: 'namedQuery', prop: 'value', query: 'SELECT e FROM SingleNamedQueryEntity e'}) RETURN n").getColumn(
                                 "n")
                         .size(), equalTo(1));
-        assertThat(query("CREATE (n:Jpa:NamedQuery {name: 'otherQuery', query: 'SELECT e'}) RETURN n").getColumn("n")
+        assertThat(query("CREATE (n:JPA:NamedQuery {name: 'otherQuery', query: 'SELECT e'}) RETURN n").getColumn("n")
                 .size(), equalTo(1));
         verifyUniqueRelation(jpaTestQueryName, jpaTestQueryQuery, 1, 0);
         verifyUniqueRelation(singleNameQueryTestQueryName, singleNameQueryTestQueryQuery, 1, 0);
@@ -243,14 +243,14 @@ class JpaIT extends AbstractJavaPluginIT {
         assertThat(applyConcept("jpa2:Entity").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         assertThat(
-                query("MATCH (e:Jpa:Entity {name: '"+jpaEntity.getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:Jpa:NamedQuery {name: 'namedQueries', prop: 'value'}) RETURN n").getColumn(
+                query("MATCH (e:JPA:Entity {name: '"+jpaEntity.getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:JPA:NamedQuery {name: 'namedQueries', prop: 'value'}) RETURN n").getColumn(
                                 "n")
                         .size(), equalTo(1));
         assertThat(
-                query("MATCH (e:Jpa:Entity {name: '"+namedQueryEntity.getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:Jpa:NamedQuery {name: 'namedQuery', prop: 'value'}) RETURN n").getColumn(
+                query("MATCH (e:JPA:Entity {name: '"+namedQueryEntity.getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:JPA:NamedQuery {name: 'namedQuery', prop: 'value'}) RETURN n").getColumn(
                                 "n")
                         .size(), equalTo(1));
-        assertThat(query("CREATE (n:Jpa:NamedQuery {name: 'otherQuery', query: 'SELECT e'}) RETURN n").getColumn("n")
+        assertThat(query("CREATE (n:JPA:NamedQuery {name: 'otherQuery', query: 'SELECT e'}) RETURN n").getColumn("n")
                 .size(), equalTo(1));
         verifyUniqueRelation(jpaTestQueryName, jpaTestQueryQuery, 0, 1);
         verifyUniqueRelation(singleNameQueryTestQueryName, singleNameQueryTestQueryQuery, 0, 1);
@@ -301,7 +301,7 @@ class JpaIT extends AbstractJavaPluginIT {
     private void persistenceDescriptor(String path, String schema, Class<?> entityClass) {
         scanClassPathDirectory(new File(getClassesDirectory(entityClass), path));
         store.beginTransaction();
-        TestResult testResult = query("MATCH (p:Jpa:Persistence:Xml) RETURN p");
+        TestResult testResult = query("MATCH (p:JPA:Persistence:Xml) RETURN p");
         assertThat(testResult.getRows()
                 .size(), equalTo(1));
         List<? super PersistenceXmlDescriptor> persistenceDescriptors = testResult.getColumn("p");
@@ -336,7 +336,7 @@ class JpaIT extends AbstractJavaPluginIT {
     private void fullPersistenceUnitDescriptor(String path, Class<?> entityClass) {
         scanClassPathDirectory(new File(getClassesDirectory(entityClass), path));
         store.beginTransaction();
-        TestResult testResult = query("MATCH (pu:Jpa:PersistenceUnit) RETURN pu");
+        TestResult testResult = query("MATCH (pu:JPA:PersistenceUnit) RETURN pu");
         assertThat(testResult.getRows()
                 .size(), equalTo(1));
         List<? super PersistenceUnitDescriptor> persistenceUnitDescriptors = testResult.getColumn("pu");
@@ -457,19 +457,19 @@ class JpaIT extends AbstractJavaPluginIT {
      *         The number of nodes without the query attribute.
      */
     private void verifyUniqueRelation(String queryName, String query, int withQueryCount, int withoutQueryCount) {
-        TestResult result = query("MATCH ()-[r:DEFINES]->(:Jpa:NamedQuery) RETURN r");
+        TestResult result = query("MATCH ()-[r:DEFINES]->(:JPA:NamedQuery) RETURN r");
         assertThat(result.getColumn("r")
                 .size(), equalTo(2));
-        assertThat(query("MATCH (q:Jpa:NamedQuery {prop: 'value'}) RETURN q").getColumn("q")
+        assertThat(query("MATCH (q:JPA:NamedQuery {prop: 'value'}) RETURN q").getColumn("q")
                 .size(), equalTo(2));
-        result = query("MATCH ()-[:DEFINES]->(q:Jpa:NamedQuery {name: '" + queryName + "', query: '" + query + "'}) RETURN q");
+        result = query("MATCH ()-[:DEFINES]->(q:JPA:NamedQuery {name: '" + queryName + "', query: '" + query + "'}) RETURN q");
         if (withQueryCount == 0) {
             assertThat(result.getRows(), empty());
         } else {
             assertThat(result.getColumn("q")
                     .size(), equalTo(withQueryCount));
         }
-        result = query("MATCH (q:Jpa:NamedQuery {name: '" + queryName + "'}) WHERE q.query IS NULL RETURN q");
+        result = query("MATCH (q:JPA:NamedQuery {name: '" + queryName + "'}) WHERE q.query IS NULL RETURN q");
         if (withoutQueryCount == 0) {
             assertThat(result.getRows(), empty());
         } else {

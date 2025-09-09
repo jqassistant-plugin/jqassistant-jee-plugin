@@ -4,14 +4,14 @@
 
     <concept id="jakarta-jpa2:Entity">
         <providesConcept refId="jpa2:Entity"/>
-        <description>Labels all types annotated with @jakarta.persistence.Entity with "Jpa" and "Entity".</description>
+        <description>Labels all types annotated with @jakarta.persistence.Entity with "JPA" and "Entity".</description>
         <cypher><![CDATA[
             MATCH
               (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
             WHERE
               a.fqn="jakarta.persistence.Entity"
             SET
-              t:Jpa:Entity
+              t:JPA:Entity
             RETURN
               t AS JpaEntity
         ]]></cypher>
@@ -19,14 +19,14 @@
 
     <concept id="jakarta-jpa2:Embeddable">
         <providesConcept refId="jpa2:Embeddable"/>
-        <description>Labels all types annotated with @jakarta.persistence.Embeddable with "Jpa" and "Embeddable".</description>
+        <description>Labels all types annotated with @jakarta.persistence.Embeddable with "JPA" and "Embeddable".</description>
         <cypher><![CDATA[
             MATCH
               (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
             WHERE
               a.fqn="jakarta.persistence.Embeddable"
             SET
-              t:Jpa:Embeddable
+              t:JPA:Embeddable
             RETURN
               t AS JpaEmbeddable
         ]]></cypher>
@@ -34,7 +34,7 @@
 
     <concept id="jakarta-jpa2:Embedded">
         <providesConcept refId="jpa2:Embedded"/>
-        <description>Labels all fields or methods annotated with @jakarta.persistence.Embedded with "Jpa" and "Embedded".</description>
+        <description>Labels all fields or methods annotated with @jakarta.persistence.Embedded with "JPA" and "Embedded".</description>
         <cypher><![CDATA[
             MATCH
               (t:Type)-[:DECLARES]->(member),
@@ -43,7 +43,7 @@
               (member:Field or member:Method)
               and a.fqn="jakarta.persistence.Embedded"
             SET
-              member:Jpa:Embedded
+              member:JPA:Embedded
             RETURN
               member AS JpaEmbedded
         ]]></cypher>
@@ -51,7 +51,7 @@
 
     <concept id="jakarta-jpa2:EmbeddedId">
         <providesConcept refId="jpa2:EmbeddedId"/>
-        <description>Labels all fields or methods annotated with @jakarta.persistence.EmbeddedId with "Jpa" and "EmbeddedId".</description>
+        <description>Labels all fields or methods annotated with @jakarta.persistence.EmbeddedId with "JPA" and "EmbeddedId".</description>
         <cypher><![CDATA[
             MATCH
               (t:Type)-[:DECLARES]->(member),
@@ -60,7 +60,7 @@
               (member:Field or member:Method)
               and a.fqn="jakarta.persistence.EmbeddedId"
             SET
-              member:Jpa:EmbeddedId
+              member:JPA:EmbeddedId
             RETURN
               member AS EmbeddedId
         ]]></cypher>
@@ -69,19 +69,19 @@
     <concept id="jakarta-jpa2:NamedQuery">
         <providesConcept refId="jpa2:NamedQuery"/>
         <requiresConcept refId="jpa2:Entity"/>
-        <description>Creates a node labeled with "Jpa" and "NamedQuery" for each @NamedQuery defined for an entity.
+        <description>Creates a node labeled with "JPA" and "NamedQuery" for each @NamedQuery defined for an entity.
             Furthermore a relation DEFINES is created between the entity and the named query.
         </description>
         <cypher><![CDATA[
             MATCH
-              (entity:Jpa:Entity),
+              (entity:JPA:Entity),
               (entity)-[:ANNOTATED_BY]->(namedQueries:Annotation)-[:OF_TYPE]-(:Type{fqn:'jakarta.persistence.NamedQueries'}),
               (namedQueries)-[:HAS]->(:Value:Array)-[:CONTAINS]->(namedQuery),
               (namedQuery)-[:OF_TYPE]->(:Type{fqn:'jakarta.persistence.NamedQuery'}),
               (namedQuery)-[:HAS]->(nameAttribute:Value{name:'name'}),
               (namedQuery)-[:HAS]->(queryAttribute:Value{name:'query'})
             MERGE
-              (entity)-[:DEFINES]->(n:Jpa:NamedQuery {name:nameAttribute.value})
+              (entity)-[:DEFINES]->(n:JPA:NamedQuery {name:nameAttribute.value})
             SET
               n.query=queryAttribute.value
             RETURN
@@ -93,7 +93,7 @@
               (namedQuery)-[:HAS]->(nameAttribute:Value{name:'name'}),
               (namedQuery)-[:HAS]->(queryAttribute:Value{name:'query'})
             MERGE
-              (entity)-[:DEFINES]->(n:Jpa:NamedQuery {name:nameAttribute.value})
+              (entity)-[:DEFINES]->(n:JPA:NamedQuery {name:nameAttribute.value})
             SET
               n.query=queryAttribute.value
             RETURN
