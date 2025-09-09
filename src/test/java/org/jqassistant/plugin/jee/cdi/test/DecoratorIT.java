@@ -20,10 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class DecoratorIT extends AbstractJavaPluginIT {
 
     /**
-     * Verifies the concept "cdi:Decorator".
-     *
-     * @throws java.io.IOException
-     *             If the test fails.
+     * Verifies the concept "decorator:Decorator".
      */
     @ParameterizedTest
     @ValueSource(classes = { JavaxDecoratorBean.class, JakartaDecoratorBean.class})
@@ -32,6 +29,18 @@ class DecoratorIT extends AbstractJavaPluginIT {
         assertThat(applyConcept("decorator:Decorator").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
         assertThat(query("MATCH (e:Decorator) RETURN e").getColumn("e"), hasItem(typeDescriptor(classToScan)));
+        store.commitTransaction();
+    }
+
+    /**
+     * Verifies the concept "decorator:Delegate".
+     */
+    @ParameterizedTest
+    @ValueSource(classes = { JavaxDecoratorBean.class, JakartaDecoratorBean.class})
+    void delegate(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
+        assertThat(applyConcept("decorator:Delegate").getStatus(), equalTo(Result.Status.SUCCESS));
+        store.beginTransaction();
         assertThat(query("MATCH (e:Field:Decorator:Delegate) RETURN e").getColumn("e"), hasItem(fieldDescriptor(classToScan, "delegate")));
         store.commitTransaction();
     }
