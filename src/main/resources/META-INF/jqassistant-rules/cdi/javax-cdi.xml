@@ -39,6 +39,8 @@
               disposesType.fqn="javax.enterprise.inject.Disposes"
             MERGE
               (parameter)-[:DISPOSES]->(type)
+            SET
+              disposeMethod:Disposer
             RETURN
               disposeMethod AS DisposeMethod
         ]]></cypher>

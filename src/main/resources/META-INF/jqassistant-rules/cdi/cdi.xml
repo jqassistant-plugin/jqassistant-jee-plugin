@@ -18,7 +18,7 @@
         </description>
         <cypher><![CDATA[
             MATCH
-              (:Type)-[:DECLARES]->(disposeMethod:Method)-[:HAS]->(parameter:Parameter)-[:DISPOSES]->(:Type)
+              (disposeMethod:Method:Disposer)
             RETURN
               disposeMethod AS DisposeMethod
         ]]></cypher>

@@ -318,9 +318,18 @@ class CdiIT extends AbstractJavaPluginIT {
         scanClasses(classToScan);
         assertThat(applyConcept("cdi:Disposes").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
-        final List<TypeDescriptor> column = query("MATCH (p:Parameter)-[:DISPOSES]->(disposedType:Type) RETURN disposedType")
-                .getColumn("disposedType");
-        assertThat(column).haveExactly(1, typeDescriptor(String.class));
+
+        final TestResult queryResult =
+                query("MATCH (disposerMethod:Method:Disposer)-[:HAS]->(p:Parameter)-[:DISPOSES]->(disposedType:Type) RETURN disposedType, disposerMethod");
+
+        final List<TypeDescriptor> disposedTypeColumn = queryResult.getColumn("disposedType");
+        assertThat(disposedTypeColumn).hasSize(1);
+        assertThat(disposedTypeColumn).haveExactly(1, typeDescriptor(String.class));
+
+        final List<MethodDescriptor> disposerMethodColumn = queryResult.getColumn("disposerMethod");
+        assertThat(disposerMethodColumn).hasSize(1);
+        assertThat(disposerMethodColumn).haveExactly(1, methodDescriptor(classToScan, "dispose", String.class));
+
         store.commitTransaction();
     }
 
