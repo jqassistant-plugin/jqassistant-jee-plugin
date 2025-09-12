@@ -22,7 +22,7 @@ It provides concepts, constraints, and scanners for the following aspects:
 * Java EE 6, e.g.
 ** Web Application Archives
 ** Enterprise ARchive
-* JPA 2, e.g.
+* JPA, e.g.
 ** entities
 ** persistence units
 ** named queries
@@ -52,7 +52,7 @@ It provides concepts, constraints, and scanners for the following aspects:
 |ejb:ScheduleMethodInEjbContext
 |Check that Schedule methods are only declared in EJB classes.
 
-|JPA 2
+|JPA
 |jpa:ValidationModeMustBeExplicitlySpecified
 |The validation mode of all persistence units must be explicitly specified and either set to CALLBACK or NONE.
 |===
