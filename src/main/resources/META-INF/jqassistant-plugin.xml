@@ -70,9 +70,6 @@
         <resource>cdi/cdi.xml</resource>
         <resource>cdi/jakarta-cdi.xml</resource>
         <resource>cdi/javax-cdi.xml</resource>
-        <resource>cdi/decorator.xml</resource>
-        <resource>cdi/jakarta-decorator.xml</resource>
-        <resource>cdi/javax-decorator.xml</resource>
         <resource>cdi/interceptor.xml</resource>
         <resource>cdi/jakarta-interceptor.xml</resource>
         <resource>cdi/javax-interceptor.xml</resource>

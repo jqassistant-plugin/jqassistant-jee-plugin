@@ -15,8 +15,8 @@ import com.buschmais.jqassistant.plugin.java.api.model.FieldDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.model.MethodDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
-
 import com.buschmais.jqassistant.plugin.java.test.assertj.TypeDescriptorCondition;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.jakarta.JakartaAlternativeBean;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.javax.JavaxAlternativeBean;
@@ -383,6 +383,20 @@ class CdiIT extends AbstractJavaPluginIT {
         store.beginTransaction();
         List<TypeDescriptor> column = query("MATCH (e:CDI:Decorator:JEE:Injectable) RETURN e").getColumn("e");
         assertThat(column).haveExactly(1, typeDescriptor(classToScan));
+        store.commitTransaction();
+    }
+
+    /**
+     * Verifies the concept "decorator:Delegate".
+     */
+    @ParameterizedTest
+    @ValueSource(classes = { JavaxDecoratorBean.class, JakartaDecoratorBean.class})
+    void delegate(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
+        assertThat(applyConcept("cdi:Delegate").getStatus()).isEqualTo(Result.Status.SUCCESS);
+        store.beginTransaction();
+        List<FieldDescriptor> column = query("MATCH (e:Field:CDI:Delegate) RETURN e").getColumn("e");
+        assertThat(column).haveExactly(1, fieldDescriptor(classToScan, "delegate"));
         store.commitTransaction();
     }
 
