@@ -556,21 +556,6 @@ class CdiIT extends AbstractJavaPluginIT {
         store.commitTransaction();
     }
 
-    private static Stream<Arguments> customStereotypeAndBeanForReturnTypesClasses() {
-        return Stream.of(Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithApplicationScopedMethod.class),
-                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithConversationScopedMethod.class),
-                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithDependentMethod.class),
-                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithRequestScopedMethod.class),
-                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithSessionScopedMethod.class),
-                Arguments.of(JavaxCustomStereotype.class, JavaxTypeWithStereotypeAnnotatedMethod.class),
-                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithApplicationScopedMethod.class),
-                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithConversationScopedMethod.class),
-                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithDependentMethod.class),
-                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithRequestScopedMethod.class),
-                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithSessionScopedMethod.class),
-                Arguments.of(JakartaCustomStereotype.class, JakartaTypeWithStereotypeAnnotatedMethod.class));
-    }
-
     private static Stream<Arguments> classesToScanForprovidedConceptJeeInjectable() {
         return Stream.of(Arguments.of(
                         new Class[] { JavaxDependentBean.class, JavaxRequestScopedBean.class, JavaxSessionScopedBean.class,
