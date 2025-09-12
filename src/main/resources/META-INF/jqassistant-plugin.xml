@@ -76,9 +76,9 @@
         <resource>ejb/ejb.xml</resource>
         <resource>ejb/jakarta-ejb.xml</resource>
         <resource>ejb/javax-ejb.xml</resource>
-        <resource>jpa2/jpa2.xml</resource>
-        <resource>jpa2/jakarta-jpa2.xml</resource>
-        <resource>jpa2/javax-jpa2.xml</resource>
+        <resource>jpa/jpa.xml</resource>
+        <resource>jpa/jakarta-jpa.xml</resource>
+        <resource>jpa/javax-jpa.xml</resource>
         <resource>injection/jee-injection.xml</resource>
         <resource>injection/jakarta-jee-injection.xml</resource>
         <resource>injection/javax-jee-injection.xml</resource>

@@ -2,7 +2,7 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
 
-    <concept id="jpa2:Entity">
+    <concept id="jpa:Entity">
         <description>Abstract concept that returns all types labeled with "JPA" and "Entity".</description>
         <cypher><![CDATA[
             MATCH
@@ -12,7 +12,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jpa2:Embeddable">
+    <concept id="jpa:Embeddable">
         <description>Abstract concept that returns all types labeled with "JPA" and "Embeddable".</description>
         <cypher><![CDATA[
             MATCH
@@ -22,7 +22,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jpa2:Embedded">
+    <concept id="jpa:Embedded">
         <description>Abstract concept that returns all fields or methods labeled with "JPA" and "Embedded".</description>
         <cypher><![CDATA[
             MATCH
@@ -32,7 +32,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jpa2:EmbeddedId">
+    <concept id="jpa:EmbeddedId">
         <description>Abstract concept that returns all fields or methods labeled with "JPA" and "EmbeddedId".</description>
         <cypher><![CDATA[
             MATCH
@@ -42,8 +42,8 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jpa2:NamedQuery">
-        <requiresConcept refId="jpa2:Entity"/>
+    <concept id="jpa:NamedQuery">
+        <requiresConcept refId="jpa:Entity"/>
         <description>Abstract concept that returns the name and the query of a node labeled with "JPA" and "NamedQuery" defined by a node labeled with "JPA" and "Entity".
         </description>
         <cypher><![CDATA[
@@ -54,7 +54,7 @@
         ]]></cypher>
     </concept>
 
-    <constraint id="jpa2:ValidationModeMustBeExplicitlySpecified">
+    <constraint id="jpa:ValidationModeMustBeExplicitlySpecified">
         <description>The validation mode of all persistence units must be explicitly specified and either set to CALLBACK or NONE.</description>
         <cypher><![CDATA[
             MATCH

@@ -2,8 +2,8 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
 
-    <concept id="javax-jpa2:Entity">
-        <providesConcept refId="jpa2:Entity"/>
+    <concept id="javax-jpa:Entity">
+        <providesConcept refId="jpa:Entity"/>
         <description>Labels all types annotated with @javax.persistence.Entity with "JPA" and "Entity".</description>
         <cypher><![CDATA[
             MATCH
@@ -17,8 +17,8 @@
         ]]></cypher>
     </concept>
 
-    <concept id="javax-jpa2:Embeddable">
-        <providesConcept refId="jpa2:Embeddable"/>
+    <concept id="javax-jpa:Embeddable">
+        <providesConcept refId="jpa:Embeddable"/>
         <description>Labels all types annotated with @javax.persistence.Embeddable with "JPA" and "Embeddable".</description>
         <cypher><![CDATA[
             MATCH
@@ -32,8 +32,8 @@
         ]]></cypher>
     </concept>
 
-    <concept id="javax-jpa2:Embedded">
-        <providesConcept refId="jpa2:Embedded"/>
+    <concept id="javax-jpa:Embedded">
+        <providesConcept refId="jpa:Embedded"/>
         <description>Labels all fields or methods annotated with @javax.persistence.Embedded with "JPA" and "Embedded".</description>
         <cypher><![CDATA[
             MATCH
@@ -49,8 +49,8 @@
         ]]></cypher>
     </concept>
 
-    <concept id="javax-jpa2:EmbeddedId">
-        <providesConcept refId="jpa2:EmbeddedId"/>
+    <concept id="javax-jpa:EmbeddedId">
+        <providesConcept refId="jpa:EmbeddedId"/>
         <description>Labels all fields or methods annotated with @javax.persistence.EmbeddedId with "JPA" and "EmbeddedId".</description>
         <cypher><![CDATA[
             MATCH
@@ -66,9 +66,9 @@
         ]]></cypher>
     </concept>
 
-    <concept id="javax-jpa2:NamedQuery">
-        <providesConcept refId="jpa2:NamedQuery"/>
-        <requiresConcept refId="jpa2:Entity"/>
+    <concept id="javax-jpa:NamedQuery">
+        <providesConcept refId="jpa:NamedQuery"/>
+        <requiresConcept refId="jpa:Entity"/>
         <description>Creates a node labeled with "JPA" and "NamedQuery" for each @NamedQuery defined for an entity.
             Furthermore a relation DEFINES is created between the entity and the named query.
         </description>

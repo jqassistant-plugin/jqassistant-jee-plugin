@@ -53,7 +53,7 @@ class JpaIT extends AbstractJavaPluginIT {
     public static final String SCHEMA_3_2 = "3.2";
 
     /**
-     * Verifies the concept `jpa2:Entity`.
+     * Verifies the concept `jpa:Entity`.
      *
      * @throws IOException
      *         If the test fails.
@@ -62,14 +62,14 @@ class JpaIT extends AbstractJavaPluginIT {
     @ValueSource(classes = {JavaxJpaEntity.class, JakartaJpaEntity.class})
     void entity(Class<?> classToScan) throws Exception {
         scanClasses(classToScan);
-        assertThat(applyConcept("jpa2:Entity").getStatus(), equalTo(SUCCESS));
+        assertThat(applyConcept("jpa:Entity").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         assertThat(query("MATCH (e:Type:JPA:Entity) RETURN e").getColumn("e"), hasItem(typeDescriptor(classToScan)));
         store.commitTransaction();
     }
 
     /**
-     * Verifies the concept "jpa2:Embeddable".
+     * Verifies the concept "jpa:Embeddable".
      *
      * @throws IOException
      *         If the test fails.
@@ -78,14 +78,14 @@ class JpaIT extends AbstractJavaPluginIT {
     @ValueSource(classes = {JavaxJpaEmbeddable.class, JakartaJpaEmbeddable.class})
     void embeddable(Class<?> classToScan) throws Exception {
         scanClasses(classToScan);
-        assertThat(applyConcept("jpa2:Embeddable").getStatus(), equalTo(SUCCESS));
+        assertThat(applyConcept("jpa:Embeddable").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         assertThat(query("MATCH (e:Type:JPA:Embeddable) RETURN e").getColumn("e"), hasItem(typeDescriptor(classToScan)));
         store.commitTransaction();
     }
 
     /**
-     * Verifies the concept "jpa2:Embedded".
+     * Verifies the concept "jpa:Embedded".
      *
      * @throws IOException
      *         If the test fails.
@@ -94,7 +94,7 @@ class JpaIT extends AbstractJavaPluginIT {
     @ValueSource(classes = {JavaxJpaEntity.class, JakartaJpaEntity.class})
     void embedded(Class<?> classToScan) throws Exception {
         scanClasses(classToScan);
-        assertThat(applyConcept("jpa2:Embedded").getStatus(), equalTo(SUCCESS));
+        assertThat(applyConcept("jpa:Embedded").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         List<Object> members = query("MATCH (e:JPA:Embedded) RETURN e").getColumn("e");
         assertThat(members, hasItem(fieldDescriptor(classToScan, "embedded")));
@@ -103,7 +103,7 @@ class JpaIT extends AbstractJavaPluginIT {
     }
 
     /**
-     * Verifies the concept "jpa2:EmbeddedId".
+     * Verifies the concept "jpa:EmbeddedId".
      *
      * @throws IOException
      *         If the test fails.
@@ -112,7 +112,7 @@ class JpaIT extends AbstractJavaPluginIT {
     @ValueSource(classes = {JavaxJpaEntity.class, JakartaJpaEntity.class})
     void embeddedId(Class<?> classToScan) throws Exception {
         scanClasses(classToScan);
-        assertThat(applyConcept("jpa2:EmbeddedId").getStatus(), equalTo(SUCCESS));
+        assertThat(applyConcept("jpa:EmbeddedId").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         List<Object> members = query("MATCH (e:JPA:EmbeddedId) RETURN e").getColumn("e");
         assertThat(members, hasItem(fieldDescriptor(classToScan, "id")));
@@ -129,7 +129,7 @@ class JpaIT extends AbstractJavaPluginIT {
     }
 
     /**
-     * Verifies the concept "jpa2:NamedQuery".
+     * Verifies the concept "jpa:NamedQuery".
      *
      * @throws IOException
      *         If the test fails.
@@ -138,7 +138,7 @@ class JpaIT extends AbstractJavaPluginIT {
     @MethodSource("entityClasses")
     void namedQueries(Class<?> jpaEntity, Class<?> namedQueryEntity, String jpaTestQueryName, String jpaTestQueryQuery, String singleNameQueryTestQueryName, String singleNameQueryTestQueryQuery) throws Exception {
         scanClasses(jpaEntity, namedQueryEntity);
-        assertThat(applyConcept("jpa2:NamedQuery").getStatus(), equalTo(SUCCESS));
+        assertThat(applyConcept("jpa:NamedQuery").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         verifyNamedQuery(jpaEntity, jpaTestQueryName, jpaTestQueryQuery);
         verifyNamedQuery(namedQueryEntity, singleNameQueryTestQueryName, singleNameQueryTestQueryQuery);
@@ -167,7 +167,7 @@ class JpaIT extends AbstractJavaPluginIT {
     }
 
     /**
-     * Verifies the uniqueness of concept "jpa2:NamedQuery" with keeping existing properties.
+     * Verifies the uniqueness of concept "jpa:NamedQuery" with keeping existing properties.
      *
      * @throws IOException
      *         If the test fails.
@@ -176,7 +176,7 @@ class JpaIT extends AbstractJavaPluginIT {
     @MethodSource("entityClasses")
     void namedQueryUniqueDifferentQuery(Class<?> jpaEntity, Class<?> namedQueryEntity, String jpaTestQueryName, String jpaTestQueryQuery, String singleNameQueryTestQueryName, String singleNameQueryTestQueryQuery) throws Exception {
         scanClasses(jpaEntity, namedQueryEntity);
-        assertThat(applyConcept("jpa2:Entity").getStatus(), equalTo(SUCCESS));
+        assertThat(applyConcept("jpa:Entity").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         assertThat(
                 query("MATCH (e:JPA:Entity {name: '"+jpaEntity.getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:JPA:NamedQuery {name: 'namedQueries', prop: 'value', query: 'foo'}) RETURN n").getColumn(
@@ -191,7 +191,7 @@ class JpaIT extends AbstractJavaPluginIT {
         verifyUniqueRelation(jpaTestQueryName, jpaTestQueryQuery, 0, 0);
         verifyUniqueRelation(singleNameQueryTestQueryName, singleNameQueryTestQueryQuery, 0, 0);
         store.commitTransaction();
-        assertThat(applyConcept("jpa2:NamedQuery").getStatus(), equalTo(SUCCESS));
+        assertThat(applyConcept("jpa:NamedQuery").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         verifyUniqueRelation(jpaTestQueryName, jpaTestQueryQuery, 1, 0);
         verifyUniqueRelation(singleNameQueryTestQueryName, singleNameQueryTestQueryQuery, 1, 0);
@@ -199,7 +199,7 @@ class JpaIT extends AbstractJavaPluginIT {
     }
 
     /**
-     * Verifies the uniqueness of concept "jpa2:NamedQuery" with keeping existing properties.
+     * Verifies the uniqueness of concept "jpa:NamedQuery" with keeping existing properties.
      *
      * @throws IOException
      *         If the test fails.
@@ -208,7 +208,7 @@ class JpaIT extends AbstractJavaPluginIT {
     @MethodSource("entityClasses")
     void namedQueryUniqueSameQuery(Class<?> jpaEntity, Class<?> namedQueryEntity, String jpaTestQueryName, String jpaTestQueryQuery, String singleNameQueryTestQueryName, String singleNameQueryTestQueryQuery) throws Exception {
         scanClasses(jpaEntity, namedQueryEntity);
-        assertThat(applyConcept("jpa2:Entity").getStatus(), equalTo(SUCCESS));
+        assertThat(applyConcept("jpa:Entity").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         assertThat(
                 query("MATCH (e:JPA:Entity {name: '"+jpaEntity.getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:JPA:NamedQuery {name: 'namedQueries', prop: 'value', query: 'SELECT e FROM JpaEntity e'}) RETURN n").getColumn(
@@ -223,7 +223,7 @@ class JpaIT extends AbstractJavaPluginIT {
         verifyUniqueRelation(jpaTestQueryName, jpaTestQueryQuery, 1, 0);
         verifyUniqueRelation(singleNameQueryTestQueryName, singleNameQueryTestQueryQuery, 1, 0);
         store.commitTransaction();
-        assertThat(applyConcept("jpa2:NamedQuery").getStatus(), equalTo(SUCCESS));
+        assertThat(applyConcept("jpa:NamedQuery").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         verifyUniqueRelation(jpaTestQueryName, jpaTestQueryQuery, 1, 0);
         verifyUniqueRelation(singleNameQueryTestQueryName, singleNameQueryTestQueryQuery, 1, 0);
@@ -231,7 +231,7 @@ class JpaIT extends AbstractJavaPluginIT {
     }
 
     /**
-     * Verifies the uniqueness of concept "jpa2:NamedQuery" with keeping existing properties.
+     * Verifies the uniqueness of concept "jpa:NamedQuery" with keeping existing properties.
      *
      * @throws IOException
      *         If the test fails.
@@ -240,7 +240,7 @@ class JpaIT extends AbstractJavaPluginIT {
     @MethodSource("entityClasses")
     void namedQueryUniqueWithoutQuery(Class<?> jpaEntity, Class<?> namedQueryEntity, String jpaTestQueryName, String jpaTestQueryQuery, String singleNameQueryTestQueryName, String singleNameQueryTestQueryQuery) throws Exception {
         scanClasses(jpaEntity, namedQueryEntity);
-        assertThat(applyConcept("jpa2:Entity").getStatus(), equalTo(SUCCESS));
+        assertThat(applyConcept("jpa:Entity").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         assertThat(
                 query("MATCH (e:JPA:Entity {name: '"+jpaEntity.getSimpleName()+"'}) CREATE (e)-[:DEFINES]->(n:JPA:NamedQuery {name: 'namedQueries', prop: 'value'}) RETURN n").getColumn(
@@ -255,7 +255,7 @@ class JpaIT extends AbstractJavaPluginIT {
         verifyUniqueRelation(jpaTestQueryName, jpaTestQueryQuery, 0, 1);
         verifyUniqueRelation(singleNameQueryTestQueryName, singleNameQueryTestQueryQuery, 0, 1);
         store.commitTransaction();
-        assertThat(applyConcept("jpa2:NamedQuery").getStatus(), equalTo(SUCCESS));
+        assertThat(applyConcept("jpa:NamedQuery").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         verifyUniqueRelation(jpaTestQueryName, jpaTestQueryQuery, 1, 0);
         verifyUniqueRelation(singleNameQueryTestQueryName, singleNameQueryTestQueryQuery, 1, 0);
@@ -356,7 +356,7 @@ class JpaIT extends AbstractJavaPluginIT {
     }
 
     /**
-     * Verifies the constraint "jpa2:ValidationModeMustBeExplicitlySpecified" if
+     * Verifies the constraint "jpa:ValidationModeMustBeExplicitlySpecified" if
      * it is not set.
      *
      * @throws IOException
@@ -375,7 +375,7 @@ class JpaIT extends AbstractJavaPluginIT {
     }
 
     /**
-     * Verifies the constraint "jpa2:ValidationModeMustBeExplicitlySpecified" if
+     * Verifies the constraint "jpa:ValidationModeMustBeExplicitlySpecified" if
      * it is set to AUTO.
      *
      * @throws IOException
@@ -401,11 +401,11 @@ class JpaIT extends AbstractJavaPluginIT {
 
     private void validationModeMustBeExplicitlySpecified(String path, Class<?> entityClass) throws RuleException {
         scanClassPathDirectory(new File(getClassesDirectory(entityClass), path));
-        assertThat(validateConstraint("jpa2:ValidationModeMustBeExplicitlySpecified").getStatus(), equalTo(FAILURE));
+        assertThat(validateConstraint("jpa:ValidationModeMustBeExplicitlySpecified").getStatus(), equalTo(FAILURE));
         store.beginTransaction();
         List<Result<Constraint>> constraintViolations = new ArrayList<>(reportPlugin.getConstraintResults()
                 .values());
-        Matcher<Iterable<? super Result<Constraint>>> matcher = hasItem(result(constraint("jpa2:ValidationModeMustBeExplicitlySpecified")));
+        Matcher<Iterable<? super Result<Constraint>>> matcher = hasItem(result(constraint("jpa:ValidationModeMustBeExplicitlySpecified")));
         assertThat(constraintViolations, matcher);
         assertThat(constraintViolations.size(), equalTo(1));
         Result<Constraint> constraintResult = constraintViolations.get(0);
@@ -420,7 +420,7 @@ class JpaIT extends AbstractJavaPluginIT {
     }
 
     /**
-     * Verifies the constraint "jpa2:ValidationModeMustBeExplicitlySpecified"
+     * Verifies the constraint "jpa:ValidationModeMustBeExplicitlySpecified"
      * for values NONE and CALLBACK.
      *
      * @throws IOException
@@ -434,7 +434,7 @@ class JpaIT extends AbstractJavaPluginIT {
 
     private void validationModeSpecified(String path, Class<?> entityClass) throws RuleException {
         scanClassPathDirectory(new File(getClassesDirectory(entityClass), path));
-        assertThat(validateConstraint("jpa2:ValidationModeMustBeExplicitlySpecified").getStatus(), equalTo(SUCCESS));
+        assertThat(validateConstraint("jpa:ValidationModeMustBeExplicitlySpecified").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         List<Result<Constraint>> constraintViolations = new ArrayList<>(reportPlugin.getConstraintResults()
                 .values());
