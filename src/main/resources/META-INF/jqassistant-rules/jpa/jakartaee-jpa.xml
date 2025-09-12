@@ -2,7 +2,7 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
 
-    <concept id="jakarta-jpa:Entity">
+    <concept id="jakartaee-jpa:Entity">
         <providesConcept refId="jpa:Entity"/>
         <description>Labels all types annotated with @jakarta.persistence.Entity with "JPA" and "Entity".</description>
         <cypher><![CDATA[
@@ -17,7 +17,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jakarta-jpa:Embeddable">
+    <concept id="jakartaee-jpa:Embeddable">
         <providesConcept refId="jpa:Embeddable"/>
         <description>Labels all types annotated with @jakarta.persistence.Embeddable with "JPA" and "Embeddable".</description>
         <cypher><![CDATA[
@@ -32,7 +32,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jakarta-jpa:Embedded">
+    <concept id="jakartaee-jpa:Embedded">
         <providesConcept refId="jpa:Embedded"/>
         <description>Labels all fields or methods annotated with @jakarta.persistence.Embedded with "JPA" and "Embedded".</description>
         <cypher><![CDATA[
@@ -49,7 +49,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jakarta-jpa:EmbeddedId">
+    <concept id="jakartaee-jpa:EmbeddedId">
         <providesConcept refId="jpa:EmbeddedId"/>
         <description>Labels all fields or methods annotated with @jakarta.persistence.EmbeddedId with "JPA" and "EmbeddedId".</description>
         <cypher><![CDATA[
@@ -66,7 +66,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jakarta-jpa:NamedQuery">
+    <concept id="jakartaee-jpa:NamedQuery">
         <providesConcept refId="jpa:NamedQuery"/>
         <requiresConcept refId="jpa:Entity"/>
         <description>Creates a node labeled with "JPA" and "NamedQuery" for each @NamedQuery defined for an entity.

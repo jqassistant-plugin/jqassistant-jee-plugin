@@ -2,7 +2,7 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
 
-    <concept id="javax-ejb:StatelessSessionBean">
+    <concept id="javaee-ejb:StatelessSessionBean">
         <providesConcept refId="ejb:EJB" />
         <providesConcept refId="ejb:StatelessSessionBean" />
         <description>Labels all types annotated with @javax.ejb.Stateless with "EJB" and "Stateless".</description>
@@ -14,7 +14,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="javax-ejb:StatefulSessionBean">
+    <concept id="javaee-ejb:StatefulSessionBean">
         <providesConcept refId="ejb:EJB" />
         <providesConcept refId="ejb:StatefulSessionBean" />
         <description>Labels all types annotated with @javax.ejb.Stateful with "EJB" and "Stateful".</description>
@@ -26,7 +26,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="javax-ejb:SingletonBean">
+    <concept id="javaee-ejb:SingletonBean">
         <providesConcept refId="ejb:EJB" />
         <providesConcept refId="ejb:SingletonBean" />
         <description>Labels all classes annotated with @javax.ejb.Singleton with "EJB" and "Singleton".</description>
@@ -38,7 +38,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="javax-ejb:MessageDrivenBean">
+    <concept id="javaee-ejb:MessageDrivenBean">
         <providesConcept refId="ejb:EJB" />
         <providesConcept refId="ejb:MessageDrivenBean" />
         <description>Labels all types annotated with @javax.ejb.MessageDriven with "EJB" and "MessageDriven".
@@ -51,7 +51,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="javax-ejb:Local">
+    <concept id="javaee-ejb:Local">
         <providesConcept refId="ejb:Local"/>
         <description>Labels all types annotated with @javax.ejb.Local with "Local".</description>
         <cypher><![CDATA[
@@ -62,7 +62,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="javax-ejb:Remote">
+    <concept id="javaee-ejb:Remote">
         <providesConcept refId="ejb:Remote"/>
         <description>Labels all types annotated with @javax.ejb.Remote with "Remote".</description>
         <cypher><![CDATA[
@@ -73,7 +73,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="javax-ejb:Schedule">
+    <concept id="javaee-ejb:Schedule">
         <providesConcept refId="ejb:Schedule"/>
         <description>Labels all methods annotated with @javax.ejb.Schedule with "Schedule".</description>
         <cypher><![CDATA[

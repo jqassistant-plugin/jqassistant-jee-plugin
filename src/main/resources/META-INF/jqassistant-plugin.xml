@@ -68,26 +68,26 @@
     </scanner>
     <rules>
         <resource>cdi/cdi.xml</resource>
-        <resource>cdi/jakarta-cdi.xml</resource>
-        <resource>cdi/javax-cdi.xml</resource>
+        <resource>cdi/jakartaee-cdi.xml</resource>
+        <resource>cdi/javaee-cdi.xml</resource>
         <resource>cdi/interceptor.xml</resource>
-        <resource>cdi/jakarta-interceptor.xml</resource>
-        <resource>cdi/javax-interceptor.xml</resource>
+        <resource>cdi/jakartaee-interceptor.xml</resource>
+        <resource>cdi/javaee-interceptor.xml</resource>
         <resource>ejb/ejb.xml</resource>
-        <resource>ejb/jakarta-ejb.xml</resource>
-        <resource>ejb/javax-ejb.xml</resource>
+        <resource>ejb/jakartaee-ejb.xml</resource>
+        <resource>ejb/javaee-ejb.xml</resource>
         <resource>jpa/jpa.xml</resource>
-        <resource>jpa/jakarta-jpa.xml</resource>
-        <resource>jpa/javax-jpa.xml</resource>
+        <resource>jpa/jakartaee-jpa.xml</resource>
+        <resource>jpa/javaee-jpa.xml</resource>
         <resource>injection/jee-injection.xml</resource>
-        <resource>injection/jakarta-jee-injection.xml</resource>
-        <resource>injection/javax-jee-injection.xml</resource>
+        <resource>injection/jakartaee-injection.xml</resource>
+        <resource>injection/javaee-injection.xml</resource>
         <resource>jsf/jsf.xml</resource>
-        <resource>jsf/jakarta-jsf.xml</resource>
-        <resource>jsf/javax-jsf.xml</resource>
+        <resource>jsf/jakartaee-jsf.xml</resource>
+        <resource>jsf/javaee-jsf.xml</resource>
         <resource>transaction/jee-transaction.xml</resource>
-        <resource>transaction/jakarta-jee-transaction.xml</resource>
-        <resource>transaction/javax-jee-transaction.xml</resource>
+        <resource>transaction/jakartaee-transaction.xml</resource>
+        <resource>transaction/javaee-transaction.xml</resource>
     </rules>
 </jqassistant-plugin>
 

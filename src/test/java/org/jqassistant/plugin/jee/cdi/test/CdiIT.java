@@ -454,11 +454,11 @@ class CdiIT extends AbstractJavaPluginIT {
                 Arguments.of(
                         List.of(JavaxDependentBean.class, JavaxRequestScopedBean.class, JavaxSessionScopedBean.class,
                                 JavaxConversationScopedBean.class, JavaxApplicationScopedBean.class, JavaxStereotypeAnnotatedBean.class),
-                        JavaxCustomStereotype.class, "javax-cdi:InjectableClassType"),
+                        JavaxCustomStereotype.class, "javaee-cdi:InjectableClassType"),
                 Arguments.of(
                         List.of(JakartaDependentBean.class, JakartaRequestScopedBean.class, JakartaSessionScopedBean.class,
                                 JakartaConversationScopedBean.class, JakartaApplicationScopedBean.class, JakartaStereotypeAnnotatedBean.class),
-                        JakartaCustomStereotype.class, "jakarta-cdi:InjectableClassType")
+                        JakartaCustomStereotype.class, "jakartaee-cdi:InjectableClassType")
         );
     }
 
@@ -496,11 +496,11 @@ class CdiIT extends AbstractJavaPluginIT {
                 Arguments.of(
                         List.of(JavaxTypeWithApplicationScopedField.class, JavaxTypeWithConversationScopedField.class, JavaxTypeWithDependentField.class,
                                 JavaxTypeWithRequestScopedField.class, JavaxTypeWithSessionScopedField.class, JavaxTypeWithStereotypeAnnotatedField.class),
-                        JavaxCustomStereotype.class, "javax-cdi:InjectableFieldType"),
+                        JavaxCustomStereotype.class, "javaee-cdi:InjectableFieldType"),
                 Arguments.of(
                         List.of(JakartaTypeWithApplicationScopedField.class, JakartaTypeWithConversationScopedField.class, JakartaTypeWithDependentField.class,
                                 JakartaTypeWithRequestScopedField.class, JakartaTypeWithSessionScopedField.class, JakartaTypeWithStereotypeAnnotatedField.class),
-                        JakartaCustomStereotype.class, "jakarta-cdi:InjectableFieldType")
+                        JakartaCustomStereotype.class, "jakartaee-cdi:InjectableFieldType")
         );
     }
 
@@ -529,11 +529,11 @@ class CdiIT extends AbstractJavaPluginIT {
                 Arguments.of(
                         List.of(JavaxTypeWithApplicationScopedMethod.class, JavaxTypeWithConversationScopedMethod.class, JavaxTypeWithDependentMethod.class,
                                 JavaxTypeWithRequestScopedMethod.class, JavaxTypeWithSessionScopedMethod.class, JavaxTypeWithStereotypeAnnotatedMethod.class),
-                        JavaxCustomStereotype.class, "javax-cdi:InjectableReturnType"),
+                        JavaxCustomStereotype.class, "javaee-cdi:InjectableReturnType"),
                 Arguments.of(
                         List.of(JakartaTypeWithApplicationScopedMethod.class, JakartaTypeWithConversationScopedMethod.class, JakartaTypeWithDependentMethod.class,
                                 JakartaTypeWithRequestScopedMethod.class, JakartaTypeWithSessionScopedMethod.class, JakartaTypeWithStereotypeAnnotatedMethod.class),
-                        JakartaCustomStereotype.class, "jakarta-cdi:InjectableReturnType")
+                        JakartaCustomStereotype.class, "jakartaee-cdi:InjectableReturnType")
         );
     }
 
