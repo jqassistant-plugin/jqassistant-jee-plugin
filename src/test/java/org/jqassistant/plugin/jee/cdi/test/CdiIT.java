@@ -320,7 +320,7 @@ class CdiIT extends AbstractJavaPluginIT {
         store.beginTransaction();
 
         final TestResult queryResult =
-                query("MATCH (disposerMethod:Method:Disposer)-[:HAS]->(p:Parameter)-[:DISPOSES]->(disposedType:Type) RETURN disposedType, disposerMethod");
+                query("MATCH (disposerMethod:Method:BeanDisposer)-[:HAS]->(p:Parameter)-[:DISPOSES]->(disposedType:Type) RETURN disposedType, disposerMethod");
 
         final List<TypeDescriptor> disposedTypeColumn = queryResult.getColumn("disposedType");
         assertThat(disposedTypeColumn).hasSize(1);

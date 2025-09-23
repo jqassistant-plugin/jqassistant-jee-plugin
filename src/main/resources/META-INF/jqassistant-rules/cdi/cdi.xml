@@ -14,11 +14,11 @@
     </concept>
 
     <concept id="cdi:Disposes">
-        <description>Returns all disposer methods.
+        <description>Returns all bean disposer methods.
         </description>
         <cypher><![CDATA[
             MATCH
-              (disposeMethod:Method:Disposer)
+              (disposeMethod:Method:BeanDisposer)
             RETURN
               disposeMethod AS DisposeMethod
         ]]></cypher>

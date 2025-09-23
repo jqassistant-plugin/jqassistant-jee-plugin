@@ -40,7 +40,7 @@
             MERGE
               (parameter)-[:DISPOSES]->(type)
             SET
-              disposeMethod:Disposer
+              disposeMethod:BeanDisposer
             RETURN
               disposeMethod AS DisposeMethod
         ]]></cypher>
