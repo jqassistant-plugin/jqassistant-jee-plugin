@@ -184,64 +184,6 @@
         ]]></cypher>
     </concept>
 
-    <concept id="javaee-cdi:InjectableFieldType">
-        <providesConcept refId="jee-injection:Injectable"/>
-        <requiresConcept refId="cdi:Stereotype" />
-        <description>Labels all types of fields annotated with @javax.enterprise.context.Dependent,
-            @javax.enterprise.context.RequestScoped, @javax.enterprise.context.SessionScoped,
-            @javax.enterprise.context.ConversationScoped, @javax.enterprise.context.ApplicationScoped or a stereotype
-            annotation with "CDI", "JEE" and "Injectable".
-        </description>
-        <cypher><![CDATA[
-            MATCH
-              (field:Java:Field)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotation:Type),
-              (field)-[:OF_TYPE]->(fieldType:Java:Type)
-            WHERE
-              annotation.fqn in [
-                "javax.enterprise.context.Dependent",
-                "javax.enterprise.context.RequestScoped",
-                "javax.enterprise.context.SessionScoped",
-                "javax.enterprise.context.ConversationScoped",
-                "javax.enterprise.context.ApplicationScoped"
-              ]
-              OR annotation:Stereotype
-            SET
-              fieldType:CDI:JEE:Injectable
-            RETURN
-              DISTINCT fieldType AS Injectable
-        ]]></cypher>
-    </concept>
-
-    <concept id="javaee-cdi:InjectableReturnType">
-        <providesConcept refId="jee-injection:Injectable"/>
-        <requiresConcept refId="cdi:Stereotype" />
-        <description>Labels all return types of methods annotated with @javax.enterprise.context.Dependent,
-            @javax.enterprise.context.RequestScoped, @javax.enterprise.context.SessionScoped,
-            @javax.enterprise.context.ConversationScoped, @javax.enterprise.context.ApplicationScoped or a stereotype
-            annotation with "CDI", "JEE" and "Injectable".
-        </description>
-        <cypher><![CDATA[
-            MATCH
-              (method:Java:Method)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotation:Type),
-              (method)-[:RETURNS]->(returnType:Java:Type)
-            WHERE
-              annotation.fqn in [
-                "javax.enterprise.context.Dependent",
-                "javax.enterprise.context.RequestScoped",
-                "javax.enterprise.context.SessionScoped",
-                "javax.enterprise.context.ConversationScoped",
-                "javax.enterprise.context.ApplicationScoped"
-              ]
-              OR annotation:Stereotype
-            SET
-              returnType:CDI:JEE:Injectable
-            RETURN
-              DISTINCT returnType AS Injectable
-        ]]></cypher>
-    </concept>
-
-
-
     <concept id="javaee-cdi:SingletonScoped">
         <providesConcept refId="jee-injection:Injectable"/>
         <providesConcept refId="cdi:SingletonScoped"/>

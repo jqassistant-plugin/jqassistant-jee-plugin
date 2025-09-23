@@ -36,12 +36,8 @@ import org.jqassistant.plugin.jee.cdi.test.set.beans.specializes.jakarta.Jakarta
 import org.jqassistant.plugin.jee.cdi.test.set.beans.specializes.javax.JavaxSpecializesJavaxBean;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.jakarta.JakartaCustomStereotype;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.jakarta.JakartaStereotypeAnnotatedBean;
-import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.jakarta.JakartaTypeWithStereotypeAnnotatedField;
-import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.jakarta.JakartaTypeWithStereotypeAnnotatedMethod;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.javax.JavaxCustomStereotype;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.javax.JavaxStereotypeAnnotatedBean;
-import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.javax.JavaxTypeWithStereotypeAnnotatedField;
-import org.jqassistant.plugin.jee.cdi.test.set.beans.stereotype.javax.JavaxTypeWithStereotypeAnnotatedMethod;
 import org.jqassistant.plugin.jee.ejb.test.set.beans.jakarta.JakartaSingletonBean;
 import org.jqassistant.plugin.jee.ejb.test.set.beans.javax.JavaxSingletonBean;
 import org.junit.jupiter.api.Test;
@@ -55,7 +51,6 @@ import static com.buschmais.jqassistant.plugin.java.test.assertj.FieldDescriptor
 import static com.buschmais.jqassistant.plugin.java.test.assertj.MethodDescriptorCondition.methodDescriptor;
 import static com.buschmais.jqassistant.plugin.java.test.assertj.TypeDescriptorCondition.typeDescriptor;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.type;
 
 /**
  * Tests for the CDI concepts.
@@ -491,88 +486,17 @@ class CdiIT extends AbstractJavaPluginIT {
         store.commitTransaction();
     }
 
-    private static Stream<Arguments> customStereotypeAndBeanForFieldTypesParameters() {
-        return Stream.of(
-                Arguments.of(
-                        List.of(JavaxTypeWithApplicationScopedField.class, JavaxTypeWithConversationScopedField.class, JavaxTypeWithDependentField.class,
-                                JavaxTypeWithRequestScopedField.class, JavaxTypeWithSessionScopedField.class, JavaxTypeWithStereotypeAnnotatedField.class),
-                        JavaxCustomStereotype.class, "javaee-cdi:InjectableFieldType"),
-                Arguments.of(
-                        List.of(JakartaTypeWithApplicationScopedField.class, JakartaTypeWithConversationScopedField.class, JakartaTypeWithDependentField.class,
-                                JakartaTypeWithRequestScopedField.class, JakartaTypeWithSessionScopedField.class, JakartaTypeWithStereotypeAnnotatedField.class),
-                        JakartaCustomStereotype.class, "jakartaee-cdi:InjectableFieldType")
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("customStereotypeAndBeanForFieldTypesParameters")
-    void injectableFieldType(List<Class<?>> injectables,  Class<?> additionalClassToScan, String concept) throws RuleException {
-        final List<Class<?>> classesToScan = new ArrayList<>(injectables);
-        classesToScan.add(additionalClassToScan);
-        scanClasses(classesToScan.toArray(new Class<?>[0]));
-        final Result<Concept> conceptResult = applyConcept(concept);
-        assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
-        store.beginTransaction();
-        assertThat(conceptResult.getRows()).hasSize(1);
-        assertThat(conceptResult.getRows().get(0).getColumns().get("Injectable").getValue())
-                .asInstanceOf(type(TypeDescriptor.class)).is(typeDescriptor(ProducedBean.class));
-
-        final List<TypeDescriptor> queryResultInjectables =
-                query("MATCH (injectableType:Java:Type:Injectable) RETURN injectableType").getColumn("injectableType");
-        assertThat(queryResultInjectables).hasSize(1);
-        assertThat(queryResultInjectables.get(0)).is(typeDescriptor(ProducedBean.class));
-        store.commitTransaction();
-    }
-
-    private static Stream<Arguments> customStereotypeAndBeanForReturnTypesParameters() {
-        return Stream.of(
-                Arguments.of(
-                        List.of(JavaxTypeWithApplicationScopedMethod.class, JavaxTypeWithConversationScopedMethod.class, JavaxTypeWithDependentMethod.class,
-                                JavaxTypeWithRequestScopedMethod.class, JavaxTypeWithSessionScopedMethod.class, JavaxTypeWithStereotypeAnnotatedMethod.class),
-                        JavaxCustomStereotype.class, "javaee-cdi:InjectableReturnType"),
-                Arguments.of(
-                        List.of(JakartaTypeWithApplicationScopedMethod.class, JakartaTypeWithConversationScopedMethod.class, JakartaTypeWithDependentMethod.class,
-                                JakartaTypeWithRequestScopedMethod.class, JakartaTypeWithSessionScopedMethod.class, JakartaTypeWithStereotypeAnnotatedMethod.class),
-                        JakartaCustomStereotype.class, "jakartaee-cdi:InjectableReturnType")
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("customStereotypeAndBeanForReturnTypesParameters")
-    void injectableReturnType(List<Class<?>> injectables,  Class<?> additionalClassToScan, String concept) throws RuleException {
-        final List<Class<?>> classesToScan = new ArrayList<>(injectables);
-        classesToScan.add(additionalClassToScan);
-        scanClasses(classesToScan.toArray(new Class<?>[0]));
-        final Result<Concept> conceptResult = applyConcept(concept);
-        assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
-        store.beginTransaction();
-        assertThat(conceptResult.getRows()).hasSize(1);
-        assertThat(conceptResult.getRows().get(0).getColumns().get("Injectable").getValue())
-                .asInstanceOf(type(TypeDescriptor.class)).is(typeDescriptor(ProducedBean.class));
-        final List<TypeDescriptor> injectableTypes =
-                query("MATCH (injectableType:Java:Type:Injectable) RETURN injectableType").getColumn("injectableType");
-        assertThat(injectableTypes).hasSize(1);
-        assertThat(injectableTypes.get(0)).is(typeDescriptor(ProducedBean.class));
-        store.commitTransaction();
-    }
-
     private static Stream<Arguments> classesToScanForprovidedConceptJeeInjectable() {
         return Stream.of(Arguments.of(
                         new Class[] { JavaxDependentBean.class, JavaxRequestScopedBean.class, JavaxSessionScopedBean.class,
                                 JavaxConversationScopedBean.class, JavaxApplicationScopedBean.class, JavaxSingletonBean.class,
                                 JavaxDecoratorBean.class, ProducedBean.class, JavaxStereotypeAnnotatedBean.class },
-                        new Class[] { JavaxTypeWithApplicationScopedField.class, JavaxTypeWithConversationScopedField.class,
-                                JavaxTypeWithDependentField.class, JavaxTypeWithRequestScopedField.class, JavaxTypeWithSessionScopedField.class,
-                                JavaxTypeWithApplicationScopedMethod.class, JavaxTypeWithConversationScopedMethod.class, JavaxTypeWithDependentMethod.class,
-                                JavaxTypeWithRequestScopedMethod.class, JavaxTypeWithSessionScopedMethod.class, JavaxCustomStereotype.class }),
+                        new Class[] {JavaxCustomStereotype.class}),
                 Arguments.of(
                         new Class[] { JakartaDependentBean.class, JakartaRequestScopedBean.class, JakartaSessionScopedBean.class,
                                 JakartaConversationScopedBean.class, JakartaApplicationScopedBean.class, JakartaSingletonBean.class,
                                 JakartaDecoratorBean.class, ProducedBean.class, JakartaStereotypeAnnotatedBean.class },
-                        new Class[] { JakartaTypeWithApplicationScopedField.class, JakartaTypeWithConversationScopedField.class,
-                                JakartaTypeWithDependentField.class, JakartaTypeWithRequestScopedField.class, JakartaTypeWithSessionScopedField.class,
-                                JakartaTypeWithApplicationScopedMethod.class, JakartaTypeWithConversationScopedMethod.class, JakartaTypeWithDependentMethod.class,
-                                JakartaTypeWithRequestScopedMethod.class, JakartaTypeWithSessionScopedMethod.class, JakartaCustomStereotype.class}));
+                        new Class[] {JakartaCustomStereotype.class}));
     }
 
     @ParameterizedTest
