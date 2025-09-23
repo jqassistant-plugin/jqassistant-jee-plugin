@@ -21,7 +21,7 @@
 
     <concept id="jakartaee-interceptor:InterceptorBinding">
         <providesConcept refId="interceptor:InterceptorBinding"/>
-        <description>Labels all annotations annotated by "jakarta.interceptor.InterceptorBinding" with "InterceptorBinding".
+        <description>Labels all annotations annotated by "jakarta.interceptor.InterceptorBinding" with "JEE" and "InterceptorBinding".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -29,7 +29,7 @@
             WHERE
               bindingType.fqn = "jakarta.interceptor.InterceptorBinding"
             SET
-              binding:InterceptorBinding
+              binding:JEE:InterceptorBinding
             RETURN
               binding AS InterceptorBinding
         ]]></cypher>

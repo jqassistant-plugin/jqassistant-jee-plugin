@@ -14,11 +14,11 @@
     </concept>
 
     <concept id="interceptor:InterceptorBinding">
-        <description>Abstract concept that returns all annotations labeled with "InterceptorBinding".
+        <description>Abstract concept that returns all annotations labeled with "JEE" and "InterceptorBinding".
         </description>
         <cypher><![CDATA[
             MATCH
-              (binding:Type:Annotation:InterceptorBinding)
+              (binding:Type:Annotation:JEE:InterceptorBinding)
             RETURN
               binding AS InterceptorBinding
         ]]></cypher>

@@ -94,7 +94,7 @@ class InterceptorIT extends AbstractJavaPluginIT {
         scanClasses(classToScan);
         assertThat(applyConcept("interceptor:InterceptorBinding").getStatus()).isEqualTo(Result.Status.SUCCESS);
         store.beginTransaction();
-        final List<TypeDescriptor> column = query("MATCH (b:InterceptorBinding) RETURN b").getColumn("b");
+        final List<TypeDescriptor> column = query("MATCH (b:JEE:InterceptorBinding) RETURN b").getColumn("b");
         assertThat(column).haveExactly(1, typeDescriptor(classToScan));
         store.commitTransaction();
     }
