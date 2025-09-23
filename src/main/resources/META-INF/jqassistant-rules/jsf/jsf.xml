@@ -19,7 +19,7 @@
 
     <constraint id="jsf:CDIBeansInsteadOfJSFManagedBeans">
         <requiresConcept refId="jsf:ManagedBean"/>
-        <description>Anstelle von JSF Managed Beans sollen CDI Beans verwendet werden.</description>
+        <description>CDI beans should be used instead of JSF Managed Beans.</description>
         <cypher><![CDATA[
             MATCH
                 (type:Type:JSF:ManagedBean)
