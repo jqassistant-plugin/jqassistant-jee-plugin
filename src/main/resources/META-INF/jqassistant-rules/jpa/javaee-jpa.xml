@@ -13,7 +13,7 @@
             SET
               t:JPA:Entity
             RETURN
-              t AS JpaEntity
+              t AS Entity
         ]]></cypher>
     </concept>
 
@@ -28,7 +28,7 @@
             SET
               t:JPA:Embeddable
             RETURN
-              t AS JpaEmbeddable
+              t AS Embeddable
         ]]></cypher>
     </concept>
 
@@ -45,7 +45,7 @@
             SET
               member:JPA:Embedded
             RETURN
-              member AS JpaEmbedded
+              member AS Embedded
         ]]></cypher>
     </concept>
 

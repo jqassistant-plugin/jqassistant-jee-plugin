@@ -297,7 +297,7 @@
             SET
               a:CDI:EventProducer
             RETURN
-              DISTINCT a.fqn AS cdiEventProducers
+              DISTINCT a.fqn AS cdiEventProducer
         ]]></cypher>
     </concept>
 

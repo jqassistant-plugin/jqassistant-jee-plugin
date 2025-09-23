@@ -8,7 +8,7 @@
             MATCH
               (t:Type:JPA:Entity)
             RETURN
-              t AS JpaEntity
+              t AS Entity
         ]]></cypher>
     </concept>
 
@@ -18,7 +18,7 @@
             MATCH
               (t:Type:JPA:Embeddable)
             RETURN
-              t AS JpaEmbeddable
+              t AS Embeddable
         ]]></cypher>
     </concept>
 
@@ -28,7 +28,7 @@
             MATCH
               (:Type)-[:DECLARES]->(member:JPA:Embedded)
             RETURN
-              member AS JpaEmbedded
+              member AS Embedded
         ]]></cypher>
     </concept>
 
