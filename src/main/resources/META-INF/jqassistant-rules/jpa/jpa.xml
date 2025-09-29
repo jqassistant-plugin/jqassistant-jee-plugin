@@ -1,0 +1,73 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+
+    <concept id="jpa:Entity">
+        <description>Abstract concept that returns all types labeled with "JPA" and "Entity".</description>
+        <cypher><![CDATA[
+            MATCH
+              (t:Type:JPA:Entity)
+            RETURN
+              t AS Entity
+        ]]></cypher>
+    </concept>
+
+    <concept id="jpa:Embeddable">
+        <description>Abstract concept that returns all types labeled with "JPA" and "Embeddable".</description>
+        <cypher><![CDATA[
+            MATCH
+              (t:Type:JPA:Embeddable)
+            RETURN
+              t AS Embeddable
+        ]]></cypher>
+    </concept>
+
+    <concept id="jpa:Embedded">
+        <description>Abstract concept that returns all fields or methods labeled with "JPA" and "Embedded".</description>
+        <cypher><![CDATA[
+            MATCH
+              (:Type)-[:DECLARES]->(member:JPA:Embedded)
+            RETURN
+              member AS Embedded
+        ]]></cypher>
+    </concept>
+
+    <concept id="jpa:EmbeddedId">
+        <description>Abstract concept that returns all fields or methods labeled with "JPA" and "EmbeddedId".</description>
+        <cypher><![CDATA[
+            MATCH
+              (t:Type)-[:DECLARES]->(member:JPA:EmbeddedId)
+            RETURN
+              member AS EmbeddedId
+        ]]></cypher>
+    </concept>
+
+    <concept id="jpa:NamedQuery">
+        <requiresConcept refId="jpa:Entity"/>
+        <description>Abstract concept that returns the name and the query of a node labeled with "JPA" and "NamedQuery" defined by a node labeled with "JPA" and "Entity".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+             (entity:JPA:Entity)-[:DEFINES]->(n:JPA:NamedQuery)
+            RETURN
+              entity as Entity, n.name as Name, n.query as Query
+        ]]></cypher>
+    </concept>
+
+    <constraint id="jpa:ValidationModeMustBeExplicitlySpecified">
+        <description>The validation mode of all persistence units must be explicitly specified and either set to CALLBACK or NONE.</description>
+        <cypher><![CDATA[
+            MATCH
+              (pu:PersistenceUnit)
+            WHERE
+              pu.validationMode IS NULL
+              OR NOT (
+                pu.validationMode='CALLBACK'
+                OR pu.validationMode='NONE'
+              )
+            RETURN
+              pu AS PersistenceUnit
+        ]]></cypher>
+    </constraint>
+
+</jqassistant-rules>

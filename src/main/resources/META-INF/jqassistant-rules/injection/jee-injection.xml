@@ -17,7 +17,7 @@
     </group>
 
     <concept id="jee-injection:Injectable">
-        <description>Returns all injectables.</description>
+        <description>Abstract concept that returns all injectables.</description>
         <cypher><![CDATA[
             MATCH
               (injectable:JEE:Injectable)
@@ -27,16 +27,10 @@
     </concept>
 
     <concept id="jee-injection:InjectionPoint">
-        <description>Labels all fields or methods annotated by @javax.inject.Inject with "InjectionPoint" and "CDI".</description>
+        <description>Abstract concept that returns all fields and methods that have been labeled with "InjectionPoint" and "CDI".</description>
         <cypher><![CDATA[
             MATCH
-              (:Type)-[:DECLARES]->(member),
-              (member)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(injectType:Type)
-            WHERE
-              (member:Field or member:Method)
-              AND injectType.fqn="javax.inject.Inject"
-            SET
-              member:InjectionPoint:CDI
+              (:Type)-[:DECLARES]->(member:InjectionPoint:CDI)
             RETURN
               member AS InjectionPoint
             ORDER BY
@@ -56,7 +50,7 @@
             WHERE NOT (
               artifact:Test
               OR type:Generated
-            )
+              )
             RETURN
               type as Type, invokes as Invocation, beanType as BeanProducerType, beanProducer as BeanProducer
         ]]></cypher>
@@ -229,8 +223,7 @@
     <constraint id="jee-injection:NoCombinationOfBeanProducersAndApplicationCode">
         <requiresConcept refId="jee-injection:Injectable"/>
         <description>
-            Da JEE keinen Konfigurationsstereotyp unterstützt, ist sicherzustellen, dass Bean-Producer nur in Klassen definiert werden,
-            in denen sich keine fachliche Logik befindet.
+            Since JEE does not provide a configuration stereotype, bean producers must be defined in classes that do not contain any business logic.
         </description>
         <cypher><![CDATA[
             MATCH
@@ -247,9 +240,8 @@
     <constraint id="jee-injection:BeansMustNotUseFieldInjection">
         <requiresConcept refId="jee-injection:InjectionPoint"/>
         <requiresConcept refId="java:GeneratedType"/>
-        <requiresConcept refId="ejb:EJB"/>
         <description>
-            Die Nutzung von Field-Injection muss vermieden, und stattdessen Constructor Injection verwendet werden.
+            Field injection must be avoided. Constructor injection should be used instead.
         </description>
         <cypher><![CDATA[
             MATCH

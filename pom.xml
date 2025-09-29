@@ -12,7 +12,7 @@
     <version>2.0.0-SNAPSHOT</version>
 
     <name>jQAssistant JEE Plugin</name>
-    <description>Plugin for jQAssistant to scan and analyze JEE related artifacts (CDI, EJB3, and JPA2 specific elements).</description>
+    <description>Plugin for jQAssistant to scan and analyze JEE related artifacts (CDI, EJB3, and JPA specific elements).</description>
     <url>https://github.com/jqassistant-plugin/jqassistant-jee-plugin</url>
 
     <organization>
@@ -169,6 +169,12 @@
                 <version>2.0.1</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>jakarta.platform</groupId>
+                <artifactId>jakarta.jakartaee-api</artifactId>
+                <version>11.0.0</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -302,6 +308,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

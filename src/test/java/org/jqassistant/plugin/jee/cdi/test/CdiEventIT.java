@@ -3,9 +3,13 @@ package org.jqassistant.plugin.jee.cdi.test;
 import com.buschmais.jqassistant.core.report.api.model.Result;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
 
-import org.jqassistant.plugin.jee.cdi.test.set.beans.event.CustomEventConsumer;
-import org.jqassistant.plugin.jee.cdi.test.set.beans.event.CustomEventProducer;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.event.jakarta.JakartaCustomEventConsumer;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.event.jakarta.JakartaCustomEventProducer;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.event.javax.JavaxCustomEventConsumer;
+import org.jqassistant.plugin.jee.cdi.test.set.beans.event.javax.JavaxCustomEventProducer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static com.buschmais.jqassistant.plugin.java.test.matcher.TypeDescriptorMatcher.typeDescriptor;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -26,12 +30,13 @@ class CdiEventIT extends AbstractJavaPluginIT {
      * @throws java.io.IOException
      *             If the test fails.
      */
-    @Test
-    void eventProducerConcept() throws Exception {
-        scanClasses(CustomEventProducer.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxCustomEventProducer.class, JakartaCustomEventProducer.class})
+    void eventProducerConcept(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         assertThat(applyConcept("cdi:EventProducer").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
-        assertThat("Expected EventProducer", query("MATCH (e:Type:CDI:EventProducer) RETURN e").getColumn("e"), hasItem(typeDescriptor(CustomEventProducer.class)));
+        assertThat("Expected EventProducer", query("MATCH (e:Type:CDI:EventProducer) RETURN e").getColumn("e"), hasItem(typeDescriptor(classToScan)));
         store.commitTransaction();
     }
 
@@ -41,6 +46,7 @@ class CdiEventIT extends AbstractJavaPluginIT {
      * @throws java.io.IOException
      *             If the test fails.
      */
+
     @Test
     void testInvalid_EventProducer_Concept() throws Exception {
         scanClasses(CdiEventIT.class);
@@ -56,12 +62,13 @@ class CdiEventIT extends AbstractJavaPluginIT {
      * @throws java.io.IOException
      *             If the test fails.
      */
-    @Test
-    void eventConsumerConcept() throws Exception {
-        scanClasses(CustomEventConsumer.class);
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxCustomEventConsumer.class, JakartaCustomEventConsumer.class})
+    void eventConsumerConcept(Class<?> classToScan) throws Exception {
+        scanClasses(classToScan);
         assertThat(applyConcept("cdi:EventConsumer").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
-        assertThat("Expected EventConsumer", query("MATCH (e:Type:CDI:EventConsumer) RETURN e").getColumn("e"), hasItem(typeDescriptor(CustomEventConsumer.class)));
+        assertThat("Expected EventConsumer", query("MATCH (e:Type:CDI:EventConsumer) RETURN e").getColumn("e"), hasItem(typeDescriptor(classToScan)));
         store.commitTransaction();
     }
 

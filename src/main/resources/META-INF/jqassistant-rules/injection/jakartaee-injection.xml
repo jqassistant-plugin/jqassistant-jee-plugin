@@ -1,0 +1,24 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v2.2"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v2.2 https://jqassistant.github.io/jqassistant/current/schema/jqassistant-rule-v2.2.xsd">
+
+    <concept id="jakartaee-injection:InjectionPoint">
+        <providesConcept refId="jee-injection:InjectionPoint"/>
+        <description>Labels all fields or methods annotated by @jakarta.inject.Inject with "InjectionPoint" and "CDI".</description>
+        <cypher><![CDATA[
+            MATCH
+              (:Type)-[:DECLARES]->(member),
+              (member)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(injectType:Type)
+            WHERE
+              (member:Field or member:Method)
+              AND injectType.fqn="jakarta.inject.Inject"
+            SET
+              member:InjectionPoint:CDI
+            RETURN
+              member AS InjectionPoint
+            ORDER BY
+              member.name
+        ]]></cypher>
+    </concept>
+
+</jqassistant-rules>

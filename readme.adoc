@@ -22,7 +22,7 @@ It provides concepts, constraints, and scanners for the following aspects:
 * Java EE 6, e.g.
 ** Web Application Archives
 ** Enterprise ARchive
-* JPA 2, e.g.
+* JPA, e.g.
 ** entities
 ** persistence units
 ** named queries
@@ -52,14 +52,14 @@ It provides concepts, constraints, and scanners for the following aspects:
 |ejb:ScheduleMethodInEjbContext
 |Check that Schedule methods are only declared in EJB classes.
 
-|JPA 2
-|jpa2:ValidationModeMustBeExplicitlySpecified
+|JPA
+|jpa:ValidationModeMustBeExplicitlySpecified
 |The validation mode of all persistence units must be explicitly specified and either set to CALLBACK or NONE.
 |===
 
 == Using the jqassistant-jee-plugin
 
-NOTE:: This plug-in supersedes the previously separated plugins for CDI, EJB3, JPA2, and JEE6.
+NOTE:: This plug-in supersedes the previously separated plugins for CDI, EJB3, JPA, and JEE6.
 
 NOTE:: From jQAssistant v2.0.0 onwards, it is not part of the core distribution anymore and a manual configuration as shown below is required.
 

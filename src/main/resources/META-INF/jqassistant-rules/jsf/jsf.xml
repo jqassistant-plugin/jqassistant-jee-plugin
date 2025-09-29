@@ -3,30 +3,26 @@
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
 
     <group id="jsf:Default">
-        <includeConcept refId="jsf:JSFManagedBeans"/>
+        <includeConcept refId="jsf:ManagedBean"/>
         <includeConstraint refId="jsf:CDIBeansInsteadOfJSFManagedBeans"/>
     </group>
 
-    <concept id="jsf:JSFManagedBeans">
-        <description>Labels all types annotated with @javax.faces.bean.ManagedBean with "Jsf" and "ManagedBean".</description>
+    <concept id="jsf:ManagedBean">
+        <description>Abstract concept that returns all types labeled with "JSF" and "ManagedBean".</description>
         <cypher><![CDATA[
             MATCH
-              (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]-(a:Type)
-            WHERE
-              a.fqn="javax.faces.bean.ManagedBean"
-            SET
-              t:Jsf:ManagedBean
+              (t:Type:JSF:ManagedBean)
             RETURN
               t AS `JSF Managed Bean`
     ]]></cypher>
     </concept>
 
     <constraint id="jsf:CDIBeansInsteadOfJSFManagedBeans">
-        <requiresConcept refId="jsf:JSFManagedBeans"/>
-        <description>Anstelle von JSF Managed Beans sollen CDI Beans verwendet werden.</description>
+        <requiresConcept refId="jsf:ManagedBean"/>
+        <description>CDI beans should be used instead of JSF Managed Beans.</description>
         <cypher><![CDATA[
             MATCH
-                (type:Type:Jsf:ManagedBean)
+                (type:Type:JSF:ManagedBean)
             RETURN
                 type AS `JSF Managed Bean`
         ]]></cypher>

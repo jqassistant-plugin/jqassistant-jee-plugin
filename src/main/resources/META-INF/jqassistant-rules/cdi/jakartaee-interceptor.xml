@@ -1,0 +1,38 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+
+    <concept id="jakartaee-interceptor:Interceptor">
+        <providesConcept refId="jee-injection:Injectable"/>
+        <providesConcept refId="interceptor:Interceptor"/>
+        <description>Labels all classes annotated by "jakarta.interceptor.Interceptor" with "Interceptor", "JEE" and "Injectable".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (interceptor:Type:Class)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(interceptorType:Type)
+            WHERE
+              interceptorType.fqn = "jakarta.interceptor.Interceptor"
+            SET
+              interceptor:Interceptor:JEE:Injectable
+            RETURN
+              interceptor AS Interceptor
+        ]]></cypher>
+    </concept>
+
+    <concept id="jakartaee-interceptor:InterceptorBinding">
+        <providesConcept refId="interceptor:InterceptorBinding"/>
+        <description>Labels all annotations annotated by "jakarta.interceptor.InterceptorBinding" with "JEE" and "InterceptorBinding".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (binding:Type:Annotation)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(bindingType:Type)
+            WHERE
+              bindingType.fqn = "jakarta.interceptor.InterceptorBinding"
+            SET
+              binding:JEE:InterceptorBinding
+            RETURN
+              binding AS InterceptorBinding
+        ]]></cypher>
+    </concept>
+
+</jqassistant-rules>

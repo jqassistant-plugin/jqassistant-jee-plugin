@@ -38,7 +38,7 @@ class JsfFaceletScannerIT extends AbstractJavaPluginIT {
         store.beginTransaction();
         scanFaceletDirectory();
 
-        List<JsfFaceletDescriptor> jsfFaceletDescriptors = query("MATCH (n:File:Jsf:Facelet) RETURN n").getColumn("n");
+        List<JsfFaceletDescriptor> jsfFaceletDescriptors = query("MATCH (n:File:JSF:Facelet) RETURN n").getColumn("n");
         assertThat(jsfFaceletDescriptors.size(), equalTo(7));
 
         List<String> fileNames = new ArrayList<String>();
@@ -65,7 +65,7 @@ class JsfFaceletScannerIT extends AbstractJavaPluginIT {
         store.beginTransaction();
         scanFaceletDirectory();
 
-        List<JsfFaceletDescriptor> descriptors = query("MATCH (n:File:Jsf:Facelet) WHERE n.fileName='/shop/productsite.jspx' RETURN n").getColumn("n");
+        List<JsfFaceletDescriptor> descriptors = query("MATCH (n:File:JSF:Facelet) WHERE n.fileName='/shop/productsite.jspx' RETURN n").getColumn("n");
         assertThat(descriptors, hasSize(1));
 
         JsfFaceletDescriptor descriptor = descriptors.iterator().next();

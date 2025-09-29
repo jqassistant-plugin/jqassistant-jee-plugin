@@ -1,0 +1,104 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+
+    <concept id="javaee-jpa:Entity">
+        <providesConcept refId="jpa:Entity"/>
+        <description>Labels all types annotated with @javax.persistence.Entity with "JPA" and "Entity".</description>
+        <cypher><![CDATA[
+            MATCH
+              (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
+            WHERE
+              a.fqn="javax.persistence.Entity"
+            SET
+              t:JPA:Entity
+            RETURN
+              t AS Entity
+        ]]></cypher>
+    </concept>
+
+    <concept id="javaee-jpa:Embeddable">
+        <providesConcept refId="jpa:Embeddable"/>
+        <description>Labels all types annotated with @javax.persistence.Embeddable with "JPA" and "Embeddable".</description>
+        <cypher><![CDATA[
+            MATCH
+              (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
+            WHERE
+              a.fqn="javax.persistence.Embeddable"
+            SET
+              t:JPA:Embeddable
+            RETURN
+              t AS Embeddable
+        ]]></cypher>
+    </concept>
+
+    <concept id="javaee-jpa:Embedded">
+        <providesConcept refId="jpa:Embedded"/>
+        <description>Labels all fields or methods annotated with @javax.persistence.Embedded with "JPA" and "Embedded".</description>
+        <cypher><![CDATA[
+            MATCH
+              (t:Type)-[:DECLARES]->(member),
+              (member)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
+            WHERE
+              (member:Field or member:Method)
+              and a.fqn="javax.persistence.Embedded"
+            SET
+              member:JPA:Embedded
+            RETURN
+              member AS Embedded
+        ]]></cypher>
+    </concept>
+
+    <concept id="javaee-jpa:EmbeddedId">
+        <providesConcept refId="jpa:EmbeddedId"/>
+        <description>Labels all fields or methods annotated with @javax.persistence.EmbeddedId with "JPA" and "EmbeddedId".</description>
+        <cypher><![CDATA[
+            MATCH
+              (t:Type)-[:DECLARES]->(member),
+              (member)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
+            WHERE
+              (member:Field or member:Method)
+              and a.fqn="javax.persistence.EmbeddedId"
+            SET
+              member:JPA:EmbeddedId
+            RETURN
+              member AS EmbeddedId
+        ]]></cypher>
+    </concept>
+
+    <concept id="javaee-jpa:NamedQuery">
+        <providesConcept refId="jpa:NamedQuery"/>
+        <requiresConcept refId="jpa:Entity"/>
+        <description>Creates a node labeled with "JPA" and "NamedQuery" for each @NamedQuery defined for an entity.
+            Furthermore a relation DEFINES is created between the entity and the named query.
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (entity:JPA:Entity),
+              (entity)-[:ANNOTATED_BY]->(namedQueries:Annotation)-[:OF_TYPE]-(:Type{fqn:'javax.persistence.NamedQueries'}),
+              (namedQueries)-[:HAS]->(:Value:Array)-[:CONTAINS]->(namedQuery),
+              (namedQuery)-[:OF_TYPE]->(:Type{fqn:'javax.persistence.NamedQuery'}),
+              (namedQuery)-[:HAS]->(nameAttribute:Value{name:'name'}),
+              (namedQuery)-[:HAS]->(queryAttribute:Value{name:'query'})
+            MERGE
+              (entity)-[:DEFINES]->(n:JPA:NamedQuery {name:nameAttribute.value})
+            SET
+              n.query=queryAttribute.value
+            RETURN
+              entity as Entity, n.name as Name, n.query as Query
+            UNION ALL
+            MATCH
+              (entity)-[:ANNOTATED_BY]->(namedQuery:Annotation),
+              (namedQuery)-[:OF_TYPE]->(:Type{fqn:'javax.persistence.NamedQuery'}),
+              (namedQuery)-[:HAS]->(nameAttribute:Value{name:'name'}),
+              (namedQuery)-[:HAS]->(queryAttribute:Value{name:'query'})
+            MERGE
+              (entity)-[:DEFINES]->(n:JPA:NamedQuery {name:nameAttribute.value})
+            SET
+              n.query=queryAttribute.value
+            RETURN
+              entity as Entity, n.name as Name, n.query as Query
+        ]]></cypher>
+    </concept>
+
+</jqassistant-rules>

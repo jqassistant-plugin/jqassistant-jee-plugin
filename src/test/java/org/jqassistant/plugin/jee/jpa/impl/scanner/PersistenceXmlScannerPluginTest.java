@@ -23,7 +23,7 @@ import com.buschmais.jqassistant.plugin.xml.api.model.XmlFileDescriptor;
 import org.jqassistant.plugin.jee.jpa.model.PersistenceUnitDescriptor;
 import org.jqassistant.plugin.jee.jpa.model.PersistenceXmlDescriptor;
 import org.jqassistant.plugin.jee.jpa.scanner.PersistenceXmlScannerPlugin;
-import org.jqassistant.plugin.jee.jpa.test.set.entity.JpaEntity;
+import org.jqassistant.plugin.jee.jpa.test.set.entity.javax.JavaxJpaEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -137,7 +137,7 @@ class PersistenceXmlScannerPluginTest {
         doReturn(jpaEntityDescriptor).when(cachedType)
                 .getTypeDescriptor();
         doReturn(cachedType).when(typeResolver)
-                .resolve(eq(JpaEntity.class.getName()), eq(context));
+                .resolve(eq(JavaxJpaEntity.class.getName()), eq(context));
         doReturn(typeResolver).when(context)
                 .peek(TypeResolver.class);
         doReturn(context).when(scanner)

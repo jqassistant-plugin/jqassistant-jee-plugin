@@ -1,0 +1,87 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+
+    <concept id="javaee-ejb:StatelessSessionBean">
+        <providesConcept refId="ejb:EJB" />
+        <providesConcept refId="ejb:StatelessSessionBean" />
+        <description>Labels all types annotated with @javax.ejb.Stateless with "EJB" and "Stateless".</description>
+        <cypher><![CDATA[
+            MATCH (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
+            WHERE a.fqn="javax.ejb.Stateless"
+            SET t:JEE:EJB:Stateless
+            RETURN t AS EJB
+        ]]></cypher>
+    </concept>
+
+    <concept id="javaee-ejb:StatefulSessionBean">
+        <providesConcept refId="ejb:EJB" />
+        <providesConcept refId="ejb:StatefulSessionBean" />
+        <description>Labels all types annotated with @javax.ejb.Stateful with "EJB" and "Stateful".</description>
+        <cypher><![CDATA[
+            MATCH (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
+            WHERE a.fqn="javax.ejb.Stateful"
+            SET t:JEE:EJB:Stateful
+            RETURN t AS EJB
+        ]]></cypher>
+    </concept>
+
+    <concept id="javaee-ejb:SingletonBean">
+        <providesConcept refId="ejb:EJB" />
+        <providesConcept refId="ejb:SingletonBean" />
+        <description>Labels all classes annotated with @javax.ejb.Singleton with "EJB" and "Singleton".</description>
+        <cypher><![CDATA[
+            MATCH (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
+            WHERE a.fqn="javax.ejb.Singleton"
+            SET t:JEE:EJB:Singleton
+            RETURN t AS EJB
+        ]]></cypher>
+    </concept>
+
+    <concept id="javaee-ejb:MessageDrivenBean">
+        <providesConcept refId="ejb:EJB" />
+        <providesConcept refId="ejb:MessageDrivenBean" />
+        <description>Labels all types annotated with @javax.ejb.MessageDriven with "EJB" and "MessageDriven".
+        </description>
+        <cypher><![CDATA[
+            MATCH (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
+            WHERE a.fqn="javax.ejb.MessageDriven"
+            SET t:JEE:EJB:MessageDriven
+            RETURN t AS EJB
+        ]]></cypher>
+    </concept>
+
+    <concept id="javaee-ejb:Local">
+        <providesConcept refId="ejb:Local"/>
+        <description>Labels all types annotated with @javax.ejb.Local with "Local".</description>
+        <cypher><![CDATA[
+            MATCH (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
+            WHERE a.fqn="javax.ejb.Local"
+            SET t:JEE:Local
+            RETURN t AS LocalBean
+        ]]></cypher>
+    </concept>
+
+    <concept id="javaee-ejb:Remote">
+        <providesConcept refId="ejb:Remote"/>
+        <description>Labels all types annotated with @javax.ejb.Remote with "Remote".</description>
+        <cypher><![CDATA[
+            MATCH (t:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
+            WHERE a.fqn="javax.ejb.Remote"
+            SET t:JEE:Remote
+            RETURN t AS RemoteBean
+        ]]></cypher>
+    </concept>
+
+    <concept id="javaee-ejb:Schedule">
+        <providesConcept refId="ejb:Schedule"/>
+        <description>Labels all methods annotated with @javax.ejb.Schedule with "Schedule".</description>
+        <cypher><![CDATA[
+            MATCH (m:Method)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(a:Type)
+            WHERE a.fqn="javax.ejb.Schedule"
+            SET m:JEE:Schedule
+            RETURN m AS ScheduledMethod
+        ]]></cypher>
+    </concept>
+
+</jqassistant-rules>

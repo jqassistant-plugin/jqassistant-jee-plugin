@@ -3,31 +3,22 @@
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
 
     <concept id="interceptor:Interceptor">
-        <providesConcept refId="jee-injection:Injectable"/>
-        <description>Labels all classes annotated by "javax.interceptor.Interceptor" with "Interceptor", "JEE" and "Injectable".
+        <description>Abstract concept that returns all classes labeled with "Interceptor", "JEE" and "Injectable".
         </description>
         <cypher><![CDATA[
             MATCH
-              (interceptor:Type:Class)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(interceptorType:Type)
-            WHERE
-              interceptorType.fqn = "javax.interceptor.Interceptor"
-            SET
-              interceptor:Interceptor:JEE:Injectable
+              (interceptor:Type:Class:Interceptor:JEE:Injectable)
             RETURN
               interceptor AS Interceptor
         ]]></cypher>
     </concept>
 
     <concept id="interceptor:InterceptorBinding">
-        <description>Labels all annotations annotated by "javax.interceptor.InterceptorBinding" with "InterceptorBinding".
+        <description>Abstract concept that returns all annotations labeled with "JEE" and "InterceptorBinding".
         </description>
         <cypher><![CDATA[
             MATCH
-              (binding:Type:Annotation)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(bindingType:Type)
-            WHERE
-              bindingType.fqn = "javax.interceptor.InterceptorBinding"
-            SET
-              binding:InterceptorBinding
+              (binding:Type:Annotation:JEE:InterceptorBinding)
             RETURN
               binding AS InterceptorBinding
         ]]></cypher>

@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.type;
 
 class PrivateMethodMustNotBeAnnotatedWithTransactionalIT extends AbstractJavaPluginIT {
-
     @ParameterizedTest
     @ValueSource(classes = {JavaxTransactionalMethod.class, JakartaTransactionalMethod.class})
     void privateMethodMustNotBeAnnotatedWithTransactional(Class<?> clazz) throws Exception {
@@ -50,10 +49,10 @@ class PrivateMethodMustNotBeAnnotatedWithTransactionalIT extends AbstractJavaPlu
 
     @Test
     void privateMethodMustNotBeAnnotatedWithTransactionalNoViolations() throws Exception {
-        scanClasses(JakartaTransactionalClass.class, JavaxTransactionalClass.class, MessageDrivenEjb.class,
-                SingletonEjb.class, StatefulEjb.class, StatelessEjb.class);
-        assertThat(validateConstraint("jee-transaction:PrivateMethodMustNotBeAnnotatedWithTransactional")
-                .getStatus()).isEqualTo(SUCCESS);
+        scanClasses(JavaxTransactionalClass.class, JakartaTransactionalClass.class, JavaxMessageDrivenEjb.class, JakartaMessageDrivenEjb.class,
+                JavaxSingletonEjb.class, JakartaSingletonEjb.class, JavaxStatefulEjb.class, JakartaStatefulEjb.class, JavaxStatelessEjb.class,
+                JakartaStatelessEjb.class);
+        assertThat(validateConstraint("jee-transaction:PrivateMethodMustNotBeAnnotatedWithTransactional").getStatus()).isEqualTo(SUCCESS);
 
         store.beginTransaction();
 
