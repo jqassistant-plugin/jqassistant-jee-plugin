@@ -21,6 +21,20 @@
         ]]></cypher>
     </concept>
 
-
+    <concept id="javaee-injection:Resource">
+        <providesConcept refId="jee-injection:Resource"/>
+        <description>Labels all types, methods and fields annotated by @javax.annotation.Resource with "JEE" and "Resource".
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (e)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(resourceAnnotationType:Type)
+            WHERE
+              (e:Type or e:Method or e:Field) AND resourceAnnotationType.fqn="javax.annotation.Resource"
+            SET
+              e:JEE:Resource
+            RETURN
+              e AS Resource
+        ]]></cypher>
+    </concept>
 
 </jqassistant-rules>

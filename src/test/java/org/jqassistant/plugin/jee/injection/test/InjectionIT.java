@@ -7,14 +7,19 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.buschmais.jqassistant.core.report.api.model.Column;
 import com.buschmais.jqassistant.core.report.api.model.Result;
 import com.buschmais.jqassistant.core.report.api.model.Row;
 import com.buschmais.jqassistant.core.rule.api.model.Concept;
 import com.buschmais.jqassistant.core.rule.api.model.Constraint;
 import com.buschmais.jqassistant.plugin.java.api.model.FieldDescriptor;
+import com.buschmais.jqassistant.plugin.java.api.model.MethodDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
 
+import com.buschmais.jqassistant.plugin.java.test.assertj.FieldDescriptorCondition;
+import com.buschmais.jqassistant.plugin.java.test.assertj.MethodDescriptorCondition;
+import com.buschmais.jqassistant.plugin.java.test.assertj.TypeDescriptorCondition;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.jqassistant.plugin.jee.injection.test.set.jakarta.*;
@@ -26,6 +31,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static com.buschmais.jqassistant.core.report.api.model.Result.Status.SUCCESS;
 import static com.buschmais.jqassistant.plugin.java.test.assertj.FieldDescriptorCondition.fieldDescriptor;
+import static com.buschmais.jqassistant.plugin.java.test.assertj.MethodDescriptorCondition.methodDescriptor;
 import static com.buschmais.jqassistant.plugin.java.test.assertj.TypeDescriptorCondition.typeDescriptor;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -352,6 +358,70 @@ public class InjectionIT extends AbstractJavaPluginIT {
         assertThat(violations).hasSize(0);
 
         store.commitTransaction();
+    }
+
+    private static Stream<Arguments> resourceClasses() {
+        return Stream.of(Arguments.of(JavaxResourceComponent.class, JavaxComponentWithResources.class, JavaxInjectableA.class),
+                Arguments.of(JakartaResourceComponent.class, JakartaComponentWithResources.class, JakartaInjectableA.class));
+    }
+
+    @ParameterizedTest
+    @MethodSource("resourceClasses")
+    void resource(Class<?> resourceComponent, Class<?> componentWithResources, Class<?> resourceMembersType) throws Exception {
+        scanClasses(resourceComponent, componentWithResources, resourceMembersType);
+        final Result<Concept> conceptResult = applyConcept("jee-injection:Resource");
+        assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
+        assertThat(conceptResult.getRows()).hasSize(3);
+
+        store.beginTransaction();
+
+        final List<?> conceptResultResources = conceptResult.getRows()
+                .stream()
+                .map(Row::getColumns)
+                .map(columns -> columns.get("Resource"))
+                .map(Column::getValue)
+                .collect(Collectors.toList());
+
+        verfiyResourceColumn(conceptResultResources,
+                typeDescriptor(resourceComponent),
+                methodDescriptor(componentWithResources, "resourceMethod"),
+                fieldDescriptor(componentWithResources, "resourceField"));
+
+
+
+        final List<?> resourceElements = query("MATCH (element:JEE:Resource) RETURN element").getColumn("element");
+        verfiyResourceColumn(resourceElements,
+                typeDescriptor(resourceComponent),
+                methodDescriptor(componentWithResources, "resourceMethod"),
+                fieldDescriptor(componentWithResources, "resourceField"));
+
+
+        store.commitTransaction();
+    }
+
+    private static void verfiyResourceColumn(List<?> column, TypeDescriptorCondition expectedType, MethodDescriptorCondition expectedMethod, FieldDescriptorCondition expectedField) {
+        assertThat(column).hasSize(3);
+
+        final List<TypeDescriptor> conceptResultTypes = column.stream()
+                .filter(TypeDescriptor.class::isInstance)
+                .map(TypeDescriptor.class::cast)
+                .collect(Collectors.toList());
+        assertThat(conceptResultTypes).hasSize(1);
+        assertThat(conceptResultTypes).haveExactly(1, expectedType);
+
+        final List<MethodDescriptor> conceptResultMethods = column.stream()
+                .filter(MethodDescriptor.class::isInstance)
+                .map(MethodDescriptor.class::cast)
+                .collect(Collectors.toList());
+        assertThat(conceptResultMethods).hasSize(1);
+        assertThat(conceptResultMethods).haveExactly(1, expectedMethod);
+
+        final List<FieldDescriptor> conceptResultFields = column.stream()
+                .filter(FieldDescriptor.class::isInstance)
+                .map(FieldDescriptor.class::cast)
+                .collect(Collectors.toList());
+        assertThat(conceptResultFields).hasSize(1);
+        assertThat(conceptResultFields).haveExactly(1, expectedField);
     }
 
 }

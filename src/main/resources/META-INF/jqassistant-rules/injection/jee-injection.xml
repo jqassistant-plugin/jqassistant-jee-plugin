@@ -38,6 +38,18 @@
         ]]></cypher>
     </concept>
 
+    <concept id="jee-injection:Resource">
+        <description>Abstract concept that returns all elements labeled with "JEE" and "Resource".</description>
+        <cypher><![CDATA[
+            MATCH
+              (resource:JEE:Resource)
+            RETURN
+              resource AS Resource
+            ORDER BY
+              resource.name
+        ]]></cypher>
+    </concept>
+
     <constraint id="jee-injection:BeanProducerMustNotBeInvokedDirectly">
         <requiresConcept refId="jee-injection:Injectable"/>
         <requiresConcept refId="java:GeneratedType"/>
