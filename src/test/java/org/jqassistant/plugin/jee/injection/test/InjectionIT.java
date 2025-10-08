@@ -77,8 +77,8 @@ public class InjectionIT extends AbstractJavaPluginIT {
 
     private static Stream<Arguments>  beanProducerWithConstraintViolationsAndInjectableClasses() {
         return Stream.of(
-                Arguments.of(JavaxBeanProducerWithConstraintViolations.class, JavaxInjectableA.class, JavaxInjectableB.class),
-                Arguments.of(JakartaBeanProducerWithConstraintViolations.class, JakartaInjectableA.class, JakartaInjectableB.class)
+                Arguments.of(JavaxBeanProducerWithConstraintViolations.class, JavaxInjectableA.class, JavaxInjectableB.class, JavaxComponentWithResources.class),
+                Arguments.of(JakartaBeanProducerWithConstraintViolations.class, JakartaInjectableA.class, JakartaInjectableB.class, JakartaComponentWithResources.class)
         );
     }
 
@@ -89,8 +89,8 @@ public class InjectionIT extends AbstractJavaPluginIT {
      */
     @ParameterizedTest
     @MethodSource("beanProducerWithConstraintViolationsAndInjectableClasses")
-    void injectableFieldManipulation(Class<?> producerWithViolations, Class<?> injectableA, Class<?> injectableB) throws Exception {
-        scanClasses(producerWithViolations, injectableA, injectableB);
+    void injectableFieldManipulation(Class<?> producerWithViolations, Class<?> injectableA, Class<?> injectableB, Class<?> componentWithResources) throws Exception {
+        scanClasses(producerWithViolations, injectableA, injectableB, componentWithResources);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:FieldsOfInjectablesMustNotBeManipulated");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
@@ -113,8 +113,8 @@ public class InjectionIT extends AbstractJavaPluginIT {
      */
     @ParameterizedTest
     @MethodSource("beanProducerWithConstraintViolationsAndInjectableClasses")
-    void finalFieldsForInjectables(Class<?> producerWithViolations, Class<?> injectableA, Class<?> injectableB) throws Exception {
-        scanClasses(producerWithViolations, injectableA, injectableB);
+    void finalFieldsForInjectables(Class<?> producerWithViolations, Class<?> injectableA, Class<?> injectableB, Class<?> componentWithResources) throws Exception {
+        scanClasses(producerWithViolations, injectableA, injectableB, componentWithResources);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesShouldBeHeldInFinalFields");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
