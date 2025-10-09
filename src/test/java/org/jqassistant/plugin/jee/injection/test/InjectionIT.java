@@ -13,6 +13,7 @@ import com.buschmais.jqassistant.core.report.api.model.Row;
 import com.buschmais.jqassistant.core.rule.api.model.Concept;
 import com.buschmais.jqassistant.core.rule.api.model.Constraint;
 import com.buschmais.jqassistant.plugin.java.api.model.FieldDescriptor;
+import com.buschmais.jqassistant.plugin.java.api.model.MemberDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.model.MethodDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
@@ -368,6 +369,10 @@ public class InjectionIT extends AbstractJavaPluginIT {
     @ParameterizedTest
     @MethodSource("resourceClasses")
     void resource(Class<?> resourceComponent, Class<?> componentWithResources, Class<?> resourceMembersType) throws Exception {
+        final TypeDescriptorCondition expectedResourceType = typeDescriptor(resourceComponent);
+        final MethodDescriptorCondition expectedResourceMethod = methodDescriptor(componentWithResources, "resourceMethod");
+        final FieldDescriptorCondition expectedResourceField = fieldDescriptor(componentWithResources, "resourceField");
+
         scanClasses(resourceComponent, componentWithResources, resourceMembersType);
         final Result<Concept> conceptResult = applyConcept("jee-injection:Resource");
         assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
@@ -375,52 +380,73 @@ public class InjectionIT extends AbstractJavaPluginIT {
 
         store.beginTransaction();
 
-        final List<?> conceptResultResources = conceptResult.getRows()
+        final List<TypeDescriptor> conceptResultTypes = conceptResult.getRows()
                 .stream()
                 .map(Row::getColumns)
-                .map(columns -> columns.get("Resource"))
+                .map(columns -> columns.get("Type"))
                 .map(Column::getValue)
+                .map(TypeDescriptor.class::cast)
                 .collect(Collectors.toList());
 
-        verfiyResourceColumn(conceptResultResources,
-                typeDescriptor(resourceComponent),
-                methodDescriptor(componentWithResources, "resourceMethod"),
-                fieldDescriptor(componentWithResources, "resourceField"));
+        assertThat(conceptResultTypes).haveExactly(1, expectedResourceType);
+        assertThat(conceptResultTypes).haveExactly(2, typeDescriptor(componentWithResources));
 
+        final List<TypeDescriptor> conceptResultResourceTypes = conceptResult.getRows()
+                .stream()
+                .map(Row::getColumns)
+                .filter(columns -> columns.get("Type").getLabel().equals(resourceComponent.getName()))
+                .map(columns -> columns.get("Resource"))
+                .map(Column::getValue)
+                .map(TypeDescriptor.class::cast)
+                .collect(Collectors.toList());
+        verifyRourceTypes(conceptResultResourceTypes, expectedResourceType);
 
+        final List<MemberDescriptor> conceptResultResourceMembers = conceptResult.getRows()
+                .stream()
+                .map(Row::getColumns)
+                .filter(columns -> columns.get("Type").getLabel().equals(componentWithResources.getName()))
+                .map(columns -> columns.get("Resource"))
+                .map(Column::getValue)
+                .map(MemberDescriptor.class::cast)
+                .collect(Collectors.toList());
+        verifyResourceMembers(conceptResultResourceMembers, expectedResourceMethod, expectedResourceField);
 
         final List<?> resourceElements = query("MATCH (element:JEE:Resource) RETURN element").getColumn("element");
-        verfiyResourceColumn(resourceElements,
-                typeDescriptor(resourceComponent),
-                methodDescriptor(componentWithResources, "resourceMethod"),
-                fieldDescriptor(componentWithResources, "resourceField"));
+        assertThat(resourceElements).hasSize(3);
 
+        verifyRourceTypes(resourceElements.stream()
+                        .filter(TypeDescriptor.class::isInstance)
+                        .map(TypeDescriptor.class::cast)
+                        .collect(Collectors.toList()),
+                expectedResourceType);
 
+        verifyResourceMembers(resourceElements.stream()
+                        .filter(MemberDescriptor.class::isInstance)
+                        .map(MemberDescriptor.class::cast)
+                        .collect(Collectors.toList()),
+                expectedResourceMethod, expectedResourceField);
+        
         store.commitTransaction();
     }
 
-    private static void verfiyResourceColumn(List<?> column, TypeDescriptorCondition expectedType, MethodDescriptorCondition expectedMethod, FieldDescriptorCondition expectedField) {
-        assertThat(column).hasSize(3);
+    private static void verifyRourceTypes(List<TypeDescriptor> column, TypeDescriptorCondition expectedType) {
+        assertThat(column).hasSize(1);
+        assertThat(column).haveExactly(1, expectedType);
+    }
 
-        final List<TypeDescriptor> conceptResultTypes = column.stream()
-                .filter(TypeDescriptor.class::isInstance)
-                .map(TypeDescriptor.class::cast)
-                .collect(Collectors.toList());
-        assertThat(conceptResultTypes).hasSize(1);
-        assertThat(conceptResultTypes).haveExactly(1, expectedType);
+    private static void verifyResourceMembers(List<MemberDescriptor> column, MethodDescriptorCondition expectedMethod, FieldDescriptorCondition expectedField) {
+        assertThat(column).hasSize(2);
 
         final List<MethodDescriptor> conceptResultMethods = column.stream()
                 .filter(MethodDescriptor.class::isInstance)
                 .map(MethodDescriptor.class::cast)
                 .collect(Collectors.toList());
-        assertThat(conceptResultMethods).hasSize(1);
         assertThat(conceptResultMethods).haveExactly(1, expectedMethod);
 
         final List<FieldDescriptor> conceptResultFields = column.stream()
                 .filter(FieldDescriptor.class::isInstance)
                 .map(FieldDescriptor.class::cast)
                 .collect(Collectors.toList());
-        assertThat(conceptResultFields).hasSize(1);
         assertThat(conceptResultFields).haveExactly(1, expectedField);
     }
 

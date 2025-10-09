@@ -42,12 +42,13 @@
         <description>Abstract concept that returns all elements labeled with "JEE" and "Resource".</description>
         <cypher><![CDATA[
             MATCH
-              (resource:JEE:Resource)
+              (t:Type)-[:DECLARES*0..1]->(resource:JEE:Resource)
             RETURN
-              resource AS Resource
+              t as Type, resource AS Resource
             ORDER BY
-              resource.name
+              t.fqn, resource.name
         ]]></cypher>
+        <report primaryColumn="Resource"/>
     </concept>
 
     <constraint id="jee-injection:BeanProducerMustNotBeInvokedDirectly">
