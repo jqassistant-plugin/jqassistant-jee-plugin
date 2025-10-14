@@ -36,7 +36,7 @@ class CdiEventIT extends AbstractJavaPluginIT {
         scanClasses(classToScan);
         assertThat(applyConcept("cdi:EventProducer").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
-        assertThat("Expected EventProducer", query("MATCH (e:Type:CDI:EventProducer) RETURN e").getColumn("e"), hasItem(typeDescriptor(classToScan)));
+        assertThat("Expected EventProducer", query("MATCH (e:Type:JEE:CDI:EventProducer) RETURN e").getColumn("e"), hasItem(typeDescriptor(classToScan)));
         store.commitTransaction();
     }
 
@@ -52,7 +52,7 @@ class CdiEventIT extends AbstractJavaPluginIT {
         scanClasses(CdiEventIT.class);
         assertThat(applyConcept("cdi:EventProducer").getStatus(), equalTo(Result.Status.WARNING));
         store.beginTransaction();
-        assertThat("Unexpected EventProducer", query("MATCH (e:Type:CDI:EventProducer) RETURN e").getRows(), empty());
+        assertThat("Unexpected EventProducer", query("MATCH (e:Type:JEE:CDI:EventProducer) RETURN e").getRows(), empty());
         store.commitTransaction();
     }
 
@@ -68,7 +68,7 @@ class CdiEventIT extends AbstractJavaPluginIT {
         scanClasses(classToScan);
         assertThat(applyConcept("cdi:EventConsumer").getStatus(), equalTo(Result.Status.SUCCESS));
         store.beginTransaction();
-        assertThat("Expected EventConsumer", query("MATCH (e:Type:CDI:EventConsumer) RETURN e").getColumn("e"), hasItem(typeDescriptor(classToScan)));
+        assertThat("Expected EventConsumer", query("MATCH (e:Type:JEE:CDI:EventConsumer) RETURN e").getColumn("e"), hasItem(typeDescriptor(classToScan)));
         store.commitTransaction();
     }
 
@@ -83,7 +83,7 @@ class CdiEventIT extends AbstractJavaPluginIT {
         scanClasses(CdiEventIT.class);
         assertThat(applyConcept("cdi:EventConsumer").getStatus(), equalTo(Result.Status.WARNING));
         store.beginTransaction();
-        assertThat("Unexpected EventConsumer", query("MATCH (e:Type:CDI:EventConsumer) RETURN e").getRows(), empty());
+        assertThat("Unexpected EventConsumer", query("MATCH (e:Type:JEE:CDI:EventConsumer) RETURN e").getRows(), empty());
         store.commitTransaction();
     }
 }

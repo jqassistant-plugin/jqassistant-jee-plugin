@@ -4,7 +4,7 @@
 
     <concept id="javaee-injection:InjectionPoint">
         <providesConcept refId="jee-injection:InjectionPoint"/>
-        <description>Labels all fields or methods annotated by @javax.inject.Inject with "InjectionPoint" and "CDI".</description>
+        <description>Labels all fields or methods annotated by @javax.inject.Inject with "InjectionPoint", "JEE" and "CDI".</description>
         <cypher><![CDATA[
             MATCH
               (:Type)-[:DECLARES]->(member),
@@ -13,7 +13,7 @@
               (member:Field or member:Method)
               AND injectType.fqn="javax.inject.Inject"
             SET
-              member:InjectionPoint:CDI
+              member:InjectionPoint:JEE:CDI
             RETURN
               member AS InjectionPoint
             ORDER BY
