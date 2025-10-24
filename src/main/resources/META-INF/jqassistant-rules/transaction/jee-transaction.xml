@@ -55,27 +55,11 @@
            MATCH
              (type:Type)-[:DECLARES]->(transactionalMethod:JEE:Transactional:Method)
            RETURN
-             type as Type, transactionalMethod as TransactionalMethod
+             type as Type,
+             transactionalMethod as TransactionalMethod,
+             transactionalMethod.transactionPropagation as TransactionPropagation
            ORDER BY
              type.fqn, transactionalMethod.signature
-        ]]></cypher>
-    </concept>
-
-    <concept id="jee-transaction:TransactionPropagation">
-        <description>
-            Identification of transaction propagation semantics.
-        </description>
-        <cypher><![CDATA[
-            MATCH
-                (artifact:Artifact)-[:CONTAINS]->(transactionalType:Java:Type),
-                (transactionalType)-[:EXTENDS|IMPLEMENTS*0..]->(:Type)-[:DECLARES]->(transactionalMethod:Method:Transactional)
-            RETURN
-                transactionalType AS TransactionalType,
-                transactionalMethod AS TransactionalMethod,
-                transactionalMethod.transactionPropagation AS TransactionPropagation
-            ORDER BY
-                transactionalType.fqn,
-                transactionalMethod.signature
         ]]></cypher>
     </concept>
 

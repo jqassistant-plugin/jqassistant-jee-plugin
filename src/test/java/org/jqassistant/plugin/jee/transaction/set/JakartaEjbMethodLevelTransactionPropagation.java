@@ -5,7 +5,7 @@ import jakarta.ejb.TransactionAttribute;
 import jakarta.ejb.TransactionAttributeType;
 
 @Stateless
-@TransactionAttribute(TransactionAttributeType.MANDATORY)
-public class JakartaTransactionPropagatingEjb {
+public class JakartaEjbMethodLevelTransactionPropagation {
+    @TransactionAttribute(TransactionAttributeType.MANDATORY)
     public void transactionalMethodMandatory(){}
 }

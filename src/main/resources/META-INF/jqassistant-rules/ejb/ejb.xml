@@ -70,11 +70,24 @@
         ]]></cypher>
     </concept>
 
+    <concept id="ejb:TransactionAttribute">
+        <description>Abstract concept that returns configured transaction attributes based on type and method level annotations.</description>
+        <cypher><![CDATA[
+            MATCH
+              (ejb:Java:Type:JEE:EJB)-[:DECLARES]->(method:Java:Method)
+            RETURN
+              ejb AS Ejb,
+              ejb.transactionAttribute AS TypeLevelTransactionAttribute,
+              method AS Method,
+              method.transactionAttribute AS MethodLevelTransactionAttribute
+        ]]></cypher>
+    </concept>
+
     <concept id="ejb:TransactionalMethod">
         <providesConcept refId="jee-transaction:TransactionalMethod" />
         <requiresConcept refId="ejb:EJB" />
         <description>
-            Labels methods of EJBs with "JEE" and "Transactional".
+            Labels methods of EJBs with "JEE" and "Transactional". It further sets the default transaction propagation semantics for all declared transactional methods.
         </description>
         <cypher><![CDATA[
            MATCH
@@ -86,8 +99,53 @@
            )
            SET
              transactionalMethod:JEE:Transactional
+           SET
+             transactionalMethod.transactionPropagation = 'REQUIRED'
            RETURN
              transactionalClass as TransactionalClass, collect(transactionalMethod) as TransactionalMethods
+        ]]></cypher>
+    </concept>
+
+    <concept id="ejb:TypeLevelTransactionPropagation">
+        <providesConcept refId="jee-transaction:TransactionalMethod"/>
+        <requiresConcept refId="ejb:TransactionalMethod"/>
+        <!-- Ensure that the type level transaction attribute overrides the default -->
+        <requiresConcept refId="ejb:TransactionAttribute"/>
+        <description>
+            Overrides the default transaction propagation semantics of declared transactional methods based on the type level transaction attribute.
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (transactionalClass:Java:Type:JEE:EJB)-[:DECLARES]->(transactionalMethod:Java:Method:JEE:Transactional)
+            WHERE
+              transactionalClass.transactionAttribute IS NOT NULL
+            SET
+              transactionalMethod.transactionPropagation = transactionalClass.transactionAttribute
+            RETURN
+              transactionalClass as TransactionalClass,
+              transactionalMethod as TransactionalMethod,
+              transactionalMethod.transactionPropagation AS TransactionPropagation
+        ]]></cypher>
+    </concept>
+
+    <concept id="ejb:MethodLevelTransactionPropagation">
+        <providesConcept refId="jee-transaction:TransactionalMethod"/>
+        <!-- Ensure that method level transaction attributes override the type level transaction attribute -->
+        <requiresConcept refId="ejb:TypeLevelTransactionPropagation"/>
+        <description>
+            Overrides the transaction propagation semantics of declared transactional methods based on the method level transaction attribute.
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (transactionalClass:Java:Type:JEE:EJB)-[:DECLARES]->(transactionalMethod:Java:Method:JEE:Transactional)
+            WHERE
+              transactionalMethod.transactionAttribute IS NOT NULL
+            SET
+              transactionalMethod.transactionPropagation = transactionalMethod.transactionAttribute
+            RETURN
+              transactionalClass as TransactionalClass,
+              transactionalMethod as TransactionalMethod,
+              transactionalMethod.transactionPropagation AS TransactionPropagation
         ]]></cypher>
     </concept>
 

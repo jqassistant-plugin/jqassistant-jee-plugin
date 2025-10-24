@@ -22,14 +22,14 @@ public class TransactionPropagationIT extends AbstractJavaPluginIT {
     public void transactionPropagationEjbDefault(Class<?> testClass) throws RuleException, NoSuchMethodException {
         scanClasses(testClass);
 
-        final Result<Concept> conceptResult = applyConcept("jee-transaction:TransactionPropagation");
+        final Result<Concept> conceptResult = applyConcept("jee-transaction:TransactionalMethod");
         store.beginTransaction();
 
         assertThat(conceptResult.getStatus()).isEqualTo(Result.Status.SUCCESS);
         assertThat(conceptResult.getRows().size()).isEqualTo(1);
 
         Row row1  = conceptResult.getRows().get(0);
-        assertThat((TypeDescriptor) row1.getColumns().get("TransactionalType").getValue())
+        assertThat((TypeDescriptor) row1.getColumns().get("Type").getValue())
                 .is(typeDescriptor(testClass));
         assertThat((MethodDescriptor) row1.getColumns().get("TransactionalMethod").getValue())
                 .is(methodDescriptor(testClass, "transactionalMethod"));
@@ -39,18 +39,53 @@ public class TransactionPropagationIT extends AbstractJavaPluginIT {
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {JavaxTransactionPropagatingEjb.class, JakartaTransactionPropagatingEjb.class})
-    public void transactionPropagationEjb(Class<?> testClass) throws RuleException, NoSuchMethodException {
+    @ValueSource(classes = {JavaxEjbTypeAndMethodLevelTransactionPropagation.class, JakartaEjbTypeAndMethodLevelTransactionPropagation.class})
+    public void transactionPropagationEjbTypeAndMethodLevel(Class<?> testClass) throws RuleException, NoSuchMethodException {
         scanClasses(testClass);
 
-        final Result<Concept> conceptResult = applyConcept("jee-transaction:TransactionPropagation");
+        final Result<Concept> conceptResult = applyConcept("jee-transaction:TransactionalMethod");
+        store.beginTransaction();
+
+        assertThat(conceptResult.getStatus()).isEqualTo(Result.Status.SUCCESS);
+        assertThat(conceptResult.getRows().size()).isEqualTo(3);
+
+        Row row1  = conceptResult.getRows().get(0);
+        assertThat((TypeDescriptor) row1.getColumns().get("Type").getValue())
+                .is(typeDescriptor(testClass));
+        assertThat((MethodDescriptor) row1.getColumns().get("TransactionalMethod").getValue())
+                .is(methodDescriptor(testClass, "transactionalMethodMandatory"));
+        assertThat(row1.getColumns().get("TransactionPropagation").getLabel()).isEqualTo("MANDATORY");
+
+        Row row2  = conceptResult.getRows().get(1);
+        assertThat((TypeDescriptor) row2.getColumns().get("Type").getValue())
+                .is(typeDescriptor(testClass));
+        assertThat((MethodDescriptor) row2.getColumns().get("TransactionalMethod").getValue())
+                .is(methodDescriptor(testClass, "transactionalMethodNever"));
+        assertThat(row2.getColumns().get("TransactionPropagation").getLabel()).isEqualTo("NEVER");
+
+        Row row3  = conceptResult.getRows().get(2);
+        assertThat((TypeDescriptor) row3.getColumns().get("Type").getValue())
+                .is(typeDescriptor(testClass));
+        assertThat((MethodDescriptor) row3.getColumns().get("TransactionalMethod").getValue())
+                .is(methodDescriptor(testClass, "transactionalMethodRequired"));
+        assertThat(row3.getColumns().get("TransactionPropagation").getLabel()).isEqualTo("REQUIRED");
+
+        store.commitTransaction();
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxEjbMethodLevelTransactionPropagation.class, JakartaEjbMethodLevelTransactionPropagation.class})
+    public void transactionPropagationEjbMethodLevel(Class<?> testClass) throws RuleException, NoSuchMethodException {
+        scanClasses(testClass);
+
+        final Result<Concept> conceptResult = applyConcept("jee-transaction:TransactionalMethod");
         store.beginTransaction();
 
         assertThat(conceptResult.getStatus()).isEqualTo(Result.Status.SUCCESS);
         assertThat(conceptResult.getRows().size()).isEqualTo(1);
 
         Row row1  = conceptResult.getRows().get(0);
-        assertThat((TypeDescriptor) row1.getColumns().get("TransactionalType").getValue())
+        assertThat((TypeDescriptor) row1.getColumns().get("Type").getValue())
                 .is(typeDescriptor(testClass));
         assertThat((MethodDescriptor) row1.getColumns().get("TransactionalMethod").getValue())
                 .is(methodDescriptor(testClass, "transactionalMethodMandatory"));
@@ -60,32 +95,32 @@ public class TransactionPropagationIT extends AbstractJavaPluginIT {
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {JavaxTransactionPropagatingType.class, JakartaTransactionPropagatingType.class})
+    @ValueSource(classes = {JavaxTypeAndMethodLevelTransactionPropagation.class, JakartaTypeAndMethodLevelTransactionPropagation.class})
     public void transactionPropagationType(Class<?> testClass) throws RuleException, NoSuchMethodException {
         scanClasses(testClass);
 
-        final Result<Concept> conceptResult = applyConcept("jee-transaction:TransactionPropagation");
+        final Result<Concept> conceptResult = applyConcept("jee-transaction:TransactionalMethod");
         store.beginTransaction();
 
         assertThat(conceptResult.getStatus()).isEqualTo(Result.Status.SUCCESS);
         assertThat(conceptResult.getRows().size()).isEqualTo(3);
 
         Row row1  = conceptResult.getRows().get(0);
-        assertThat((TypeDescriptor) row1.getColumns().get("TransactionalType").getValue())
+        assertThat((TypeDescriptor) row1.getColumns().get("Type").getValue())
                 .is(typeDescriptor(testClass));
         assertThat((MethodDescriptor) row1.getColumns().get("TransactionalMethod").getValue())
                 .is(methodDescriptor(testClass, "transactionalMethodMandatory"));
         assertThat(row1.getColumns().get("TransactionPropagation").getLabel()).isEqualTo("MANDATORY");
 
         Row row2  = conceptResult.getRows().get(1);
-        assertThat((TypeDescriptor) row2.getColumns().get("TransactionalType").getValue())
+        assertThat((TypeDescriptor) row2.getColumns().get("Type").getValue())
                 .is(typeDescriptor(testClass));
         assertThat((MethodDescriptor) row2.getColumns().get("TransactionalMethod").getValue())
                 .is(methodDescriptor(testClass, "transactionalMethodNever"));
         assertThat(row2.getColumns().get("TransactionPropagation").getLabel()).isEqualTo("NEVER");
 
         Row row3  = conceptResult.getRows().get(2);
-        assertThat((TypeDescriptor) row3.getColumns().get("TransactionalType").getValue())
+        assertThat((TypeDescriptor) row3.getColumns().get("Type").getValue())
                 .is(typeDescriptor(testClass));
         assertThat((MethodDescriptor) row3.getColumns().get("TransactionalMethod").getValue())
                 .is(methodDescriptor(testClass, "transactionalMethodRequiresNew"));
@@ -95,25 +130,25 @@ public class TransactionPropagationIT extends AbstractJavaPluginIT {
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {JavaxTransactionPropagatingMethod.class, JakartaTransactionPropagatingMethod.class})
+    @ValueSource(classes = {JavaxMethodLevelTransactionPropagation.class, JakartaMethodLevelTransactionPropagation.class})
     public void transactionPropagationMethod(Class<?> testClass) throws RuleException, NoSuchMethodException {
         scanClasses(testClass);
 
-        final Result<Concept> conceptResult = applyConcept("jee-transaction:TransactionPropagation");
+        final Result<Concept> conceptResult = applyConcept("jee-transaction:TransactionalMethod");
         store.beginTransaction();
 
         assertThat(conceptResult.getStatus()).isEqualTo(Result.Status.SUCCESS);
         assertThat(conceptResult.getRows().size()).isEqualTo(2);
 
         Row row1  = conceptResult.getRows().get(0);
-        assertThat((TypeDescriptor) row1.getColumns().get("TransactionalType").getValue())
+        assertThat((TypeDescriptor) row1.getColumns().get("Type").getValue())
                 .is(typeDescriptor(testClass));
         assertThat((MethodDescriptor) row1.getColumns().get("TransactionalMethod").getValue())
                 .is(methodDescriptor(testClass, "transactionalMethodRequired"));
         assertThat(row1.getColumns().get("TransactionPropagation").getLabel()).isEqualTo("REQUIRED");
 
         Row row2  = conceptResult.getRows().get(1);
-        assertThat((TypeDescriptor) row2.getColumns().get("TransactionalType").getValue())
+        assertThat((TypeDescriptor) row2.getColumns().get("Type").getValue())
                 .is(typeDescriptor(testClass));
         assertThat((MethodDescriptor) row2.getColumns().get("TransactionalMethod").getValue())
                 .is(methodDescriptor(testClass, "transactionalMethodRequiresNew"));

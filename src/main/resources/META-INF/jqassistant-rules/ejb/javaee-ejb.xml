@@ -84,4 +84,53 @@
         ]]></cypher>
     </concept>
 
+    <concept id="javaee-ejb:TypeLevelTransactionAttribute">
+        <providesConcept refId="ejb:TransactionAttribute"/>
+        <requiresConcept refId="ejb:EJB"/>
+        <description>
+            Identifies the configured type level transaction attribute based on the "javax.ejb.TransactionAttribute" annotation.
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (ejb:Java:Type:JEE:EJB)-[:ANNOTATED_BY]->(annotation:Java:Annotation),
+              (annotation)-[:OF_TYPE]-(annotationType:Type {fqn: 'javax.ejb.TransactionAttribute'})
+            OPTIONAL MATCH
+              (annotation)-[:HAS]->(propagation:Value {name: 'value'})-[:IS]->(propagationType:Java:Field)
+            WITH
+              ejb,
+              COALESCE(SPLIT(propagationType.signature,' ')[1], 'REQUIRED') AS propagationType
+            SET
+              ejb.transactionAttribute = propagationType
+            RETURN
+              ejb as Ejb,
+              ejb.transactionAttribute as TransactionAttribute
+        ]]></cypher>
+    </concept>
+
+    <concept id="javaee-ejb:MethodLevelTransactionAttribute">
+        <providesConcept refId="ejb:TransactionAttribute"/>
+        <requiresConcept refId="ejb:EJB"/>
+        <description>
+            Identifies the configured method level transaction attribute based on the "javax.ejb.TransactionAttribute" annotation.
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (ejb:Java:Type:JEE:EJB)-[:DECLARES]->(method:Java:Method),
+              (method)-[:ANNOTATED_BY]->(annotation:Java:Annotation),
+              (annotation)-[:OF_TYPE]-(annotationType:Type {fqn: 'javax.ejb.TransactionAttribute'})
+            OPTIONAL MATCH
+              (annotation)-[:HAS]->(propagation:Value {name: 'value'})-[:IS]->(propagationType:Java:Field)
+            WITH
+              ejb,
+              method,
+              COALESCE(SPLIT(propagationType.signature,' ')[1], 'REQUIRED') AS propagationType
+            SET
+              method.transactionAttribute = propagationType
+            RETURN
+              ejb as Ejb,
+              method as Method,
+              method.transactionAttribute as TransactionAttribute
+        ]]></cypher>
+    </concept>
+
 </jqassistant-rules>

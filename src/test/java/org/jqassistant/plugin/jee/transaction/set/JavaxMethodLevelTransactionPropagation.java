@@ -1,9 +1,9 @@
 package org.jqassistant.plugin.jee.transaction.set;
 
-import jakarta.transaction.Transactional;
+import javax.transaction.Transactional;
 
 @Transactional
-public class JakartaTransactionPropagatingMethod {
+public class JavaxMethodLevelTransactionPropagation {
 
     @Transactional(value = Transactional.TxType.REQUIRES_NEW)
     public void transactionalMethodRequiresNew(){}
