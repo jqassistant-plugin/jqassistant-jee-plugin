@@ -55,7 +55,9 @@
            MATCH
              (type:Type)-[:DECLARES]->(transactionalMethod:JEE:Transactional:Method)
            RETURN
-             type as Type, transactionalMethod as TransactionalMethod
+             type as Type,
+             transactionalMethod as TransactionalMethod,
+             transactionalMethod.transactionPropagation as TransactionPropagation
            ORDER BY
              type.fqn, transactionalMethod.signature
         ]]></cypher>

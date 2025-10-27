@@ -2,22 +2,30 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v2.2 https://jqassistant.github.io/jqassistant/current/schema/jqassistant-rule-v2.2.xsd">
 
-
     <concept id="jakartaee-transaction:TransactionalMethodByAnnotatedMethod">
         <providesConcept refId="jee-transaction:TransactionalMethod" />
+        <!-- Ensure that method level annotations override type level annotations -->
+        <requiresConcept refId="jakartaee-transaction:TransactionalMethodByAnnotatedClass"/>
         <description>
-            Labels all methods which are annotated with "jakarta.transaction.Transactional" with "JEE" and "Transactional".
+            Labels all methods which are annotated with "jakarta.transaction.Transactional" with "JEE" and "Transactional". It further identifies method level transaction propagation semantics. The configured transaction propagation at method level overrides the type level configuration.
         </description>
         <cypher><![CDATA[
            MATCH
              (type:Type)-[:DECLARES]->(transactionalMethod:Method),
-             (transactionalMethod:Method)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotationType:Type)
-           WHERE
-             annotationType.fqn="jakarta.transaction.Transactional"
-           AND NOT
+             (transactionalMethod:Method)-[:ANNOTATED_BY]->(annotation:Java:Annotation),
+             (annotation)-[:OF_TYPE]->(annotationType:Type {fqn: 'jakarta.transaction.Transactional'})
+           OPTIONAL MATCH
+             (annotation)-[:HAS]->(propagation:Value {name: 'value'})-[:IS]->(propagationType:Java:Field)
+           WITH
+             type,
+             transactionalMethod,
+             COALESCE(SPLIT(propagationType.signature,' ')[1], 'REQUIRED') AS effectivePropagationType
+           WHERE NOT
              transactionalMethod.visibility = "private"
            SET
              transactionalMethod:JEE:Transactional
+           SET
+             transactionalMethod.transactionPropagation = effectivePropagationType
            RETURN
              type as Type, transactionalMethod as TransactionalMethod
         ]]></cypher>
@@ -26,23 +34,32 @@
     <concept id="jakartaee-transaction:TransactionalMethodByAnnotatedClass">
         <providesConcept refId="jee-transaction:TransactionalMethod" />
         <description>
-            Labels methods of classes which are directly or indirectly annotated with "jakarta.transaction.Transactional" with "JEE" and "Transactional".
+            Labels methods of classes which are directly or indirectly annotated with "jakarta.transaction.Transactional" with "JEE" and "Transactional". It further identifies type level transaction propagation semantics. The configured transaction propagation at type level applies to declared methods.
         </description>
         <cypher><![CDATA[
            MATCH
-             (transactionalClass:Type)-[:EXTENDS|IMPLEMENTS*0..]->(:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotationType:Type),
+             (transactionalClass:Type)-[:EXTENDS|IMPLEMENTS*0..]->(:Type)-[:ANNOTATED_BY]->(annotation:Java:Annotation),
+             (annotation)-[:OF_TYPE]->(annotationType:Type {fqn: 'jakarta.transaction.Transactional'}),
              (transactionalClass)-[:DECLARES]->(transactionalMethod:Method)
-           WHERE
-             annotationType.fqn="jakarta.transaction.Transactional"
-           AND NOT (
-               transactionalMethod:Constructor
-               OR (transactionalMethod.static IS NOT NULL and transactionalMethod.static)
-               OR transactionalMethod.visibility = "private"
-             )
+           OPTIONAL MATCH
+             (annotation)-[:HAS]->(propagation:Value {name: 'value'})-[:IS]->(propagationType:Java:Field)
+           WITH
+             transactionalClass,
+             transactionalMethod,
+             COALESCE(SPLIT(propagationType.signature,' ')[1], 'REQUIRED') AS effectivePropagationType
+           WHERE NOT (
+             transactionalMethod:Constructor
+             OR (transactionalMethod.static IS NOT NULL and transactionalMethod.static)
+             OR transactionalMethod.visibility = "private"
+           )
            SET
              transactionalMethod:JEE:Transactional
+           SET
+             transactionalMethod.transactionPropagation = effectivePropagationType
            RETURN
-             transactionalClass as TransactionalClass, collect(transactionalMethod) as TransactionalMethods
+             transactionalClass as TransactionalClass,
+             transactionalMethod as TransactionalMethod,
+             transactionalMethod.transactionPropagation AS TransactionPropagation
         ]]></cypher>
     </concept>
     

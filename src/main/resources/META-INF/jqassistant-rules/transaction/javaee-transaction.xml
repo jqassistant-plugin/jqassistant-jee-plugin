@@ -5,19 +5,28 @@
 
     <concept id="javaee-transaction:TransactionalMethodByAnnotatedMethod">
         <providesConcept refId="jee-transaction:TransactionalMethod" />
+        <!-- Ensure that method level annotations override type level annotations -->
+        <requiresConcept refId="javaee-transaction:TransactionalMethodByAnnotatedClass"/>
         <description>
-            Labels all methods which are annotated with "javax.transaction.Transactional", with "JEE" and "Transactional".
+            Labels all methods which are annotated with "javax.transaction.Transactional" with "JEE" and "Transactional".
         </description>
         <cypher><![CDATA[
            MATCH
              (type:Type)-[:DECLARES]->(transactionalMethod:Method),
-             (transactionalMethod:Method)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotationType:Type)
-           WHERE
-             annotationType.fqn="javax.transaction.Transactional"
-           AND NOT
+             (transactionalMethod:Method)-[:ANNOTATED_BY]->(annotation:Java:Annotation),
+             (annotation)-[:OF_TYPE]->(annotationType:Type {fqn: 'javax.transaction.Transactional'})
+           OPTIONAL MATCH
+             (annotation)-[:HAS]->(propagation:Value {name: 'value'})-[:IS]->(propagationType:Java:Field)
+           WITH
+             type,
+             transactionalMethod,
+             COALESCE(SPLIT(propagationType.signature,' ')[1], 'REQUIRED') AS effectivePropagationType
+           WHERE NOT
              transactionalMethod.visibility = "private"
            SET
              transactionalMethod:JEE:Transactional
+           SET
+             transactionalMethod.transactionPropagation = effectivePropagationType
            RETURN
              type as Type, transactionalMethod as TransactionalMethod
         ]]></cypher>
@@ -30,19 +39,28 @@
         </description>
         <cypher><![CDATA[
            MATCH
-             (transactionalClass:Type)-[:EXTENDS|IMPLEMENTS*0..]->(:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]->(annotationType:Type),
+             (transactionalClass:Type)-[:EXTENDS|IMPLEMENTS*0..]->(:Type)-[:ANNOTATED_BY]->(annotation:Java:Annotation),
+             (annotation)-[:OF_TYPE]->(annotationType:Type {fqn: 'javax.transaction.Transactional'}),
              (transactionalClass)-[:DECLARES]->(transactionalMethod:Method)
-           WHERE
-             annotationType.fqn="javax.transaction.Transactional"
-             AND NOT (
-               transactionalMethod:Constructor
-               OR (transactionalMethod.static IS NOT NULL and transactionalMethod.static)
-               OR transactionalMethod.visibility = "private"
-             )
+           OPTIONAL MATCH
+             (annotation)-[:HAS]->(propagation:Value {name: 'value'})-[:IS]->(propagationType:Java:Field)
+           WITH
+             transactionalClass,
+             transactionalMethod,
+             COALESCE(SPLIT(propagationType.signature,' ')[1], 'REQUIRED') AS effectivePropagationType
+           WHERE NOT (
+             transactionalMethod:Constructor
+             OR (transactionalMethod.static IS NOT NULL and transactionalMethod.static)
+             OR transactionalMethod.visibility = "private"
+           )
            SET
              transactionalMethod:JEE:Transactional
+           SET
+             transactionalMethod.transactionPropagation = effectivePropagationType
            RETURN
-             transactionalClass as TransactionalClass, collect(transactionalMethod) as TransactionalMethods
+             transactionalClass as TransactionalClass,
+             transactionalMethod as TransactionalMethod,
+             transactionalMethod.transactionPropagation AS TransactionPropagation
         ]]></cypher>
     </concept>
     
