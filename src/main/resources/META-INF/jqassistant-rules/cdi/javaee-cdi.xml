@@ -48,7 +48,7 @@
 
     <concept id="javaee-cdi:Qualifier">
         <providesConcept refId="cdi:Qualifier"/>
-        <description>Labels all annotation types annotated by @javax.inject.Qualifier with "CDI" and "Qualifier" and adds the labels "CDI" and "Nonbinding" to all non-binding annotation values (i.e. which are annotated by @javax.enterprise.util.Nonbinding).
+        <description>Labels all annotation types annotated by @javax.inject.Qualifier with "JEE", "CDI" and "Qualifier" and adds the labels "CDI" and "Nonbinding" to all non-binding annotation values (i.e. which are annotated by @javax.enterprise.util.Nonbinding).
         </description>
         <cypher><![CDATA[
             MATCH
@@ -56,7 +56,7 @@
             WHERE
               qualifierType.fqn = "javax.inject.Qualifier"
             SET
-              qualifier:CDI:Qualifier
+              qualifier:JEE:CDI:Qualifier
             WITH
               qualifier
             MATCH
@@ -65,7 +65,7 @@
             WHERE
               nonbindingType.fqn = "javax.enterprise.util.Nonbinding"
             SET
-              attribute:CDI:Nonbinding
+              attribute:JEE:CDI:Nonbinding
             RETURN
               distinct qualifier AS Qualifier
         ]]></cypher>
@@ -73,7 +73,7 @@
 
     <concept id="javaee-cdi:Dependent">
         <providesConcept refId="cdi:Dependent"/>
-        <description>Labels all beans, fields or methods annotated by @javax.enterprise.context.Dependent with "CDI" and "Dependent".
+        <description>Labels all beans, fields or methods annotated by @javax.enterprise.context.Dependent with "JEE", "CDI" and "Dependent".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -82,7 +82,7 @@
               (e:Type or e:Method or e:Field)
               and scopeType.fqn="javax.enterprise.context.Dependent"
             SET
-              e:CDI:Dependent
+              e:JEE:CDI:Dependent
             RETURN
               e AS DependentElement
         ]]></cypher>
@@ -90,7 +90,7 @@
 
     <concept id="javaee-cdi:RequestScoped">
         <providesConcept refId="cdi:RequestScoped"/>
-        <description>Labels all beans, fields or methods annotated by @javax.enterprise.context.RequestScoped with "CDI" and "RequestScoped".
+        <description>Labels all beans, fields or methods annotated by @javax.enterprise.context.RequestScoped with "JEE", "CDI" and "RequestScoped".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -99,7 +99,7 @@
               (e:Type or e:Method or e:Field)
               and scopeType.fqn="javax.enterprise.context.RequestScoped"
             SET
-              e:CDI:RequestScoped
+              e:JEE:CDI:RequestScoped
             RETURN
               e AS RequestScopedElement
         ]]></cypher>
@@ -107,7 +107,7 @@
 
     <concept id="javaee-cdi:SessionScoped">
         <providesConcept refId="cdi:SessionScoped"/>
-        <description>Labels all beans, fields or methods annotated by @javax.enterprise.context.SessionScoped with "CDI" and "SessionScoped".
+        <description>Labels all beans, fields or methods annotated by @javax.enterprise.context.SessionScoped with "JEE", "CDI" and "SessionScoped".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -116,7 +116,7 @@
               (e:Type or e:Method or e:Field)
               and scopeType.fqn="javax.enterprise.context.SessionScoped"
             SET
-              e:CDI:SessionScoped
+              e:JEE:CDI:SessionScoped
             RETURN
               e AS SessionScopedElement
         ]]></cypher>
@@ -125,7 +125,7 @@
 
     <concept id="javaee-cdi:ConversationScoped">
         <providesConcept refId="cdi:ConversationScoped"/>
-        <description>Labels all beans, fields or methods annotated by @javax.enterprise.context.ConversationScoped with "CDI" and "ConversationScoped".
+        <description>Labels all beans, fields or methods annotated by @javax.enterprise.context.ConversationScoped with "JEE", "CDI" and "ConversationScoped".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -134,7 +134,7 @@
               (e:Type or e:Method or e:Field)
               and scopeType.fqn="javax.enterprise.context.ConversationScoped"
             SET
-              e:CDI:ConversationScoped
+              e:JEE:CDI:ConversationScoped
             RETURN
               e AS ConversationScopedElement
         ]]></cypher>
@@ -142,7 +142,7 @@
 
     <concept id="javaee-cdi:ApplicationScoped">
         <providesConcept refId="cdi:ApplicationScoped"/>
-        <description>Labels all beans, fields or methods annotated by @javax.enterprise.context.ApplicationScoped with "CDI" and "ApplicationScoped".
+        <description>Labels all beans, fields or methods annotated by @javax.enterprise.context.ApplicationScoped with "JEE", "CDI" and "ApplicationScoped".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -151,7 +151,7 @@
               (e:Type or e:Method or e:Field)
               and scopeType.fqn="javax.enterprise.context.ApplicationScoped"
             SET
-              e:CDI:ApplicationScoped
+              e:JEE:CDI:ApplicationScoped
             RETURN
               e AS ApplicationScopedElement
         ]]></cypher>
@@ -163,7 +163,7 @@
         <description>Labels all classes annotated with @javax.enterprise.context.Dependent,
             @javax.enterprise.context.RequestScoped, @javax.enterprise.context.SessionScoped,
             @javax.enterprise.context.ConversationScoped, @javax.enterprise.context.ApplicationScoped or a stereotype
-            annotation with "CDI", "JEE" and "Injectable".
+            annotation with "JEE", "CDI" and "Injectable".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -178,7 +178,7 @@
               ]
               OR annotation:Stereotype
             SET
-              type:CDI:JEE:Injectable
+              type:JEE:CDI:Injectable
             RETURN
               type AS Injectable
         ]]></cypher>
@@ -187,7 +187,7 @@
     <concept id="javaee-cdi:SingletonScoped">
         <providesConcept refId="jee-injection:Injectable"/>
         <providesConcept refId="cdi:SingletonScoped"/>
-        <description>Labels all beans annotated by @javax.inject.Singleton with "CDI", "SingletonScoped", "JEE" and "Injectable".
+        <description>Labels all beans annotated by @javax.inject.Singleton with "JEE", "CDI", "SingletonScoped" and "Injectable".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -195,7 +195,7 @@
             WHERE
               a.fqn = "javax.inject.Singleton"
             SET
-              t:CDI:SingletonScoped:JEE:Injectable
+              t:JEE:CDI:SingletonScoped:JEE:Injectable
             RETURN
               t AS cdiSingleton
         ]]></cypher>
@@ -203,7 +203,7 @@
 
     <concept id="javaee-cdi:Stereotype">
         <providesConcept refId="cdi:Stereotype"/>
-        <description>Labels all annotation types annotated by @javax.enterprise.inject.Stereotype with "CDI" and "Stereotype".
+        <description>Labels all annotation types annotated by @javax.enterprise.inject.Stereotype with "JEE", "CDI" and "Stereotype".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -211,7 +211,7 @@
             WHERE
               stereotypeType.fqn="javax.enterprise.inject.Stereotype"
             SET
-              stereotype:CDI:Stereotype
+              stereotype:JEE:CDI:Stereotype
             RETURN
               stereotype AS Stereotype
         ]]></cypher>
@@ -219,7 +219,7 @@
 
     <concept id="javaee-cdi:Alternative">
         <providesConcept refId="cdi:Alternative"/>
-        <description>Labels all types annotated by @javax.enterprise.inject.Alternative with "CDI" and "Alternative".
+        <description>Labels all types annotated by @javax.enterprise.inject.Alternative with "JEE", "CDI" and "Alternative".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -227,7 +227,7 @@
             WHERE
               alternativeType.fqn="javax.enterprise.inject.Alternative"
             SET
-              alternative:CDI:Alternative
+              alternative:JEE:CDI:Alternative
             RETURN
               alternative AS Alternative
         ]]></cypher>
@@ -235,7 +235,7 @@
 
     <concept id="javaee-cdi:Specializes">
         <providesConcept refId="cdi:Specializes"/>
-        <description>Labels all types and methods annotated by @javax.enterprise.inject.Specializes with "CDI" and "Specializes".
+        <description>Labels all types and methods annotated by @javax.enterprise.inject.Specializes with "JEE", "CDI" and "Specializes".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -244,7 +244,7 @@
               (specializes:Type or specializes:Method)
               and specializesType.fqn="javax.enterprise.inject.Specializes"
             SET
-              specializes:CDI:Specializes
+              specializes:JEE:CDI:Specializes
             RETURN
               specializes AS Specialization
         ]]></cypher>
@@ -252,7 +252,7 @@
 
     <concept id="javaee-cdi:Delegate">
         <providesConcept refId="cdi:Delegate"/>
-        <description>Labels all fields annotated by @javax.decorator.Delegate with "CDI" and "Delegate".
+        <description>Labels all fields annotated by @javax.decorator.Delegate with "JEE", "CDI" and "Delegate".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -260,7 +260,7 @@
             WHERE
               delegateType.fqn="javax.decorator.Delegate"
             SET
-              delegate:CDI:Delegate
+              delegate:JEE:CDI:Delegate
             RETURN
               delegate AS Delegate
         ]]></cypher>
@@ -269,7 +269,7 @@
     <concept id="javaee-cdi:Decorator">
         <providesConcept refId="jee-injection:Injectable"/>
         <providesConcept refId="cdi:Decorator"/>
-        <description>Labels all types annotated by @javax.decorator.Decorator with "CDI", "Decorator", "JEE" and "Injectable".
+        <description>Labels all types annotated by @javax.decorator.Decorator with "JEE", "CDI", "Decorator", "JEE" and "Injectable".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -277,7 +277,7 @@
             WHERE
               decoratorType.fqn="javax.decorator.Decorator"
             SET
-              decorator:CDI:Decorator:JEE:Injectable
+              decorator:JEE:CDI:Decorator:Injectable
             RETURN
               decorator AS Decorator
         ]]></cypher>
@@ -286,16 +286,16 @@
     <concept id="javaee-cdi:EventProducer">
         <providesConcept refId="cdi:EventProducer"/>
         <requiresConcept refId="jee-injection:InjectionPoint"/>
-        <description>Labels all beans declaring "InjectionPoint" of type "javax.enterprise.event.Event" with "CDI" and "EventProducer".
+        <description>Labels all beans declaring "InjectionPoint" of type "javax.enterprise.event.Event" with "JEE", "CDI" and "EventProducer".
         </description>
         <cypher><![CDATA[
             MATCH
-              (a:Type)-[:DECLARES]->(member:Field:CDI:InjectionPoint),
+              (a:Type)-[:DECLARES]->(member:Field:JEE:CDI:InjectionPoint),
               (member)-[:OF_TYPE]->(injectType:Type)
             WHERE
               injectType.fqn = "javax.enterprise.event.Event"
             SET
-              a:CDI:EventProducer
+              a:JEE:CDI:EventProducer
             RETURN
               DISTINCT a.fqn AS cdiEventProducer
         ]]></cypher>
@@ -304,7 +304,7 @@
     <concept id="javaee-cdi:EventConsumer">
         <providesConcept refId="cdi:EventConsumer"/>
         <requiresConcept refId="jee-injection:InjectionPoint"/>
-        <description>Labels all beans declaring method that has parameter of type "javax.enterprise.event.Observes" with "CDI" and "EventConsumer".
+        <description>Labels all beans declaring method that has parameter of type "javax.enterprise.event.Observes" with "JEE", "CDI" and "EventConsumer".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -313,7 +313,7 @@
             WHERE
               injectType.fqn = "javax.enterprise.event.Observes"
             SET
-              a:CDI:EventConsumer
+              a:JEE:CDI:EventConsumer
             RETURN
               DISTINCT a.fqn AS cdiEventConsumer
         ]]></cypher>
@@ -321,7 +321,7 @@
 
     <concept id="javaee-cdi:Named">
         <providesConcept refId="cdi:Named"/>
-        <description>Labels all types or methods annotated by "javax.inject.Named" with "CDI" and "Named".
+        <description>Labels all types or methods annotated by "javax.inject.Named" with "JEE", "CDI" and "Named".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -329,7 +329,7 @@
             WHERE
               namedType.fqn = "javax.inject.Named"
             SET
-              e:CDI:Named
+              e:JEE:CDI:Named
             RETURN
               e AS Named
         ]]></cypher>
@@ -337,7 +337,7 @@
 
     <concept id="javaee-cdi:Default">
         <providesConcept refId="cdi:Default"/>
-        <description>Labels all elements annotated by "javax.enterprise.inject.Default" with "CDI" and "Default".
+        <description>Labels all elements annotated by "javax.enterprise.inject.Default" with "JEE", "CDI" and "Default".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -345,7 +345,7 @@
             WHERE
               defaultType.fqn = "javax.enterprise.inject.Default"
             SET
-              e:CDI:Default
+              e:JEE:CDI:Default
             RETURN
               e AS Default
         ]]></cypher>
@@ -353,7 +353,7 @@
 
     <concept id="javaee-cdi:Any">
         <providesConcept refId="cdi:Any"/>
-        <description>Labels all elements annotated by "javax.enterprise.inject.Any" with "CDI" and "Any".
+        <description>Labels all elements annotated by "javax.enterprise.inject.Any" with "JEE", "CDI" and "Any".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -361,7 +361,7 @@
             WHERE
               anyType.fqn = "javax.enterprise.inject.Any"
             SET
-              e:CDI:Any
+              e:JEE:CDI:Any
             RETURN
               e AS Any
         ]]></cypher>
@@ -369,7 +369,7 @@
 
     <concept id="javaee-cdi:New">
         <providesConcept refId="cdi:New"/>
-        <description>Labels all elements annotated by "javax.enterprise.inject.New" with "CDI" and "New".
+        <description>Labels all elements annotated by "javax.enterprise.inject.New" with "JEE", "CDI" and "New".
         </description>
         <cypher><![CDATA[
             MATCH
@@ -377,7 +377,7 @@
             WHERE
               newType.fqn = "javax.enterprise.inject.New"
             SET
-              e:CDI:New
+              e:JEE:CDI:New
             RETURN
               e AS New
         ]]></cypher>

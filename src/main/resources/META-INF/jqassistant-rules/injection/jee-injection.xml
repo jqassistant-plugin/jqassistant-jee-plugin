@@ -27,10 +27,10 @@
     </concept>
 
     <concept id="jee-injection:InjectionPoint">
-        <description>Abstract concept that returns all fields and methods that have been labeled with "InjectionPoint" and "CDI".</description>
+        <description>Abstract concept that returns all fields and methods that have been labeled with "InjectionPoint", "JEE" and "CDI".</description>
         <cypher><![CDATA[
             MATCH
-              (:Type)-[:DECLARES]->(member:InjectionPoint:CDI)
+              (:Type)-[:DECLARES]->(member:InjectionPoint:JEE:CDI)
             RETURN
               member AS InjectionPoint
             ORDER BY
