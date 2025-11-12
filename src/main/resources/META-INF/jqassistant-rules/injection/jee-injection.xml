@@ -66,12 +66,12 @@
         <description>Fields of injectable types must not be manipulated, except from constructors.</description>
         <cypher><![CDATA[
             MATCH
-              (artifact:Artifact)-[:CONTAINS]->(injectable:Type:Injectable),
+              (artifact:Artifact)-[:CONTAINS]->(injectable:Type:Injectable:JEE),
               (injectable)-[:DECLARES]->(field:Field)-[:OF_TYPE]->(fieldType:Type),
               (injectable)-[:DECLARES]->(method:Method),
               (method)-[writes:WRITES]->(field)
             WHERE
-              (fieldType)-[:ASSIGNABLE_FROM*0..]->(:Injectable)
+              (fieldType)-[:ASSIGNABLE_FROM*0..]->(:Injectable:JEE)
             AND NOT (
               artifact:Test
               OR injectable:Generated
@@ -95,7 +95,7 @@
         <description>Fields holding injectables should be declared final.</description>
         <cypher><![CDATA[
             MATCH
-              (artifact:Artifact)-[:CONTAINS]->(type:Type:Injectable)-[declares:DECLARES]->(field:Field)-[:OF_TYPE]->(injectedType:Type:Injectable)
+              (artifact:Artifact)-[:CONTAINS]->(type:Type:Injectable:JEE)-[declares:DECLARES]->(field:Field)-[:OF_TYPE]->(injectedType:Type:Injectable:JEE)
             WHERE NOT (
               artifact:Test
               OR type:Generated
@@ -120,7 +120,7 @@
               (artifact:Artifact)-[:CONTAINS]->(:Type)-[:DECLARES]->(field:Field)-[:OF_TYPE]->(fieldType:Type),
               (type:Type)-[:DECLARES]->(method:Method)-[:WRITES|READS]->(field)
             WHERE
-              (fieldType)-[:ASSIGNABLE_FROM*0..]->(:Injectable)
+              (fieldType)-[:ASSIGNABLE_FROM*0..]->(:Injectable:JEE)
               AND field.static
               AND NOT (
                 artifact:Test
@@ -141,7 +141,7 @@
             MATCH
               (artifact:Artifact)-[:CONTAINS]->(type:Type)-[:DECLARES]->(field:Field)-[:OF_TYPE]->(fieldType:Type)
             WHERE
-              (fieldType)-[:ASSIGNABLE_FROM*0..]->(:Injectable)
+              (fieldType)-[:ASSIGNABLE_FROM*0..]->(:Injectable:JEE)
               AND field.static
               AND NOT (
                 artifact:Test
@@ -161,8 +161,8 @@
         <description>If the constructor of an Injectable is called from another Injectable, then the caller must be a BeanProducer.</description>
         <cypher><![CDATA[
             MATCH
-              (injectable:Injectable:Type)-[:DECLARES]->(constructor:Constructor),
-              (artifact:Artifact)-[:CONTAINS]->(type:Injectable:Type)-[:DECLARES]->(method:Method),
+              (injectable:Injectable:JEE:Type)-[:DECLARES]->(constructor:Constructor),
+              (artifact:Artifact)-[:CONTAINS]->(type:Injectable:JEE:Type)-[:DECLARES]->(method:Method),
               shortestPath((method)-[:INVOKES*]->(constructor))
             WHERE NOT (
               artifact:Test
@@ -230,7 +230,7 @@
               (t:Java:Type)-[:DECLARES]->(beanProducer:JEE:BeanProducer),
               (t)-[:DECLARES]->(otherPublicMethod:Method {visibility: "public"})
             WHERE
-              NOT otherPublicMethod:BeanProducer
+              NOT otherPublicMethod:BeanProducer:JEE
               AND NOT otherPublicMethod:Constructor
             RETURN DISTINCT
               t AS `Java-Klasse`
@@ -245,7 +245,7 @@
         </description>
         <cypher><![CDATA[
             MATCH
-              (artifact:Artifact)-[:CONTAINS]->(type:Type)-[:DECLARES]->(field:Field:InjectionPoint)-[:OF_TYPE]->(bean:Java:Type)
+              (artifact:Artifact)-[:CONTAINS]->(type:Type)-[:DECLARES]->(field:Field:InjectionPoint:JEE)-[:OF_TYPE]->(bean:Java:Type)
             WHERE NOT (
               artifact:Test
               OR type:Generated
