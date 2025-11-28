@@ -1,4 +1,4 @@
-package org.jqassistant.plugin.jee.transaction.set.inheritance.simple;
+package org.jqassistant.plugin.jee.transaction.set.inheritance.simple.jakarta;
 
 import jakarta.transaction.Transactional;
 
