@@ -11,7 +11,6 @@ import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.jakarta.Ja
 import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.jakarta.JakartaCallingSubClassOfGenericNonTransactionalClass;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.jakarta.JakartaCallingSubClassOfGenericTransactionalClass;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.jakarta.JakartaGenericClassWithTransactionalMethod;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.jakarta.JakartaGenericNonTransactionalClass;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.jakarta.JakartaGenericTransactionalClass;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.jakarta.JakartaOverridingSubClassOfGenericClassWithTransactionalMethod;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.jakarta.JakartaOverridingSubClassOfGenericNonTransactionalClass;
@@ -20,7 +19,7 @@ import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.javax.Java
 import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.javax.JavaxCallingSubClassOfGenericNonTransactionalClass;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.javax.JavaxCallingSubClassOfGenericTransactionalClass;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.javax.JavaxGenericClassWithTransactionalMethod;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.javax.JavaxGenericNonTransactionalClass;
+import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.GenericNonTransactionalClass;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.javax.JavaxGenericTransactionalClass;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.javax.JavaxOverridingSubClassOfGenericClassWithTransactionalMethod;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.javax.JavaxOverridingSubClassOfGenericNonTransactionalClass;
@@ -32,7 +31,7 @@ import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.jakarta.Jak
 import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.jakarta.JakartaOverridingSubClassOfSimpleNonTransactionalClass;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.jakarta.JakartaOverridingSubClassOfSimpleTransactionalClass;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.jakarta.JakartaSimpleClassWithTransactionalMethod;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.jakarta.JakartaSimpleNonTransactionalClass;
+import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.SimpleNonTransactionalClass;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.jakarta.JakartaSimpleTransactionalClass;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.javax.JavaxCallingSubClassOfSimpleClassWithTransactionalMethod;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.javax.JavaxCallingSubClassOfSimpleNonTransactionalClass;
@@ -41,7 +40,6 @@ import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.javax.Javax
 import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.javax.JavaxOverridingSubClassOfSimpleNonTransactionalClass;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.javax.JavaxOverridingSubClassOfSimpleTransactionalClass;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.javax.JavaxSimpleClassWithTransactionalMethod;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.javax.JavaxSimpleNonTransactionalClass;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.javax.JavaxSimpleTransactionalClass;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -60,7 +58,7 @@ import static com.buschmais.jqassistant.core.report.api.model.Result.Status.FAIL
 import static org.assertj.core.api.InstanceOfAssertFactories.type;
 import static org.jqassistant.plugin.jee.SimpleMethodDescriptorCondition.simpleMethodDescriptor;
 
-class TransactionalMethodMustNotBeInvokedFromSameSubclassIT extends AbstractJavaPluginIT {
+class TransactionalMethodMustNotBeInvokedFromSameClassOrSubclassIT extends AbstractJavaPluginIT {
 
     @ParameterizedTest
     @ValueSource(classes = {JavaxTransactionalMethod.class, JakartaTransactionalMethod.class,
@@ -95,7 +93,7 @@ class TransactionalMethodMustNotBeInvokedFromSameSubclassIT extends AbstractJava
 
     @Test
     void transactionalMethodMustNotBeInvokedFromSameClassSimpleInheritanceJakarta() throws Exception {
-        scanClasses(JakartaSimpleNonTransactionalClass.class, JakartaSimpleTransactionalClass.class, JakartaSimpleClassWithTransactionalMethod.class,
+        scanClasses(SimpleNonTransactionalClass.class, JakartaSimpleTransactionalClass.class, JakartaSimpleClassWithTransactionalMethod.class,
                 JakartaCallingSubClassOfSimpleNonTransactionalClass.class, JakartaCallingSubClassOfSimpleTransactionalClass.class, JakartaCallingSubClassOfSimpleClassWithTransactionalMethod.class,
                 JakartaOverridingSubClassOfSimpleNonTransactionalClass.class, JakartaOverridingSubClassOfSimpleTransactionalClass.class, JakartaOverridingSubClassOfSimpleClassWithTransactionalMethod.class);
         assertThat(validateConstraint("jee-transaction:TransactionalMethodMustNotBeInvokedFromSameClassOrSubclass").getStatus()).isEqualTo(FAILURE);
@@ -144,7 +142,7 @@ class TransactionalMethodMustNotBeInvokedFromSameSubclassIT extends AbstractJava
 
     @Test
     void transactionalMethodMustNotBeInvokedFromSameClassSimpleInheritanceJavax() throws Exception {
-        scanClasses(JavaxSimpleNonTransactionalClass.class, JavaxSimpleTransactionalClass.class, JavaxSimpleClassWithTransactionalMethod.class,
+        scanClasses(SimpleNonTransactionalClass.class, JavaxSimpleTransactionalClass.class, JavaxSimpleClassWithTransactionalMethod.class,
                 JavaxCallingSubClassOfSimpleNonTransactionalClass.class, JavaxCallingSubClassOfSimpleTransactionalClass.class, JavaxCallingSubClassOfSimpleClassWithTransactionalMethod.class,
                 JavaxOverridingSubClassOfSimpleNonTransactionalClass.class, JavaxOverridingSubClassOfSimpleTransactionalClass.class, JavaxOverridingSubClassOfSimpleClassWithTransactionalMethod.class);
         assertThat(validateConstraint("jee-transaction:TransactionalMethodMustNotBeInvokedFromSameClassOrSubclass").getStatus()).isEqualTo(FAILURE);
@@ -193,7 +191,7 @@ class TransactionalMethodMustNotBeInvokedFromSameSubclassIT extends AbstractJava
 
     @Test
     void transactionalMethodMustNotBeInvokedFromSameClassGenericInheritanceJakarta() throws Exception {
-        scanClasses(JakartaGenericNonTransactionalClass.class, JakartaGenericTransactionalClass.class, JakartaGenericClassWithTransactionalMethod.class,
+        scanClasses(GenericNonTransactionalClass.class, JakartaGenericTransactionalClass.class, JakartaGenericClassWithTransactionalMethod.class,
                 JakartaCallingSubClassOfGenericNonTransactionalClass.class, JakartaCallingSubClassOfGenericTransactionalClass.class,
                 JakartaCallingSubClassOfGenericClassWithTransactionalMethod.class, JakartaOverridingSubClassOfGenericNonTransactionalClass.class,
                 JakartaOverridingSubClassOfGenericTransactionalClass.class, JakartaOverridingSubClassOfGenericClassWithTransactionalMethod.class);
@@ -243,7 +241,7 @@ class TransactionalMethodMustNotBeInvokedFromSameSubclassIT extends AbstractJava
 
     @Test
     void transactionalMethodMustNotBeInvokedFromSameClassGenericInheritanceJavax() throws Exception {
-        scanClasses(JavaxGenericNonTransactionalClass.class, JavaxGenericTransactionalClass.class, JavaxGenericClassWithTransactionalMethod.class,
+        scanClasses(GenericNonTransactionalClass.class, JavaxGenericTransactionalClass.class, JavaxGenericClassWithTransactionalMethod.class,
                 JavaxCallingSubClassOfGenericNonTransactionalClass.class, JavaxCallingSubClassOfGenericTransactionalClass.class,
                 JavaxCallingSubClassOfGenericClassWithTransactionalMethod.class, JavaxOverridingSubClassOfGenericNonTransactionalClass.class,
                 JavaxOverridingSubClassOfGenericTransactionalClass.class, JavaxOverridingSubClassOfGenericClassWithTransactionalMethod.class);
