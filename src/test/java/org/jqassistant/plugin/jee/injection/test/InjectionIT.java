@@ -190,6 +190,21 @@ public class InjectionIT extends AbstractJavaPluginIT {
     }
 
     /**
+     * Verifies the constraint "jee-injection:InjectablesMustNotBeInstantiated" with a test class without violations.
+     *
+     * @throws IOException If the test fails.
+     */
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxBeanProducerWithoutConstraintViolations.class, JakartaBeanProducerWithoutConstraintViolations.class})
+    void injectableInstantiationWithoutViolations(Class<?> producerWithoutViolation) throws Exception {
+        scanClasses(producerWithoutViolation);
+        Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesMustNotBeInstantiated");
+        store.beginTransaction();
+        assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.SUCCESS);
+        store.commitTransaction();
+    }
+
+    /**
      * Verifies the constraint "jee-injection:InjectablesMustOnlyBeHeldInInjectables".
      *
      * @throws IOException If the test fails.
