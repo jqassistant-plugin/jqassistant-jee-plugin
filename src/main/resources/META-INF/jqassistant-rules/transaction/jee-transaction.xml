@@ -11,7 +11,7 @@
         <requiresConcept refId="jee-transaction:TransactionalMethod"/>
         <requiresConcept refId="java:GeneratedType"/>
         <requiresConcept refId="java:MemberInheritedFrom"/>
-        <description>Transactional methods must not be invoked from the same class.</description>
+        <description>Transactional methods must not be invoked from the same class or from a subclass within the inheritance hierarchy.</description>
         <cypher><![CDATA[
             MATCH
               (artifact:Artifact)-[:CONTAINS]->(callingType:Java:Type),
