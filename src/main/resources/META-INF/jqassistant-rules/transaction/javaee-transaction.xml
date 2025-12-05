@@ -7,13 +7,14 @@
         <providesConcept refId="jee-transaction:TransactionalMethod" />
         <!-- Ensure that method level annotations override type level annotations -->
         <requiresConcept refId="javaee-transaction:TransactionalMethodByAnnotatedClass"/>
+        <requiresConcept refId="java:MemberInheritedFrom"/>
         <description>
             Labels all methods which are annotated with "javax.transaction.Transactional" with "JEE" and "Transactional".
         </description>
         <cypher><![CDATA[
            MATCH
              (type:Type)-[:DECLARES]->(transactionalMethod:Method),
-             (transactionalMethod:Method)-[:ANNOTATED_BY]->(annotation:Java:Annotation),
+             (transactionalMethod:Java:Method)-[:INHERITED_FROM*0..]->(definedMethod:Java:Method)-[:ANNOTATED_BY]->(annotation:Java:Annotation),
              (annotation)-[:OF_TYPE]->(annotationType:Type {fqn: 'javax.transaction.Transactional'})
            OPTIONAL MATCH
              (annotation)-[:HAS]->(propagation:Value {name: 'value'})-[:IS]->(propagationType:Java:Field)
@@ -21,8 +22,8 @@
              type,
              transactionalMethod,
              COALESCE(SPLIT(propagationType.signature,' ')[1], 'REQUIRED') AS effectivePropagationType
-           WHERE NOT
-             transactionalMethod.visibility = "private"
+           WHERE
+             NOT definedMethod.visibility = "private"
            SET
              transactionalMethod:JEE:Transactional
            SET
@@ -34,6 +35,7 @@
 
     <concept id="javaee-transaction:TransactionalMethodByAnnotatedClass">
         <providesConcept refId="jee-transaction:TransactionalMethod" />
+        <requiresConcept refId="java:MemberInheritedFrom"/>
         <description>
             Labels methods of classes which are directly or indirectly annotated with "javax.transaction.Transactional" with "JEE" and "Transactional".
         </description>
@@ -41,7 +43,7 @@
            MATCH
              (transactionalClass:Type)-[:EXTENDS|IMPLEMENTS*0..]->(:Type)-[:ANNOTATED_BY]->(annotation:Java:Annotation),
              (annotation)-[:OF_TYPE]->(annotationType:Type {fqn: 'javax.transaction.Transactional'}),
-             (transactionalClass)-[:DECLARES]->(transactionalMethod:Method)
+             (transactionalClass)-[:DECLARES]->(definedMethod:Java:Method)<-[:INHERITED_FROM*0..]-(transactionalMethod:Java:Method)
            OPTIONAL MATCH
              (annotation)-[:HAS]->(propagation:Value {name: 'value'})-[:IS]->(propagationType:Java:Field)
            WITH
@@ -49,9 +51,9 @@
              transactionalMethod,
              COALESCE(SPLIT(propagationType.signature,' ')[1], 'REQUIRED') AS effectivePropagationType
            WHERE NOT (
-             transactionalMethod:Constructor
-             OR (transactionalMethod.static IS NOT NULL and transactionalMethod.static)
-             OR transactionalMethod.visibility = "private"
+             definedMethod:Constructor
+             OR (definedMethod.static IS NOT NULL and definedMethod.static)
+             OR definedMethod.visibility = "private"
            )
            SET
              transactionalMethod:JEE:Transactional
