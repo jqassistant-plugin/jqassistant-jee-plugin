@@ -7,14 +7,20 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.buschmais.jqassistant.core.report.api.model.Column;
 import com.buschmais.jqassistant.core.report.api.model.Result;
 import com.buschmais.jqassistant.core.report.api.model.Row;
 import com.buschmais.jqassistant.core.rule.api.model.Concept;
 import com.buschmais.jqassistant.core.rule.api.model.Constraint;
 import com.buschmais.jqassistant.plugin.java.api.model.FieldDescriptor;
+import com.buschmais.jqassistant.plugin.java.api.model.MemberDescriptor;
+import com.buschmais.jqassistant.plugin.java.api.model.MethodDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
 
+import com.buschmais.jqassistant.plugin.java.test.assertj.FieldDescriptorCondition;
+import com.buschmais.jqassistant.plugin.java.test.assertj.MethodDescriptorCondition;
+import com.buschmais.jqassistant.plugin.java.test.assertj.TypeDescriptorCondition;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.jqassistant.plugin.jee.injection.test.set.jakarta.*;
@@ -26,6 +32,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static com.buschmais.jqassistant.core.report.api.model.Result.Status.SUCCESS;
 import static com.buschmais.jqassistant.plugin.java.test.assertj.FieldDescriptorCondition.fieldDescriptor;
+import static com.buschmais.jqassistant.plugin.java.test.assertj.MethodDescriptorCondition.methodDescriptor;
 import static com.buschmais.jqassistant.plugin.java.test.assertj.TypeDescriptorCondition.typeDescriptor;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -71,8 +78,8 @@ public class InjectionIT extends AbstractJavaPluginIT {
 
     private static Stream<Arguments>  beanProducerWithConstraintViolationsAndInjectableClasses() {
         return Stream.of(
-                Arguments.of(JavaxBeanProducerWithConstraintViolations.class, JavaxInjectableA.class, JavaxInjectableB.class),
-                Arguments.of(JakartaBeanProducerWithConstraintViolations.class, JakartaInjectableA.class, JakartaInjectableB.class)
+                Arguments.of(JavaxBeanProducerWithConstraintViolations.class, JavaxInjectableA.class, JavaxInjectableB.class, JavaxComponentWithResources.class),
+                Arguments.of(JakartaBeanProducerWithConstraintViolations.class, JakartaInjectableA.class, JakartaInjectableB.class, JakartaComponentWithResources.class)
         );
     }
 
@@ -83,8 +90,8 @@ public class InjectionIT extends AbstractJavaPluginIT {
      */
     @ParameterizedTest
     @MethodSource("beanProducerWithConstraintViolationsAndInjectableClasses")
-    void injectableFieldManipulation(Class<?> producerWithViolations, Class<?> injectableA, Class<?> injectableB) throws Exception {
-        scanClasses(producerWithViolations, injectableA, injectableB);
+    void injectableFieldManipulation(Class<?> producerWithViolations, Class<?> injectableA, Class<?> injectableB, Class<?> componentWithResources) throws Exception {
+        scanClasses(producerWithViolations, injectableA, injectableB, componentWithResources);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:FieldsOfInjectablesMustNotBeManipulated");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
@@ -107,8 +114,8 @@ public class InjectionIT extends AbstractJavaPluginIT {
      */
     @ParameterizedTest
     @MethodSource("beanProducerWithConstraintViolationsAndInjectableClasses")
-    void finalFieldsForInjectables(Class<?> producerWithViolations, Class<?> injectableA, Class<?> injectableB) throws Exception {
-        scanClasses(producerWithViolations, injectableA, injectableB);
+    void finalFieldsForInjectables(Class<?> producerWithViolations, Class<?> injectableA, Class<?> injectableB, Class<?> componentWithResources) throws Exception {
+        scanClasses(producerWithViolations, injectableA, injectableB, componentWithResources);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesShouldBeHeldInFinalFields");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
@@ -367,6 +374,95 @@ public class InjectionIT extends AbstractJavaPluginIT {
         assertThat(violations).hasSize(0);
 
         store.commitTransaction();
+    }
+
+    private static Stream<Arguments> resourceClasses() {
+        return Stream.of(Arguments.of(JavaxResourceComponent.class, JavaxComponentWithResources.class, JavaxInjectableA.class),
+                Arguments.of(JakartaResourceComponent.class, JakartaComponentWithResources.class, JakartaInjectableA.class));
+    }
+
+    @ParameterizedTest
+    @MethodSource("resourceClasses")
+    void resource(Class<?> resourceComponent, Class<?> componentWithResources, Class<?> resourceMembersType) throws Exception {
+        final TypeDescriptorCondition expectedResourceType = typeDescriptor(resourceComponent);
+        final MethodDescriptorCondition expectedResourceMethod = methodDescriptor(componentWithResources, "resourceMethod");
+        final FieldDescriptorCondition expectedResourceField = fieldDescriptor(componentWithResources, "resourceField");
+
+        scanClasses(resourceComponent, componentWithResources, resourceMembersType);
+        final Result<Concept> conceptResult = applyConcept("jee-injection:Resource");
+        assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
+        assertThat(conceptResult.getRows()).hasSize(3);
+
+        store.beginTransaction();
+
+        final List<TypeDescriptor> conceptResultTypes = conceptResult.getRows()
+                .stream()
+                .map(Row::getColumns)
+                .map(columns -> columns.get("Type"))
+                .map(Column::getValue)
+                .map(TypeDescriptor.class::cast)
+                .collect(Collectors.toList());
+
+        assertThat(conceptResultTypes).haveExactly(1, expectedResourceType);
+        assertThat(conceptResultTypes).haveExactly(2, typeDescriptor(componentWithResources));
+
+        final List<TypeDescriptor> conceptResultResourceTypes = conceptResult.getRows()
+                .stream()
+                .map(Row::getColumns)
+                .filter(columns -> columns.get("Type").getLabel().equals(resourceComponent.getName()))
+                .map(columns -> columns.get("Resource"))
+                .map(Column::getValue)
+                .map(TypeDescriptor.class::cast)
+                .collect(Collectors.toList());
+        verifyRourceTypes(conceptResultResourceTypes, expectedResourceType);
+
+        final List<MemberDescriptor> conceptResultResourceMembers = conceptResult.getRows()
+                .stream()
+                .map(Row::getColumns)
+                .filter(columns -> columns.get("Type").getLabel().equals(componentWithResources.getName()))
+                .map(columns -> columns.get("Resource"))
+                .map(Column::getValue)
+                .map(MemberDescriptor.class::cast)
+                .collect(Collectors.toList());
+        verifyResourceMembers(conceptResultResourceMembers, expectedResourceMethod, expectedResourceField);
+
+        final List<?> resourceElements = query("MATCH (element:JEE:Resource) RETURN element").getColumn("element");
+        assertThat(resourceElements).hasSize(3);
+
+        verifyRourceTypes(resourceElements.stream()
+                        .filter(TypeDescriptor.class::isInstance)
+                        .map(TypeDescriptor.class::cast)
+                        .collect(Collectors.toList()),
+                expectedResourceType);
+
+        verifyResourceMembers(resourceElements.stream()
+                        .filter(MemberDescriptor.class::isInstance)
+                        .map(MemberDescriptor.class::cast)
+                        .collect(Collectors.toList()),
+                expectedResourceMethod, expectedResourceField);
+        
+        store.commitTransaction();
+    }
+
+    private static void verifyRourceTypes(List<TypeDescriptor> column, TypeDescriptorCondition expectedType) {
+        assertThat(column).hasSize(1);
+        assertThat(column).haveExactly(1, expectedType);
+    }
+
+    private static void verifyResourceMembers(List<MemberDescriptor> column, MethodDescriptorCondition expectedMethod, FieldDescriptorCondition expectedField) {
+        assertThat(column).hasSize(2);
+
+        final List<MethodDescriptor> conceptResultMethods = column.stream()
+                .filter(MethodDescriptor.class::isInstance)
+                .map(MethodDescriptor.class::cast)
+                .collect(Collectors.toList());
+        assertThat(conceptResultMethods).haveExactly(1, expectedMethod);
+
+        final List<FieldDescriptor> conceptResultFields = column.stream()
+                .filter(FieldDescriptor.class::isInstance)
+                .map(FieldDescriptor.class::cast)
+                .collect(Collectors.toList());
+        assertThat(conceptResultFields).haveExactly(1, expectedField);
     }
 
 }
