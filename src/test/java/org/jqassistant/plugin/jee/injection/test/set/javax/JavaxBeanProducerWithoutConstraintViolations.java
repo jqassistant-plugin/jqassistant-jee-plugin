@@ -7,8 +7,8 @@ import javax.enterprise.inject.Produces;
 public class JavaxBeanProducerWithoutConstraintViolations {
 
     @Produces
-    public JavaxInjectableA beanProducerA(){
-        return new JavaxInjectableA();
+    public JavaxInjectableA beanProducerA(JavaxInjectableB injectableB, JavaxInjectableD injectableD){
+        return new JavaxInjectableA(injectableB, injectableD);
     }
 
     @Produces
