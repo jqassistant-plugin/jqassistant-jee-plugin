@@ -29,6 +29,11 @@ public class JakartaBeanProducerWithConstraintViolations {
         return new JakartaInjectableC();
     }
 
+    @Produces
+    public JakartaInjectableD beanProducerD(){
+        return new JakartaInjectableD();
+    }
+
     // illegal type
     @Produces
     public String beanProducerWithIllegalType(){

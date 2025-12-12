@@ -5,29 +5,29 @@ import jakarta.inject.Inject;
 
 public class JakartaInjectableA {
 
-    private JakartaInjectableB fieldOfInjectable1;
+    private JakartaInjectableB fieldOfInjectableB;
 
-    private final JakartaInjectableD fieldOfInjectable2;
+    private static JakartaInjectableC fieldOfInjectableC;
 
-    private static JakartaInjectableC fieldOfInjectable3;
+    private final JakartaInjectableD fieldOfInjectableD;
 
     @Resource
     private JakartaApplicationResource resource;
 
     @Inject
-    public JakartaInjectableA(JakartaInjectableB fieldOfInjectable1, JakartaInjectableD fieldOfInjectable2) {
-        this.fieldOfInjectable1 = fieldOfInjectable1;
-        this.fieldOfInjectable2 = fieldOfInjectable2;
+    public JakartaInjectableA(JakartaInjectableB injectableB, JakartaInjectableD injectableD) {
+        this.fieldOfInjectableB = injectableB;
+        this.fieldOfInjectableD = injectableD;
     }
 
     public void manipulateField() {
         // Illegal modification
-        fieldOfInjectable1 = null;
+        fieldOfInjectableB = null;
     }
 
     public void accessFieldStatically() {
         // Illegal access
-        fieldOfInjectable3 = null;
+        fieldOfInjectableC = null;
     }
 
     public void injectableInstantiation() {

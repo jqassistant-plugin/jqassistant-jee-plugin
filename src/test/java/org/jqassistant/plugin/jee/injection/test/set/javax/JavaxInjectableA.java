@@ -5,29 +5,29 @@ import javax.inject.Inject;
 
 public class JavaxInjectableA {
 
-    private JavaxInjectableB fieldOfInjectable1;
+    private JavaxInjectableB fieldOfInjectableB;
 
-    private final JavaxInjectableD fieldOfInjectable2;
+    private static JavaxInjectableC fieldOfInjectableC;
 
-    private static JavaxInjectableC fieldOfInjectable3;
+    private final JavaxInjectableD fieldOfInjectableD;
 
     @Resource
     private JavaxApplicationResource resource;
 
     @Inject
-    public JavaxInjectableA(JavaxInjectableB fieldOfInjectable1, JavaxInjectableD fieldOfInjectable2) {
-        this.fieldOfInjectable1 = fieldOfInjectable1;
-        this.fieldOfInjectable2 = fieldOfInjectable2;
+    public JavaxInjectableA(JavaxInjectableB injectableB, JavaxInjectableD injectableD) {
+        this.fieldOfInjectableB = injectableB;
+        this.fieldOfInjectableD = injectableD;
     }
 
     public void manipulateField() {
         // Illegal modification
-        fieldOfInjectable1 = null;
+        fieldOfInjectableB = null;
     }
 
     public void accessFieldStatically() {
         // Illegal access
-        fieldOfInjectable3 = null;
+        fieldOfInjectableC = null;
     }
 
     public void injectableInstantiation() {

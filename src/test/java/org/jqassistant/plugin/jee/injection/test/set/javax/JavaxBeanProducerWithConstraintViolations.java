@@ -29,6 +29,11 @@ public class JavaxBeanProducerWithConstraintViolations {
         return new JavaxInjectableC();
     }
 
+    @Produces
+    public JavaxInjectableD beanProducerD() {
+        return new JavaxInjectableD();
+    }
+
     // illegal type
     @Produces
     public String beanProducerWithIllegalType(){
