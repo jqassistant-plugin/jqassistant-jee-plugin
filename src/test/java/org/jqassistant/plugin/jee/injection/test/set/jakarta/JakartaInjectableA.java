@@ -1,21 +1,33 @@
 package org.jqassistant.plugin.jee.injection.test.set.jakarta;
 
+import jakarta.annotation.Resource;
+import jakarta.inject.Inject;
+
 public class JakartaInjectableA {
 
-    private JakartaInjectableB fieldOfInjectable1;
+    private JakartaInjectableB fieldOfInjectableB;
 
-    private static JakartaInjectableB fieldOfInjectable2;
+    private static JakartaInjectableC fieldOfInjectableC;
 
-    public JakartaInjectableA(){}
+    private final JakartaInjectableD fieldOfInjectableD;
+
+    @Resource
+    private JakartaApplicationResource resource;
+
+    @Inject
+    public JakartaInjectableA(JakartaInjectableB injectableB, JakartaInjectableD injectableD) {
+        this.fieldOfInjectableB = injectableB;
+        this.fieldOfInjectableD = injectableD;
+    }
 
     public void manipulateField() {
         // Illegal modification
-        fieldOfInjectable1 = null;
+        fieldOfInjectableB = null;
     }
 
     public void accessFieldStatically() {
         // Illegal access
-        fieldOfInjectable2 = null;
+        fieldOfInjectableC = null;
     }
 
     public void injectableInstantiation() {

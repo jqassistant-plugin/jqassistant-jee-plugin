@@ -7,8 +7,8 @@ import jakarta.enterprise.inject.Produces;
 public class JakartaBeanProducerWithoutConstraintViolations {
 
     @Produces
-    public JakartaInjectableA beanProducerA(){
-        return new JakartaInjectableA();
+    public JakartaInjectableA beanProducerA(JakartaInjectableB injectableB, JakartaInjectableD injectableD){
+        return new JakartaInjectableA(injectableB, injectableD);
     }
 
     @Produces

@@ -92,10 +92,13 @@
         <requiresConcept refId="jee-injection:Injectable"/>
         <requiresConcept refId="jee-injection:InjectionPoint"/>
         <requiresConcept refId="java:GeneratedType"/>
-        <description>Fields holding injectables should be declared final.</description>
+        <description>Fields holding injectables should be declared final if written by the constructor.</description>
         <cypher><![CDATA[
             MATCH
-              (artifact:Artifact)-[:CONTAINS]->(type:Type:Injectable:JEE)-[declares:DECLARES]->(field:Field)-[:OF_TYPE]->(injectedType:Type:Injectable:JEE)
+              (artifact:Artifact)-[:CONTAINS]->(type:Type:Injectable:JEE),
+              (type)-[:DECLARES]->(field:Field)-[:OF_TYPE]->(injectedType:Type:Injectable:JEE),
+              (type)-[:DECLARES]->(constructor:Method:Constructor),
+              (constructor)-[:WRITES]->(field)
             WHERE NOT (
               artifact:Test
               OR type:Generated

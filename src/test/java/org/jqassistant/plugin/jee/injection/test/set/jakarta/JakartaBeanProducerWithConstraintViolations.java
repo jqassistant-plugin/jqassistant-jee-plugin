@@ -15,23 +15,33 @@ public class JakartaBeanProducerWithConstraintViolations {
     public void test() {}
 
     @Produces
-    public JakartaInjectableA beanProducerA(){
-        return new JakartaInjectableA();
+    public JakartaInjectableA beanProducerA(JakartaInjectableB injectableB, JakartaInjectableD injectableD){
+        return new JakartaInjectableA(injectableB, injectableD);
     }
 
     @Produces
     public JakartaInjectableB beanProducerB(){
-        return null;
+        return new JakartaInjectableB();
+    }
+
+    @Produces
+    public JakartaInjectableC beanProducerC(){
+        return new JakartaInjectableC();
+    }
+
+    @Produces
+    public JakartaInjectableD beanProducerD(){
+        return new JakartaInjectableD();
     }
 
     // illegal type
     @Produces
-    public String beanProducerC(){
+    public String beanProducerWithIllegalType(){
         return null;
     }
 
     public void beanProducerAccessor(){
         // Illegal direct access
-        beanProducerA();
+        beanProducerB();
     }
 }
