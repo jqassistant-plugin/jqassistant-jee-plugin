@@ -42,6 +42,16 @@
         ]]></cypher>
     </concept>
 
+    <concept id="jpa:PersistenceContext">
+        <description>Abstract concept that returns all fields labeled with "JPA" and "PersistenceContext".</description>
+        <cypher><![CDATA[
+            MATCH
+              (t:Type)-[:DECLARES]->(field:JPA:PersistenceContext)
+            RETURN
+               field AS PersistenceContext
+        ]]></cypher>
+    </concept>
+
     <concept id="jpa:NamedQuery">
         <requiresConcept refId="jpa:Entity"/>
         <description>Abstract concept that returns the name and the query of a node labeled with "JPA" and "NamedQuery" defined by a node labeled with "JPA" and "Entity".
