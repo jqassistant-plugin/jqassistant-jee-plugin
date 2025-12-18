@@ -15,23 +15,33 @@ public class JavaxBeanProducerWithConstraintViolations {
     public void test() {}
 
     @Produces
-    public JavaxInjectableA beanProducerA(){
-        return new JavaxInjectableA();
+    public JavaxInjectableA beanProducerA(JavaxInjectableB injectableB, JavaxInjectableD injectableD){
+        return new JavaxInjectableA(injectableB, injectableD);
     }
 
     @Produces
     public JavaxInjectableB beanProducerB(){
-        return null;
+        return new JavaxInjectableB();
+    }
+
+    @Produces
+    public JavaxInjectableC beanProducerC(){
+        return new JavaxInjectableC();
+    }
+
+    @Produces
+    public JavaxInjectableD beanProducerD() {
+        return new JavaxInjectableD();
     }
 
     // illegal type
     @Produces
-    public String beanProducerC(){
+    public String beanProducerWithIllegalType(){
         return null;
     }
 
     public void beanProducerAccessor(){
         // Illegal direct access
-        beanProducerA();
+        beanProducerB();
     }
 }
