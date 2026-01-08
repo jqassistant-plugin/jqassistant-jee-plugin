@@ -374,4 +374,44 @@ public class InjectionIT extends AbstractJavaPluginIT {
         store.commitTransaction();
     }
 
+    private static Stream<Arguments> constraintValidatorParams() {
+        return Stream.of(
+                Arguments.of("javaee-injection:ConstraintValidator", JavaxConstraintValidator.class, javax.validation.ConstraintValidator.class),
+                Arguments.of("jakarta-injection:ConstraintValidator",  JakartaConstraintValidator.class, jakarta.validation.ConstraintValidator.class)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("constraintValidatorParams")
+    void constraintValidator(String concept, Class<?> validatorClass, Class<?> validatorInterface) throws Exception {
+        scanClasses(validatorClass);
+        assertThat(applyConcept(concept).getStatus()).isEqualTo(SUCCESS);
+        store.beginTransaction();
+        List<TypeDescriptor> injectables = query("MATCH (i:Type:JEE:Injectable) RETURN i").getColumn("i");
+        assertThat(injectables.size()).isEqualTo(2);
+        assertThat(injectables).haveExactly(1, typeDescriptor(validatorClass));
+        assertThat(injectables).haveExactly(1, typeDescriptor(validatorInterface));
+        store.commitTransaction();
+    }
+
+    private static Stream<Arguments> constraintValidatorProvidedConceptInjectableParams() {
+        return Stream.of(
+                Arguments.of(JavaxConstraintValidator.class, javax.validation.ConstraintValidator.class),
+                Arguments.of(JakartaConstraintValidator.class, jakarta.validation.ConstraintValidator.class)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("constraintValidatorProvidedConceptInjectableParams")
+    void constraintValidatorProvidedConceptInjectable(Class<?> validatorClass, Class<?> validatorInterface) throws Exception {
+        scanClasses(validatorClass);
+        assertThat(applyConcept("jee-injection:Injectable").getStatus()).isEqualTo(SUCCESS);
+        store.beginTransaction();
+        List<TypeDescriptor> injectables = query("MATCH (i:Type:JEE:Injectable) RETURN i").getColumn("i");
+        assertThat(injectables.size()).isEqualTo(2);
+        assertThat(injectables).haveExactly(1, typeDescriptor(validatorClass));
+        assertThat(injectables).haveExactly(1, typeDescriptor(validatorInterface));
+        store.commitTransaction();
+    }
+
 }
