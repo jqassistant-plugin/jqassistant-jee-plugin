@@ -21,4 +21,20 @@
         ]]></cypher>
     </concept>
 
+    <concept id="jakarta-injection:ConstraintValidator">
+        <!-- https://beanvalidation.org/1.1/spec/ -->
+        <providesConcept refId="jee-injection:Injectable"/>
+        <description>Labels types that directly or indirectly implement jakarta.validation.ConstraintValidator with "JEE" and "Injectable".</description>
+        <cypher><![CDATA[
+            MATCH
+                (injectableType:Java:Type)-[:IMPLEMENTS|EXTENDS*0..]->(constraintValidator:Java:Type)
+            WHERE
+                constraintValidator.fqn = "jakarta.validation.ConstraintValidator"
+            SET
+                injectableType:JEE:Injectable
+            RETURN
+                injectableType as Injectable
+            ]]></cypher>
+    </concept>
+
 </jqassistant-rules>
