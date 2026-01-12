@@ -384,6 +384,8 @@ public class InjectionIT extends AbstractJavaPluginIT {
     @ParameterizedTest
     @MethodSource("constraintValidatorParams")
     void constraintValidator(String concept, Class<?> validatorClass, Class<?> validatorInterface) throws Exception {
+        // The validator interface itself is part of the framework. Hence, it is not explicitly scanned but identified
+        // anyway when the implementing class is scanned.
         scanClasses(validatorClass);
         assertThat(applyConcept(concept).getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
@@ -404,6 +406,8 @@ public class InjectionIT extends AbstractJavaPluginIT {
     @ParameterizedTest
     @MethodSource("constraintValidatorProvidedConceptInjectableParams")
     void constraintValidatorProvidedConceptInjectable(Class<?> validatorClass, Class<?> validatorInterface) throws Exception {
+        // The validator interface itself is part of the framework. Hence, it is not explicitly scanned but identified
+        // anyway when the implementing class is scanned.
         scanClasses(validatorClass);
         assertThat(applyConcept("jee-injection:Injectable").getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
