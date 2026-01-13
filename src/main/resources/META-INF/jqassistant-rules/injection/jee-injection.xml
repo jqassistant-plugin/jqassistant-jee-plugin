@@ -14,6 +14,7 @@
         <includeConstraint refId="jee-injection:InjectablesMustNotBeInstantiated" severity="critical"/>
         <includeConstraint refId="jee-injection:InjectablesMustOnlyBeHeldInInjectables" severity="critical"/>
         <includeConstraint refId="jee-injection:JdkClassesMustNotBeInjectables" severity="critical"/>
+        <includeConstraint refId="jee-injection:InjectableNotApplicableForCdiOrEjbInjection" severity="critical"/>
     </group>
 
     <concept id="jee-injection:Injectable">
@@ -267,6 +268,27 @@
               field as Field
         ]]></cypher>
         <report primaryColumn="Field"/>
+    </constraint>
+
+    <constraint id="jee-injection:InjectableNotApplicableForCdiOrEjbInjection">
+        <requiresConcept refId="jee-injection:Injectable"/>
+        <requiresConcept refId="java:GeneratedType"/>
+        <description>
+            Each injectable type must be applicable for CDI or EJB injection. Violations are usually caused by missing CDI bean producers.
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (artifact:Artifact)-[:CONTAINS]->(type:Type:JEE:Injectable)
+            WHERE NOT (
+              artifact:Test
+              OR type:Generated
+              OR type:CDI
+              OR type:EJB
+            )
+            RETURN
+              type as Type
+        ]]></cypher>
+        <report primaryColumn="Type"/>
     </constraint>
 
 </jqassistant-rules>
