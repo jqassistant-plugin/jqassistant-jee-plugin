@@ -17,8 +17,8 @@
               (member:Field or member:Method)
               and producesType.fqn="javax.enterprise.inject.Produces"
             SET
-              type:JEE:Injectable,
-              member:JEE:BeanProducer
+              type:JEE:CDI:Injectable,
+              member:JEE:CDI:BeanProducer
             MERGE
               (member)-[:PRODUCES]->(type)
             RETURN
@@ -195,7 +195,7 @@
             WHERE
               a.fqn = "javax.inject.Singleton"
             SET
-              t:JEE:CDI:SingletonScoped:JEE:Injectable
+              t:JEE:CDI:SingletonScoped:Injectable
             RETURN
               t AS cdiSingleton
         ]]></cypher>
