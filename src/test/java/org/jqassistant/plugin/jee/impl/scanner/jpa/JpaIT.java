@@ -128,7 +128,7 @@ class JpaIT extends AbstractJavaPluginIT {
         scanClasses(typeWithPersistenceContext);
         assertThat(applyConcept("jpa:PersistenceContext").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
-        List<Object> members = query("MATCH (e:JPA:PersistenceContext) RETURN e").getColumn("e");
+        List<Object> members = query("MATCH (e:JPA:PersistenceContext:InjectionPoint:JEE) RETURN e").getColumn("e");
         assertThat(members, hasItem(fieldDescriptor(typeWithPersistenceContext, "entityManager")));
         List<Object> injectables = query("MATCH (e:Type:Injectable) RETURN e").getColumn("e");
         assertThat(injectables, hasItem(typeDescriptor(entityManager)));

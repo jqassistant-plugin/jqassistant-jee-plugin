@@ -69,14 +69,16 @@
     <concept id="javaee-jpa:PersistenceContext">
         <providesConcept refId="jpa:PersistenceContext"/>
         <providesConcept refId="jee-injection:Injectable"/>
-        <description>Labels all fields annotated with @javax.persistence.PersistenceContext with "JPA" and "PersistenceContext".</description>
+        <providesConcept refId="jee-injection:InjectionPoint"/>
+        <description>Labels all fields annotated with @javax.persistence.PersistenceContext with "JPA", "PersistenceContext", "JEE" and "InjectionPoint". The according type is labeled with "JEE" and "Injectable".</description>
+        <!-- CDI label is not set, since these types are not applicable for CDI-injection unless an explicit CDI bean producer exists for them -->
         <cypher><![CDATA[
             MATCH
               (t:Type)-[:DECLARES]->(field:Field),
               (field)-[:OF_TYPE]->(fieldType:Type),
               (field)-[:ANNOTATED_BY]->(:Annotation)-[:OF_TYPE]->(:Type {fqn: 'javax.persistence.PersistenceContext'})
             SET
-              field:JPA:PersistenceContext
+              field:JPA:PersistenceContext:JEE:InjectionPoint
             SET
               fieldType:JEE:Injectable
             RETURN
