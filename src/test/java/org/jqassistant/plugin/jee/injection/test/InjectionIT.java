@@ -23,7 +23,6 @@ import org.jqassistant.plugin.jee.injection.test.set.jakarta.*;
 import org.jqassistant.plugin.jee.injection.test.set.javax.*;
 
 import org.jqassistant.plugin.jee.injection.test.set.javax.persistence.*;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -394,9 +393,7 @@ public class InjectionIT extends AbstractJavaPluginIT {
      * Verifies the constraint "jee-injection:BeansMustNotUseFieldInjection" results in violations for
      * field injection out of configuration classes using @PersistenceContext.
      */
-    // TODO: Fix!
     @Test
-    @Disabled("Fails since jee-injection:BeansMustNotUseFieldInjection does not allow field injection in configuration classes yet.")
     void beansMustNotUseFieldInjectionForPersistenceContext() throws Exception {
         scanClasses(persistenceContextTestSet);
         String ruleName = "jee-injection:BeansMustNotUseFieldInjection";
@@ -413,12 +410,12 @@ public class InjectionIT extends AbstractJavaPluginIT {
                 .map(Row::getColumns)
                 .collect(Collectors.toMap(row -> (TypeDescriptor) row.get("Type").getValue(), row -> (FieldDescriptor) row.get("Field").getValue()));
         assertThat(properties).hasEntrySatisfying(
-                typeDescriptor(JavaxEntityManagerWithoutProducer.class),
-                fieldDescriptor(JavaxEntityManagerWithoutProducer.class, "entityManagerWithoutProducer")
+                typeDescriptor(JavaxTypeWithFieldInjectedPersistenceContext.class),
+                fieldDescriptor(JavaxTypeWithFieldInjectedPersistenceContext.class, "entityManagerWithoutProducer")
         );
         assertThat(properties).hasEntrySatisfying(
-                typeDescriptor(JakartaEntityManagerWithoutProducer.class),
-                fieldDescriptor(JakartaEntityManagerWithoutProducer.class, "entityManagerWithoutProducer")
+                typeDescriptor(JakartaTypeWithFieldInjectedPersistenceContext.class),
+                fieldDescriptor(JakartaTypeWithFieldInjectedPersistenceContext.class, "entityManagerWithoutProducer")
         );
         store.commitTransaction();
     }

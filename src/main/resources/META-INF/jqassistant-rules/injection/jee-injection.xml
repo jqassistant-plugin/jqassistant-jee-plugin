@@ -252,9 +252,10 @@
 
     <constraint id="jee-injection:BeansMustNotUseFieldInjection">
         <requiresConcept refId="jee-injection:InjectionPoint"/>
+        <requiresConcept refId="cdi:Produces"/>
         <requiresConcept refId="java:GeneratedType"/>
         <description>
-            Field injection must be avoided. Constructor injection should be used instead.
+            Field injection must be avoided. Constructor injection should be used instead. To enable constructor injection, field injection may be used to provide beans for producers.
         </description>
         <cypher><![CDATA[
             MATCH
@@ -262,6 +263,8 @@
             WHERE NOT (
               artifact:Test
               OR type:Generated
+              OR field:JEE:CDI:BeanProducer
+              OR (:Java:Method:JEE:CDI:BeanProducer)-[:INVOKES*0..1]->(:Java:Method)-[:READS]->(field)
             )
             RETURN
               type as Type,
