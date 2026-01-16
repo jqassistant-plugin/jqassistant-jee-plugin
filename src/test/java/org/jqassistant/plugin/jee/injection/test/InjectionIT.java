@@ -33,6 +33,7 @@ import static com.buschmais.jqassistant.core.report.api.model.Result.Status.*;
 import static com.buschmais.jqassistant.plugin.java.test.assertj.FieldDescriptorCondition.fieldDescriptor;
 import static com.buschmais.jqassistant.plugin.java.test.assertj.TypeDescriptorCondition.typeDescriptor;
 import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.InstanceOfAssertFactories.type;
 
 public class InjectionIT extends AbstractJavaPluginIT {
 
@@ -387,8 +388,6 @@ public class InjectionIT extends AbstractJavaPluginIT {
         store.commitTransaction();
     }
 
-
-
     /**
      * Verifies the constraint "jee-injection:BeansMustNotUseFieldInjection" results in violations for
      * field injection out of configuration classes using @PersistenceContext.
@@ -417,6 +416,27 @@ public class InjectionIT extends AbstractJavaPluginIT {
                 typeDescriptor(JakartaTypeWithFieldInjectedPersistenceContext.class),
                 fieldDescriptor(JakartaTypeWithFieldInjectedPersistenceContext.class, "entityManagerWithoutProducer")
         );
+        store.commitTransaction();
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxResourceConfiguration.class, JakartaResourceConfiguration.class})
+    void beansMustNotUseFieldInjectionForResource(Class<?> configurationClass) throws Exception {
+        scanClasses(configurationClass); // Inner class is irrevelant for this test.
+        String ruleName = "jee-injection:BeansMustNotUseFieldInjection";
+        assertThat(validateConstraint(ruleName).getStatus()).isEqualTo(FAILURE);
+        store.beginTransaction();
+
+        final List<Result<Constraint>> constraintViolations = new ArrayList<>(reportPlugin.getConstraintResults().values());
+        assertThat(constraintViolations).hasSize(1);
+        final Result<Constraint> result = constraintViolations.get(0);
+        assertThat(result.getRule().getId()).isEqualTo(ruleName);
+        final List<Row> violations = result.getRows();
+        assertThat(violations).hasSize(1);
+        assertThat(violations.get(0).getColumns().get("Type").getValue()).asInstanceOf(type(TypeDescriptor.class))
+                .is(typeDescriptor(configurationClass));
+        assertThat(violations.get(0).getColumns().get("Field").getValue()).asInstanceOf(type(FieldDescriptor.class))
+                .is(fieldDescriptor(configurationClass, "someOtherResource"));
         store.commitTransaction();
     }
 
