@@ -303,7 +303,6 @@
 
     <concept id="jakartaee-cdi:EventConsumer">
         <providesConcept refId="cdi:EventConsumer"/>
-        <requiresConcept refId="jee-injection:InjectionPoint"/>
         <description>Labels all beans declaring method that has parameter of type "jakarta.enterprise.event.Observes" with "JEE", "CDI" and "EventConsumer".
         </description>
         <cypher><![CDATA[

@@ -91,7 +91,6 @@
 
     <constraint id="jee-injection:InjectablesShouldBeHeldInFinalFields">
         <requiresConcept refId="jee-injection:Injectable"/>
-        <requiresConcept refId="jee-injection:InjectionPoint"/>
         <requiresConcept refId="java:GeneratedType"/>
         <description>Fields holding injectables should be declared final if written by the constructor.</description>
         <cypher><![CDATA[
