@@ -10,8 +10,7 @@
         <!-- CDI label is not set, since these types are not applicable for CDI-injection unless explicit CDI bean producers exist for them -->
         <cypher><![CDATA[
             MATCH
-              (t:Type)-[:DECLARES]->(field:Field),
-              (field)-[:OF_TYPE]->(fieldType:Type),
+              (field:Field)-[:OF_TYPE]->(fieldType:Type),
               (field)-[:ANNOTATED_BY]->(:Annotation)-[:OF_TYPE]->(:Type {fqn: 'jakarta.annotation.Resource'})
             SET
               field:JEE:InjectionPoint:Resource

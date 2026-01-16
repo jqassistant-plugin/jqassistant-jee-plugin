@@ -6,9 +6,9 @@
         <description>Abstract concept that returns all fields labeled with "JEE" and "Resource".</description>
         <cypher><![CDATA[
             MATCH
-              (:Type)-[:DECLARES]->(field:JEE:Resource)
+              (field:JEE:Resource)
             RETURN
-               field AS PersistenceContext
+              field AS PersistenceContext
         ]]></cypher>
     </concept>
 

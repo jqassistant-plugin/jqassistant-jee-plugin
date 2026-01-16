@@ -46,7 +46,7 @@
         <description>Abstract concept that returns all fields labeled with "JPA" and "PersistenceContext".</description>
         <cypher><![CDATA[
             MATCH
-              (t:Type)-[:DECLARES]->(field:JPA:PersistenceContext)
+              (field:JPA:PersistenceContext)
             RETURN
                field AS PersistenceContext
         ]]></cypher>
