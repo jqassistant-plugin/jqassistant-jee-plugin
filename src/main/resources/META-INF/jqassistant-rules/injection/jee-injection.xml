@@ -255,7 +255,7 @@
         <requiresConcept refId="cdi:Produces"/>
         <requiresConcept refId="java:GeneratedType"/>
         <description>
-            Field injection must be avoided. Constructor injection should be used instead. To enable constructor injection, field injection may be used to provide beans for producers.
+            Field injection must be avoided. Constructor injection should be used instead. Field injection may only be used to provide beans for producers to enable constructor injection.
         </description>
         <cypher><![CDATA[
             MATCH
