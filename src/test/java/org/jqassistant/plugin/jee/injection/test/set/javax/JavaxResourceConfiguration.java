@@ -44,10 +44,6 @@ public class JavaxResourceConfiguration {
         return indirectlyMethodProducedResource;
     }
 
-    private UserTransaction getSomeOtherResource() {
-        return someOtherResource;
-    }
-
     @RequiredArgsConstructor
     private static class TransactionHandler {
         private final TransactionManager transactionManager;
@@ -56,6 +52,10 @@ public class JavaxResourceConfiguration {
     @Produces
     TransactionHandler produceComplexResource() {
         return new TransactionHandler(innerResource);
+    }
+
+    UserTransaction getSomeOtherResource() {
+        return someOtherResource;
     }
 
 }

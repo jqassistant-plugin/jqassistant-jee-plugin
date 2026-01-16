@@ -44,10 +44,6 @@ public class JakartaResourceConfiguration {
         return indirectlyMethodProducedResource;
     }
 
-    private UserTransaction getSomeOtherResource() {
-        return someOtherResource;
-    }
-
     @RequiredArgsConstructor
     private static class TransactionHandler {
         private final TransactionManager transactionManager;
@@ -56,6 +52,10 @@ public class JakartaResourceConfiguration {
     @Produces
     TransactionHandler produceComplexResource() {
         return new TransactionHandler(innerResource);
+    }
+
+    UserTransaction getSomeOtherResource() {
+        return someOtherResource;
     }
 
 }
