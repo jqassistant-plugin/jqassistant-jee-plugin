@@ -278,12 +278,12 @@
         <description>
             Each injectable type must be applicable for CDI or EJB injection. Violations are usually caused by missing CDI bean producers.
         </description>
+        <!-- Artifacts containing the type are not matched, because this would exclude framework types including those that are typically used with @Resource and @PersistenceContext and hence candidates for violations. -->
         <cypher><![CDATA[
             MATCH
-              (artifact:Artifact)-[:CONTAINS]->(type:Type:JEE:Injectable)
+              (type:Type:JEE:Injectable)
             WHERE NOT (
-              artifact:Test
-              OR type:Generated
+              type:Generated
               OR type:CDI
               OR type:EJB
             )
