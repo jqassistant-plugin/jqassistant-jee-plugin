@@ -1,53 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-   JBoss, Home of Professional Open Source Copyright 2008, Red Hat
-   Middleware LLC, and individual contributors by the @authors tag.
-   See the copyright.txt in the distribution for a full listing of
-   individual contributors. Licensed under the Apache License,
-   Version 2.0 (the "License"); you may not use this file except in
-   compliance with the License. You may obtain a copy of the License
-   at http://www.apache.org/licenses/LICENSE-2.0 Unless required by
-   applicable law or agreed to in writing, software distributed under
-   the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
-   OR CONDITIONS OF ANY KIND, either express or implied. See the
-   License for the specific language governing permissions and
-   limitations under the License.
+Copyright 2025, Contributors to the Eclipse Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 -->
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:jakartaee="https://jakarta.ee/xml/ns/jakartaee"
            elementFormDefault="qualified"
-           targetNamespace="http://xmlns.jcp.org/xml/ns/javaee"
-           xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee"
-           version="1.1">
+           targetNamespace="https://jakarta.ee/xml/ns/jakartaee"
+           version="5.0">
 
     <xs:annotation>
         <xs:documentation>
             <![CDATA[[
-         Contexts and Dependency Injection (CDI) defines
+         Jakarta Contexts and Dependency Injection (CDI) defines
          a set of complementary services that help improve the structure
          of application code. beans.xml is used to enable CDI services
          for the current bean archive as well as to enable named
          interceptors, decorators and alternatives for the current bean
          archive.
-         
+
 
          This is the XML Schema for the beans.xml deployment
-         descriptor for CDI 1.1.  The deployment descriptor must be named
+         descriptor for CDI 5.0.  The deployment descriptor must be named
          "META-INF/beans.xml" or "WEB-INF/beans.xml" in a war file.
          All application deployment descriptors may indicate
-         the application schema by using the Java EE namespace:
+         the application schema by using the Jakarta EE namespace:
 
-         http://xmlns.jcp.org/xml/ns/javaee
+         https://jakarta.ee/xml/ns/jakartaee
 
          and may indicate the version of the schema by
          using the version element as shown below:
 
-         <beans xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         <beans xmlns="https://jakarta.ee/xml/ns/jakartaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
-         http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd"
-         version="1.1">
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/beans_5_0.xsd"
+         version="5.0">
             ...
          </beans>
 
@@ -55,7 +54,7 @@
         the schema using the xsi:schemaLocation attribute for the Java EE
         namespace with the following location:
 
-        http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd
+        https://jakarta.ee/xml/ns/jakartaee/beans_5_0.xsd
 
      ]]>
         </xs:documentation>
@@ -72,20 +71,23 @@
                 there is a file named beans.xml in the WEB-INF directory of
                 the war. A directory in the JVM classpath is a bean archive
                 if it has a file named beans.xml in the META-INF directory.
+
+                When running in a CDI Lite environment, the bean-discovery-mode
+                attribute is the only configuration value read from a beans.xml file.
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
-            <xs:choice minOccurs="0" maxOccurs="unbounded">
-                <xs:element ref="javaee:interceptors"/>
-                <xs:element ref="javaee:decorators"/>
-                <xs:element ref="javaee:alternatives"/>
-                <xs:element ref="javaee:scan"/>
-                <xs:any namespace="##other" processContents="lax"/>
-            </xs:choice>
-            <xs:attribute name="version" default="1.1">
+            <xs:all >
+                <xs:element ref="jakartaee:interceptors" minOccurs="0"/>
+                <xs:element ref="jakartaee:decorators" minOccurs="0" />
+                <xs:element ref="jakartaee:alternatives" minOccurs="0" />
+                <xs:element ref="jakartaee:scan" minOccurs="0" />
+                <xs:element ref="jakartaee:trim" minOccurs="0"/>
+            </xs:all>
+            <xs:attribute name="version" default="5.0">
                 <xs:annotation>
                     <xs:documentation>
-                        The version of CDI this beans.xml is for. If the version is "1.1" (or
+                        The version of CDI this beans.xml is for. If the version is "5.0" (or
                         later), then the attribute bean-discovery-mode must be added.
                     </xs:documentation>
                 </xs:annotation>
@@ -95,10 +97,13 @@
                     </xs:restriction>
                 </xs:simpleType>
             </xs:attribute>
-            <xs:attribute name="bean-discovery-mode" use="required">
+            <xs:attribute name="bean-discovery-mode" use="optional" default="annotated">
                 <xs:annotation>
                     <xs:documentation>
-                        It is strongly recommended you use "annotated".
+                        It is strongly recommended you use "annotated". This is now the default and it
+                        is also the default as of 4.1 when an empty beans.xml file is seen. When running
+                        in a CDI Lite  environment, this is the only aspect of the beans.xml file that
+                        is used.
 
                         If the bean discovery mode is "all", then all types in this
                         archive will be considered. If the bean discovery mode is
@@ -350,6 +355,15 @@
                 </xs:element>
             </xs:choice>
         </xs:complexType>
+    </xs:element>
+    <xs:element name="trim" type="xs:string" fixed="">
+        <xs:annotation>
+            <xs:documentation>
+                If an explicit bean archive contains the &lt;trim/&lt; element in its beans.xml file, types that don’t have
+                either a bean defining annotation (as defined in Bean defining annotations) or any scope annotation,
+                are removed from the set of discovered types.
+            </xs:documentation>
+        </xs:annotation>
     </xs:element>
 
 </xs:schema>
