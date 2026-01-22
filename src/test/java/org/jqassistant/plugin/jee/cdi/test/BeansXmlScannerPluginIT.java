@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
 
-import org.jqassistant.plugin.jee.cdi.api.model.BeansXmlDescriptor;
+import org.jqassistant.plugin.jee.api.model.cdi.BeansXmlDescriptor;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.jakarta.JakartaAlternativeBean;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.jakarta.JakartaAlternativeStereotype;
 import org.jqassistant.plugin.jee.cdi.test.set.beans.alternative.javax.JavaxAlternativeBean;

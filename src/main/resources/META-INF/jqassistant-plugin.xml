@@ -5,66 +5,66 @@
                     version="${project.version}">
     <description>${project.description}</description>
     <model>
-        <class>org.jqassistant.plugin.jee.cdi.api.model.BeansXmlDescriptor</class>
-        <class>org.jqassistant.plugin.jee.cdi.api.model.CdiDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.cdi.BeansXmlDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.cdi.CdiDescriptor</class>
 
-        <class>org.jqassistant.plugin.jee.jee6.api.model.EnterpriseApplicationArchiveDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.WebApplicationArchiveDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.WebApplicationDirectoryDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.WebXmlDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.SessionConfigDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.ErrorPageDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.ServletDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.ServletMappingDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.UrlPatternDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.IconDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.DescriptionDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.DisplayNameDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.ParamValueDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.MultipartConfigDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.RunAsDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.SecurityRoleRefDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.FilterDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.FilterMappingDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.DispatcherDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.ListenerDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.SecurityConstraintDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.AuthConstraintDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.UserDataConstraintDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.RoleNameDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.WebResourceCollectionDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.HttpMethodDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.HttpMethodOmissionDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.SecurityRoleDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.LoginConfigDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.FormLoginConfigDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.ApplicationXmlDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.EjbModuleDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.ConnectorModuleDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.ClientModuleDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.WebModuleDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.model.JsfFaceletDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.EnterpriseApplicationArchiveDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.WebApplicationArchiveDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.WebApplicationDirectoryDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.WebXmlDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.SessionConfigDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.ErrorPageDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.ServletDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.ServletMappingDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.UrlPatternDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.IconDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.DescriptionDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.DisplayNameDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.ParamValueDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.MultipartConfigDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.RunAsDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.SecurityRoleRefDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.FilterDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.FilterMappingDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.DispatcherDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.ListenerDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.SecurityConstraintDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.AuthConstraintDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.UserDataConstraintDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.RoleNameDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.WebResourceCollectionDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.HttpMethodDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.HttpMethodOmissionDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.SecurityRoleDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.LoginConfigDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.FormLoginConfigDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.ApplicationXmlDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.EjbModuleDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.ConnectorModuleDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.ClientModuleDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.WebModuleDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.JsfFaceletDescriptor</class>
 
-        <class>org.jqassistant.plugin.jee.jpa.model.PersistenceXmlDescriptor</class>
-        <class>org.jqassistant.plugin.jee.jpa.model.PersistenceUnitDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.jpa.PersistenceXmlDescriptor</class>
+        <class>org.jqassistant.plugin.jee.api.model.jpa.PersistenceUnitDescriptor</class>
     </model>
     <scope>
-        <class>org.jqassistant.plugin.jee.jee6.api.scanner.WebApplicationScope</class>
-        <class>org.jqassistant.plugin.jee.jee6.api.scanner.EnterpriseApplicationScope</class>
+        <class>org.jqassistant.plugin.jee.api.scope.WebApplicationScope</class>
+        <class>org.jqassistant.plugin.jee.api.scope.EnterpriseApplicationScope</class>
     </scope>
     <scanner>
-        <class>org.jqassistant.plugin.jee.cdi.impl.scanner.BeansXmlScannerPlugin</class>
+        <class>org.jqassistant.plugin.jee.impl.scanner.cdi.BeansXmlScannerPlugin</class>
 
-        <class>org.jqassistant.plugin.jee.jee6.impl.scanner.EarArchiveScannerPlugin</class>
-        <class>org.jqassistant.plugin.jee.jee6.impl.scanner.WebApplicationArchiveScannerPlugin</class>
-        <class>org.jqassistant.plugin.jee.jee6.impl.scanner.WebApplicationDirectoryScannerPlugin</class>
-        <class>org.jqassistant.plugin.jee.jee6.impl.scanner.WarClassesFileScannerPlugin</class>
-        <class>org.jqassistant.plugin.jee.jee6.impl.scanner.WarClassesDirectoryScannerPlugin</class>
-        <class>org.jqassistant.plugin.jee.jee6.impl.scanner.WebXmlScannerPlugin</class>
-        <class>org.jqassistant.plugin.jee.jee6.impl.scanner.ApplicationXmlScannerPlugin</class>
-        <class>org.jqassistant.plugin.jee.jee6.impl.scanner.JsfFaceletScannerPlugin</class>
+        <class>org.jqassistant.plugin.jee.impl.scanner.EarArchiveScannerPlugin</class>
+        <class>org.jqassistant.plugin.jee.impl.scanner.WebApplicationArchiveScannerPlugin</class>
+        <class>org.jqassistant.plugin.jee.impl.scanner.WebApplicationDirectoryScannerPlugin</class>
+        <class>org.jqassistant.plugin.jee.impl.scanner.WarClassesFileScannerPlugin</class>
+        <class>org.jqassistant.plugin.jee.impl.scanner.WarClassesDirectoryScannerPlugin</class>
+        <class>org.jqassistant.plugin.jee.impl.scanner.WebXmlScannerPlugin</class>
+        <class>org.jqassistant.plugin.jee.impl.scanner.ApplicationXmlScannerPlugin</class>
+        <class>org.jqassistant.plugin.jee.impl.scanner.JsfFaceletScannerPlugin</class>
 
-        <class>org.jqassistant.plugin.jee.jpa.scanner.PersistenceXmlScannerPlugin</class>
+        <class>org.jqassistant.plugin.jee.impl.scanner.jpa.PersistenceXmlScannerPlugin</class>
     </scanner>
     <rules>
         <resource>cdi/cdi.xml</resource>
