@@ -15,15 +15,15 @@ import com.buschmais.jqassistant.core.scanner.api.ScannerPlugin.Requires;
 import com.buschmais.jqassistant.core.scanner.api.Scope;
 import com.buschmais.jqassistant.core.shared.xml.JAXBHelper;
 import com.buschmais.jqassistant.core.store.api.Store;
-import com.buschmais.jqassistant.plugin.common.api.model.FileDescriptor;
 import com.buschmais.jqassistant.plugin.common.api.model.NamedDescriptor;
+import com.buschmais.jqassistant.plugin.common.api.scanner.AbstractScannerPlugin;
 import com.buschmais.jqassistant.plugin.common.api.scanner.filesystem.FileResource;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.scanner.TypeCache;
 import com.buschmais.jqassistant.plugin.java.api.scanner.TypeResolver;
-import com.buschmais.jqassistant.plugin.xml.api.scanner.AbstractXmlFileScannerPlugin;
+import com.buschmais.jqassistant.plugin.xml.api.model.XmlFileDescriptor;
 
-import com.sun.java.xml.ns.javaee.*;
+import https.jakarta_ee.xml.ns.jakartaee.*;
 import org.jqassistant.plugin.jee.jee6.api.model.*;
 import org.jqassistant.plugin.jee.jee6.api.scanner.WebApplicationScope;
 
@@ -31,26 +31,31 @@ import org.jqassistant.plugin.jee.jee6.api.scanner.WebApplicationScope;
  * Scanner plugin for the content of web application XML descriptors (i.e.
  * `WEB-INF/web.xml`)
  */
-@Requires(FileDescriptor.class)
-public class WebXmlScannerPlugin extends AbstractXmlFileScannerPlugin<WebXmlDescriptor> {
+@Requires(XmlFileDescriptor.class)
+public class WebXmlScannerPlugin extends AbstractScannerPlugin<FileResource, WebXmlDescriptor> {
+
+    private static final String TARGET_NAMESPACE = "https://jakarta.ee/xml/ns/jakartaee";
 
     private JAXBHelper<WebAppType> unmarshaller;
 
     @Override
     public void initialize() {
-        unmarshaller = new JAXBHelper<>(WebAppType.class);
+        unmarshaller = new JAXBHelper<>(WebAppType.class, TARGET_NAMESPACE);
     }
 
     @Override
-    public boolean accepts(FileResource item, String path, Scope scope) throws IOException {
+    public boolean accepts(FileResource item, String path, Scope scope) {
         return WebApplicationScope.WAR.equals(scope) && "/WEB-INF/web.xml".equals(path);
     }
 
     @Override
-    public WebXmlDescriptor scan(FileResource item, WebXmlDescriptor webXmlDescriptor, String path, Scope scope, Scanner scanner) throws IOException {
+    public WebXmlDescriptor scan(FileResource item, String path, Scope scope, Scanner scanner) throws IOException {
         WebAppType webAppType = getWebAppType(item);
-        Store store = scanner.getContext()
-                .getStore();
+        ScannerContext context = scanner.getContext();
+        Store store = context.getStore();
+        XmlFileDescriptor xmlFileDescriptor = context.getCurrentDescriptor();
+        WebXmlDescriptor webXmlDescriptor = context.getStore()
+                .addDescriptorType(xmlFileDescriptor, WebXmlDescriptor.class);
         webXmlDescriptor.setVersion(webAppType.getVersion());
         Map<String, ServletDescriptor> servlets = new HashMap<>();
         Map<String, FilterDescriptor> filters = new HashMap<>();
@@ -61,7 +66,7 @@ public class WebXmlScannerPlugin extends AbstractXmlFileScannerPlugin<WebXmlDesc
                 webXmlDescriptor.getContextParams()
                         .add(paramValue);
             } else if (value instanceof ErrorPageType) {
-                ErrorPageDescriptor errorPageDescriptor = createErrorPage((ErrorPageType) value, scanner.getContext());
+                ErrorPageDescriptor errorPageDescriptor = createErrorPage((ErrorPageType) value, context);
                 webXmlDescriptor.getErrorPages()
                         .add(errorPageDescriptor);
             } else if (value instanceof ServletMappingType) {
@@ -73,7 +78,7 @@ public class WebXmlScannerPlugin extends AbstractXmlFileScannerPlugin<WebXmlDesc
                 webXmlDescriptor.setSessionConfig(sessionConfig);
             } else if (value instanceof FilterType) {
                 FilterType filterType = (FilterType) value;
-                FilterDescriptor filterDescriptor = createFilter(filterType, filters, scanner.getContext());
+                FilterDescriptor filterDescriptor = createFilter(filterType, filters, context);
                 webXmlDescriptor.getFilters()
                         .add(filterDescriptor);
             } else if (value instanceof FilterMappingType) {
@@ -81,11 +86,11 @@ public class WebXmlScannerPlugin extends AbstractXmlFileScannerPlugin<WebXmlDesc
                 webXmlDescriptor.getFilterMappings()
                         .add(filterMapping);
             } else if (value instanceof ServletType) {
-                ServletDescriptor servletDescriptor = createServlet((ServletType) value, servlets, scanner.getContext());
+                ServletDescriptor servletDescriptor = createServlet((ServletType) value, servlets, context);
                 webXmlDescriptor.getServlets()
                         .add(servletDescriptor);
             } else if (value instanceof ListenerType) {
-                ListenerDescriptor listenerDescriptor = createListener((ListenerType) value, scanner.getContext());
+                ListenerDescriptor listenerDescriptor = createListener((ListenerType) value, context);
                 webXmlDescriptor.getListeners()
                         .add(listenerDescriptor);
             } else if (value instanceof SecurityConstraintType) {
@@ -126,7 +131,7 @@ public class WebXmlScannerPlugin extends AbstractXmlFileScannerPlugin<WebXmlDesc
                     .getValue());
             loginConfigDescriptor.setFormLoginConfig(formLoginConfigDescriptor);
         }
-        com.sun.java.xml.ns.javaee.String realmName = loginConfigType.getRealmName();
+        https.jakarta_ee.xml.ns.jakartaee.String realmName = loginConfigType.getRealmName();
         if (realmName != null) {
             loginConfigDescriptor.setRealmName(realmName.getValue());
         }
@@ -378,7 +383,8 @@ public class WebXmlScannerPlugin extends AbstractXmlFileScannerPlugin<WebXmlDesc
             if (fileSizeThreshold != null) {
                 multipartConfigDescriptor.setFileSizeThreshold(fileSizeThreshold.longValue());
             }
-            multipartConfigDescriptor.setLocation(multipartConfig.getLocation());
+            multipartConfigDescriptor.setLocation(multipartConfig.getLocation()
+                    .getValue());
             multipartConfigDescriptor.setMaxFileSize(multipartConfig.getMaxFileSize());
             multipartConfigDescriptor.setMaxRequestSize(multipartConfig.getMaxRequestSize());
             servletDescriptor.setMultipartConfig(multipartConfigDescriptor);

@@ -1,63 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+-->
+
 <xsd:schema xmlns="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://java.sun.com/xml/ns/javaee"
-            xmlns:javaee="http://java.sun.com/xml/ns/javaee"
+            targetNamespace="https://jakarta.ee/xml/ns/jakartaee"
+            xmlns:jakartaee="https://jakarta.ee/xml/ns/jakartaee"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
-            version="1.3">
+            version="2.0">
+
     <xsd:annotation>
         <xsd:documentation>
-
-            DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-
-            Copyright 2003-2009 Sun Microsystems, Inc. All rights reserved.
-
-            The contents of this file are subject to the terms of either the
-            GNU General Public License Version 2 only ("GPL") or the Common
-            Development and Distribution License("CDDL") (collectively, the
-            "License"). You may not use this file except in compliance with
-            the License. You can obtain a copy of the License at
-            https://glassfish.dev.java.net/public/CDDL+GPL.html or
-            glassfish/bootstrap/legal/LICENSE.txt. See the License for the
-            specific language governing permissions and limitations under the
-            License.
-
-            When distributing the software, include this License Header
-            Notice in each file and include the License file at
-            glassfish/bootstrap/legal/LICENSE.txt. Sun designates this
-            particular file as subject to the "Classpath" exception as
-            provided by Sun in the GPL Version 2 section of the License file
-            that accompanied this code. If applicable, add the following
-            below the License Header, with the fields enclosed by brackets []
-            replaced by your own identifying information:
-            "Portions Copyrighted [year] [name of copyright owner]"
-
-            Contributor(s):
-
-            If you wish your version of this file to be governed by only the
-            CDDL or only the GPL Version 2, indicate your decision by adding
-            "[Contributor] elects to include this software in this
-            distribution under the [CDDL or GPL Version 2] license." If you
-            don't indicate a single choice of license, a recipient has the
-            option to distribute your version of this file under either the
-            CDDL, the GPL Version 2 or to extend the choice of license to its
-            licensees as provided above. However, if you add GPL Version 2
-            code and therefore, elected the GPL Version 2 license, then the
-            option applies only if the new code is made subject to such
-            option by the copyright holder.
-
+            <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="license.inc" parse="text"/>
         </xsd:documentation>
     </xsd:annotation>
 
     <xsd:annotation>
         <xsd:documentation>
-
-            (C) Copyright International Business Machines Corporation 2002
-
+            <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="license-ibm.inc" parse="text"/>
         </xsd:documentation>
     </xsd:annotation>
-
 
     <!-- **************************************************** -->
 
@@ -69,16 +47,17 @@
                 service. It contains optional description, display name and
                 icons, a declaration of the required Service interface,
                 an optional WSDL document location, an optional set
-                of JAX-RPC mappings, an optional QName for the service element,
+                of Jakarta XML RPC mappings, an optional QName for the service element,
                 an optional set of Service Endpoint Interfaces to be resolved
                 by the container to a WSDL port, and an optional set of handlers.
 
             </xsd:documentation>
         </xsd:annotation>
+
         <xsd:sequence>
-            <xsd:group ref="javaee:descriptionGroup"/>
+            <xsd:group ref="jakartaee:descriptionGroup"/>
             <xsd:element name="service-ref-name"
-                         type="javaee:jndi-nameType">
+                         type="jakartaee:jndi-nameType">
                 <xsd:annotation>
                     <xsd:documentation>
 
@@ -90,23 +69,24 @@
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
+
             <xsd:element name="service-interface"
-                         type="javaee:fully-qualified-classType">
+                         type="jakartaee:fully-qualified-classType">
                 <xsd:annotation>
                     <xsd:documentation>
 
                         The service-interface element declares the fully qualified class
-                        name of the JAX-RPC Service interface the client depends on.
-                        In most cases the value will be javax.xml.rpc.Service. A JAX-RPC
-                        generated Service Interface class may also be specified.
+                        name of the Jakarta XML RPC Service interface the client depends on.
+                        In most cases the value will be jakarta.xml.rpc.Service.  A Jakarta XML
+                        RPC generated Service Interface class may also be specified.
 
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
+
             <xsd:element name="service-ref-type"
-                         type="javaee:fully-qualified-classType"
-                         minOccurs="0"
-                         maxOccurs="1">
+                         type="jakartaee:fully-qualified-classType"
+                         minOccurs="0" maxOccurs="1">
                 <xsd:annotation>
                     <xsd:documentation>
 
@@ -114,21 +94,21 @@
                         element that is injected or returned when a JNDI lookup is done.
                         This must be either a fully qualified name of Service class or
                         the fully qualified name of service endpoint interface class.
-                        This is only used with JAX-WS runtime where the corresponding
-                        @WebServiceRef annotation can be used to denote both a Service
-                        or a Port.
+                        This is only used with Jakarta XML Web Services runtime where
+                        the corresponding @WebServiceRef annotation can be used to denote both
+                        a Service or a Port.
 
                         If this is not specified, then the type of service-ref element
                         that is injected or returned when a JNDI lookup is done is
                         always a Service interface/class.
-
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
+
+
             <xsd:element name="wsdl-file"
-                         type="javaee:xsdAnyURIType"
-                         minOccurs="0"
-                         maxOccurs="1">
+                         type="jakartaee:xsdAnyURIType"
+                         minOccurs="0" maxOccurs="1">
                 <xsd:annotation>
                     <xsd:documentation>
 
@@ -138,41 +118,42 @@
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
+
             <xsd:element name="jaxrpc-mapping-file"
-                         type="javaee:pathType"
-                         minOccurs="0"
-                         maxOccurs="1">
+                         type="jakartaee:pathType"
+                         minOccurs="0" maxOccurs="1">
                 <xsd:annotation>
                     <xsd:documentation>
 
                         The jaxrpc-mapping-file element contains the name of a file that
-                        describes the JAX-RPC mapping between the Java interaces used by
-                        the application and the WSDL description in the wsdl-file. The
+                        describes the Jakarta XML RPC mapping between the Java interaces used by
+                        the application and the WSDL description in the wsdl-file.  The
                         file name is a relative path within the module file.
 
-                        This is not required when JAX-WS based runtime is used.
+                        This is not required when Jakarta Enterprise Web Services based
+                        runtime is used.
 
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
+
             <xsd:element name="service-qname"
-                         type="javaee:xsdQNameType"
-                         minOccurs="0"
-                         maxOccurs="1">
+                         type="jakartaee:xsdQNameType"
+                         minOccurs="0" maxOccurs="1">
                 <xsd:annotation>
                     <xsd:documentation>
 
                         The service-qname element declares the specific WSDL service
-                        element that is being refered to. It is not specified if no
+                        element that is being refered to.  It is not specified if no
                         wsdl-file is declared.
 
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
+
             <xsd:element name="port-component-ref"
-                         type="javaee:port-component-refType"
-                         minOccurs="0"
-                         maxOccurs="unbounded">
+                         type="jakartaee:port-component-refType"
+                         minOccurs="0" maxOccurs="unbounded">
                 <xsd:annotation>
                     <xsd:documentation>
 
@@ -185,11 +166,11 @@
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
+
             <xsd:choice>
                 <xsd:element name="handler"
-                             type="javaee:handlerType"
-                             minOccurs="0"
-                             maxOccurs="unbounded">
+                             type="jakartaee:handlerType"
+                             minOccurs="0" maxOccurs="unbounded">
                     <xsd:annotation>
                         <xsd:documentation>
 
@@ -199,32 +180,27 @@
                             handler is assumed to be associated with all ports of the
                             service.
 
-                            To be used with JAX-RPC based runtime only.
+                            To be used with Jakarta XML RPC based runtime only.
 
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:element>
                 <xsd:element name="handler-chains"
-                             type="javaee:handler-chainsType"
-                             minOccurs="0"
-                             maxOccurs="1">
+                             type="jakartaee:handler-chainsType"
+                             minOccurs="0" maxOccurs="1">
                     <xsd:annotation>
                         <xsd:documentation>
-
-                            To be used with JAX-WS based runtime only.
-
+                            To be used with Jakarta XML Web Services based runtime only.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:element>
             </xsd:choice>
-            <xsd:group ref="javaee:resourceGroup"/>
+
+            <xsd:group ref="jakartaee:resourceGroup"/>
+
         </xsd:sequence>
-        <xsd:attribute name="id"
-                       type="xsd:ID"/>
+        <xsd:attribute name="id" type="xsd:ID"/>
     </xsd:complexType>
-
-
-    <!-- **************************************************** -->
 
     <xsd:complexType name="port-component-refType">
         <xsd:annotation>
@@ -238,9 +214,10 @@
 
             </xsd:documentation>
         </xsd:annotation>
+
         <xsd:sequence>
             <xsd:element name="service-endpoint-interface"
-                         type="javaee:fully-qualified-classType">
+                         type="jakartaee:fully-qualified-classType">
                 <xsd:annotation>
                     <xsd:documentation>
 
@@ -251,76 +228,72 @@
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
+
             <xsd:element name="enable-mtom"
-                         type="javaee:true-falseType"
-                         minOccurs="0"
-                         maxOccurs="1">
+                         type="jakartaee:true-falseType"
+                         minOccurs="0" maxOccurs="1">
                 <xsd:annotation>
                     <xsd:documentation>
 
                         Used to enable or disable SOAP MTOM/XOP mechanism on the client
                         side for a port-component.
 
-                        Not to be specified for JAX-RPC runtime
-
+                        Not to be specified for Jakarta XML RPC runtime
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
+
             <xsd:element name="mtom-threshold"
-                         type="javaee:xsdNonNegativeIntegerType"
-                         minOccurs="0"
-                         maxOccurs="1">
+                         type="jakartaee:xsdNonNegativeIntegerType"
+                         minOccurs="0" maxOccurs="1">
                 <xsd:annotation>
                     <xsd:documentation>
 
                         When MTOM is enabled, binary data above this size in bytes
                         should be XOP encoded or sent as attachment. Default value is 0.
 
-                        Not to be specified for JAX-RPC runtime
-
+                        Not to be specified for Jakarta XML RPC runtime
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
+
             <xsd:element name="addressing"
-                         type="javaee:addressingType"
-                         minOccurs="0"
-                         maxOccurs="1">
+                         type="jakartaee:addressingType"
+                         minOccurs="0" maxOccurs="1">
                 <xsd:annotation>
                     <xsd:documentation>
 
-                        This specifies the WS-Addressing requirements for a JAX-WS
-                        web service. It corresponds to javax.xml.ws.soap.Addressing
-                        annotation or its feature javax.xml.ws.soap.AddressingFeature.
+                        This specifies the WS-Addressing requirements for a Jakarta XML
+                        web service. It corresponds to jakarta.xml.ws.soap.Addressing
+                        annotation or its feature jakarta.xml.ws.soap.AddressingFeature.
 
                         See the addressingType for more information.
 
-                        Not to be specified for JAX-RPC runtime
-
+                        Not to be specified for Jakarta XML RPC runtime
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
+
             <xsd:element name="respect-binding"
-                         type="javaee:respect-bindingType"
-                         minOccurs="0"
-                         maxOccurs="1">
+                         type="jakartaee:respect-bindingType"
+                         minOccurs="0" maxOccurs="1">
                 <xsd:annotation>
                     <xsd:documentation>
 
-                        Corresponds to the javax.xml.ws.RespectBinding annotation
-                        or its corresponding javax.xml.ws.RespectBindingFeature web
-                        service feature. This is used to control whether a JAX-WS
-                        implementation must respect/honor the contents of the
+                        Corresponds to the jakarta.xml.ws.RespectBinding annotation
+                        or its corresponding jakarta.xml.ws.RespectBindingFeature web
+                        service feature. This is used to control whether a Jakarta XML Web
+                        Services implementation must respect/honor the contents of the
                         wsdl:binding in the WSDL that is associated with the service.
 
-                        Not to be specified for JAX-RPC runtime
-
+                        Not to be specified for Jakarta XML RPC runtime
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
+
             <xsd:element name="port-component-link"
-                         type="javaee:string"
-                         minOccurs="0"
-                         maxOccurs="1">
+                         type="jakartaee:string"
+                         minOccurs="0" maxOccurs="1">
                 <xsd:annotation>
                     <xsd:documentation>
 
@@ -338,10 +311,8 @@
                 </xsd:annotation>
             </xsd:element>
         </xsd:sequence>
-        <xsd:attribute name="id"
-                       type="xsd:ID"/>
+        <xsd:attribute name="id" type="xsd:ID"/>
     </xsd:complexType>
-
 
     <!-- **************************************************** -->
 
@@ -354,16 +325,15 @@
 
             </xsd:documentation>
         </xsd:annotation>
+
         <xsd:sequence>
             <xsd:element name="handler-chain"
-                         type="javaee:handler-chainType"
-                         minOccurs="0"
-                         maxOccurs="unbounded"/>
+                         type="jakartaee:handler-chainType"
+                         minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
-        <xsd:attribute name="id"
-                       type="xsd:ID"/>
-    </xsd:complexType>
 
+        <xsd:attribute name="id" type="xsd:ID"/>
+    </xsd:complexType>
 
     <!-- **************************************************** -->
 
@@ -384,29 +354,31 @@
 
             </xsd:documentation>
         </xsd:annotation>
+
         <xsd:sequence>
-            <xsd:choice minOccurs="0"
-                        maxOccurs="1">
+
+            <xsd:choice minOccurs="0" maxOccurs="1">
                 <xsd:element name="service-name-pattern"
-                             type="javaee:qname-pattern"/>
+                             type="jakartaee:qname-pattern" />
                 <xsd:element name="port-name-pattern"
-                             type="javaee:qname-pattern"/>
+                             type="jakartaee:qname-pattern" />
                 <xsd:element name="protocol-bindings"
-                             type="javaee:protocol-bindingListType"/>
+                             type="jakartaee:protocol-bindingListType"/>
             </xsd:choice>
+
             <xsd:element name="handler"
-                         type="javaee:handlerType"
-                         minOccurs="1"
-                         maxOccurs="unbounded"/>
+                         type="jakartaee:handlerType"
+                         minOccurs="1" maxOccurs="unbounded"/>
         </xsd:sequence>
-        <xsd:attribute name="id"
-                       type="xsd:ID"/>
+
+        <xsd:attribute name="id" type="xsd:ID"/>
     </xsd:complexType>
+
+    <!-- **************************************************** -->
 
     <xsd:simpleType name="protocol-bindingListType">
         <xsd:annotation>
             <xsd:documentation>
-
                 Defines the type used for specifying a list of
                 protocol-bindingType(s). For e.g.
 
@@ -414,15 +386,17 @@
 
             </xsd:documentation>
         </xsd:annotation>
-        <xsd:list itemType="javaee:protocol-bindingType"/>
+        <xsd:list itemType="jakartaee:protocol-bindingType"/>
     </xsd:simpleType>
+
+
+    <!-- **************************************************** -->
 
     <xsd:simpleType name="protocol-bindingType">
         <xsd:annotation>
             <xsd:documentation>
-
                 Defines the type used for specifying the URI for the
-                protocol binding used by the port-component. For
+                protocol binding used by the port-component.  For
                 portability one could use one of the following tokens that
                 alias the standard binding types:
 
@@ -437,13 +411,14 @@
 
             </xsd:documentation>
         </xsd:annotation>
-        <xsd:union memberTypes="xsd:anyURI javaee:protocol-URIAliasType"/>
+        <xsd:union memberTypes="xsd:anyURI jakartaee:protocol-URIAliasType"/>
     </xsd:simpleType>
+
+    <!-- **************************************************** -->
 
     <xsd:simpleType name="protocol-URIAliasType">
         <xsd:annotation>
             <xsd:documentation>
-
                 Defines the type that is used for specifying tokens that
                 start with ## which are used to alias existing standard
                 protocol bindings and support aliases for new standard
@@ -467,10 +442,12 @@
         </xsd:restriction>
     </xsd:simpleType>
 
+
+    <!-- **************************************************** -->
+
     <xsd:simpleType name="qname-pattern">
         <xsd:annotation>
             <xsd:documentation>
-
                 This is used to specify the QName pattern in the
                 attribute service-name-pattern and port-name-pattern in
                 the handler-chain element
@@ -512,11 +489,12 @@
 
             </xsd:documentation>
         </xsd:annotation>
+
         <xsd:restriction base="xsd:token">
             <xsd:pattern value="\*|([\i-[:]][\c-[:]]*:)?[\i-[:]][\c-[:]]*\*?"/>
         </xsd:restriction>
-    </xsd:simpleType>
 
+    </xsd:simpleType>
 
     <!-- **************************************************** -->
 
@@ -524,9 +502,9 @@
         <xsd:annotation>
             <xsd:documentation>
 
-                This specifies the WS-Addressing requirements for a JAX-WS web service.
-                It corresponds to javax.xml.ws.soap.Addressing annotation or its
-                feature javax.xml.ws.soap.AddressingFeature.
+                This specifies the WS-Addressing requirements for a Jakarta XML web
+                service. It corresponds to jakarta.xml.ws.soap.Addressing annotation or its
+                feature jakarta.xml.ws.soap.AddressingFeature.
 
                 If the "enabled" element is "true", WS-Addressing is enabled.
                 It means that the endpoint supports WS-Addressing but does not require
@@ -550,21 +528,14 @@
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
-            <xsd:element name="enabled"
-                         type="javaee:true-falseType"
-                         minOccurs="0"
-                         maxOccurs="1"/>
-            <xsd:element name="required"
-                         type="javaee:true-falseType"
-                         minOccurs="0"
-                         maxOccurs="1"/>
-            <xsd:element name="responses"
-                         type="javaee:addressing-responsesType"
-                         minOccurs="0"
-                         maxOccurs="1"/>
+            <xsd:element name="enabled" type="jakartaee:true-falseType"
+                         minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="required" type="jakartaee:true-falseType"
+                         minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="responses" type="jakartaee:addressing-responsesType"
+                         minOccurs="0" maxOccurs="1"/>
         </xsd:sequence>
     </xsd:complexType>
-
 
     <!-- **************************************************** -->
 
@@ -579,7 +550,7 @@
             </xsd:documentation>
         </xsd:annotation>
         <xsd:simpleContent>
-            <xsd:restriction base="javaee:string">
+            <xsd:restriction base="jakartaee:string">
                 <xsd:enumeration value="ANONYMOUS"/>
                 <xsd:enumeration value="NON_ANONYMOUS"/>
                 <xsd:enumeration value="ALL"/>
@@ -587,17 +558,16 @@
         </xsd:simpleContent>
     </xsd:complexType>
 
-
     <!-- **************************************************** -->
 
     <xsd:complexType name="respect-bindingType">
         <xsd:annotation>
             <xsd:documentation>
 
-                Corresponds to the javax.xml.ws.RespectBinding annotation
-                or its corresponding javax.xml.ws.RespectBindingFeature web
-                service feature. This is used to control whether a JAX-WS
-                implementation must respect/honor the contents of the
+                Corresponds to the jakarta.xml.ws.RespectBinding annotation
+                or its corresponding jakarta.xml.ws.RespectBindingFeature web
+                service feature. This is used to control whether a Jakarta XML
+                Web Services implementation must respect/honor the contents of the
                 wsdl:binding in the WSDL that is associated with the service.
 
                 If the "enabled" element is "true", wsdl:binding in the
@@ -605,14 +575,13 @@
 
             </xsd:documentation>
         </xsd:annotation>
-        <xsd:sequence>
-            <xsd:element name="enabled"
-                         type="javaee:true-falseType"
-                         minOccurs="0"
-                         maxOccurs="1"/>
-        </xsd:sequence>
-    </xsd:complexType>
 
+        <xsd:sequence>
+            <xsd:element name="enabled" type="jakartaee:true-falseType"
+                         minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+
+    </xsd:complexType>
 
     <!-- **************************************************** -->
 
@@ -628,9 +597,9 @@
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
-            <xsd:group ref="javaee:descriptionGroup"/>
+            <xsd:group ref="jakartaee:descriptionGroup"/>
             <xsd:element name="handler-name"
-                         type="javaee:string">
+                         type="jakartaee:string">
                 <xsd:annotation>
                     <xsd:documentation>
 
@@ -641,7 +610,7 @@
                 </xsd:annotation>
             </xsd:element>
             <xsd:element name="handler-class"
-                         type="javaee:fully-qualified-classType">
+                         type="jakartaee:fully-qualified-classType">
                 <xsd:annotation>
                     <xsd:documentation>
 
@@ -651,36 +620,34 @@
                 </xsd:annotation>
             </xsd:element>
             <xsd:element name="init-param"
-                         type="javaee:param-valueType"
-                         minOccurs="0"
-                         maxOccurs="unbounded">
+                         type="jakartaee:param-valueType"
+                         minOccurs="0" maxOccurs="unbounded">
                 <xsd:annotation>
                     <xsd:documentation>
 
-                        Not to be specified for JAX-WS runtime
+                        Not to be specified for Jakarta XML Web Services runtime
 
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
+
             <xsd:element name="soap-header"
-                         type="javaee:xsdQNameType"
-                         minOccurs="0"
-                         maxOccurs="unbounded">
+                         type="jakartaee:xsdQNameType"
+                         minOccurs="0" maxOccurs="unbounded">
                 <xsd:annotation>
                     <xsd:documentation>
 
                         Defines the QName of a SOAP header that will be processed by the
                         handler.
 
-                        Not to be specified for JAX-WS runtime
+                        Not to be specified for Jakarta XML Web Services runtime
 
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
             <xsd:element name="soap-role"
-                         type="javaee:string"
-                         minOccurs="0"
-                         maxOccurs="unbounded">
+                         type="jakartaee:string"
+                         minOccurs="0" maxOccurs="unbounded">
                 <xsd:annotation>
                     <xsd:documentation>
 
@@ -691,9 +658,8 @@
                 </xsd:annotation>
             </xsd:element>
             <xsd:element name="port-name"
-                         type="javaee:string"
-                         minOccurs="0"
-                         maxOccurs="unbounded">
+                         type="jakartaee:string"
+                         minOccurs="0" maxOccurs="unbounded">
                 <xsd:annotation>
                     <xsd:documentation>
 
@@ -702,22 +668,21 @@
                         specified, the handler is assumed to be associated with
                         all ports of the service.
 
-                        Not to be specified for JAX-WS runtime
+                        Not to be specified for Jakarta XML Web Services runtime
 
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
+
         </xsd:sequence>
-        <xsd:attribute name="id"
-                       type="xsd:ID"/>
+        <xsd:attribute name="id" type="xsd:ID"/>
     </xsd:complexType>
 
     <xsd:group name="service-refGroup">
         <xsd:sequence>
             <xsd:element name="service-ref"
-                         type="javaee:service-refType"
-                         minOccurs="0"
-                         maxOccurs="unbounded">
+                         type="jakartaee:service-refType"
+                         minOccurs="0" maxOccurs="unbounded">
                 <xsd:key name="service-ref_handler-name-key">
                     <xsd:annotation>
                         <xsd:documentation>
@@ -727,11 +692,10 @@
 
                         </xsd:documentation>
                     </xsd:annotation>
-                    <xsd:selector xpath="javaee:handler"/>
-                    <xsd:field xpath="javaee:handler-name"/>
+                    <xsd:selector xpath="jakartaee:handler"/>
+                    <xsd:field xpath="jakartaee:handler-name"/>
                 </xsd:key>
             </xsd:element>
         </xsd:sequence>
     </xsd:group>
-
 </xsd:schema>

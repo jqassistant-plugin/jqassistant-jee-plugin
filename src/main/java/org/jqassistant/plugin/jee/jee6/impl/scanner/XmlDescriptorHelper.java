@@ -2,9 +2,8 @@ package org.jqassistant.plugin.jee.jee6.impl.scanner;
 
 import com.buschmais.jqassistant.core.store.api.Store;
 
+import https.jakarta_ee.xml.ns.jakartaee.*;
 import org.jqassistant.plugin.jee.jee6.api.model.*;
-
-import com.sun.java.xml.ns.javaee.*;
 
 public class XmlDescriptorHelper {
 
@@ -15,9 +14,9 @@ public class XmlDescriptorHelper {
      * Create a description descriptor.
      *
      * @param descriptionType
-     *            The XML description type.
+     *         The XML description type.
      * @param store
-     *            The store.
+     *         The store.
      * @return The description descriptor.
      */
     public static DescriptionDescriptor createDescription(DescriptionType descriptionType, Store store) {
@@ -31,9 +30,9 @@ public class XmlDescriptorHelper {
      * Create an icon descriptor.
      *
      * @param iconType
-     *            The XML icon type.
+     *         The XML icon type.
      * @param store
-     *            The store
+     *         The store
      * @return The icon descriptor.
      */
     public static IconDescriptor createIcon(IconType iconType, Store store) {
@@ -54,9 +53,9 @@ public class XmlDescriptorHelper {
      * Create a display name descriptor.
      *
      * @param displayNameType
-     *            The XML display name type.
+     *         The XML display name type.
      * @param store
-     *            The store.
+     *         The store.
      * @return The display name descriptor.
      */
     public static DisplayNameDescriptor createDisplayName(DisplayNameType displayNameType, Store store) {
@@ -69,7 +68,8 @@ public class XmlDescriptorHelper {
     public static SecurityRoleDescriptor createSecurityRole(SecurityRoleType securityRoleType, Store store) {
         SecurityRoleDescriptor securityRoleDescriptor = store.create(SecurityRoleDescriptor.class);
         for (DescriptionType descriptionType : securityRoleType.getDescription()) {
-            securityRoleDescriptor.getDescriptions().add(XmlDescriptorHelper.createDescription(descriptionType, store));
+            securityRoleDescriptor.getDescriptions()
+                    .add(XmlDescriptorHelper.createDescription(descriptionType, store));
         }
         securityRoleDescriptor.setRoleName(createRoleName(securityRoleType.getRoleName(), store));
         return securityRoleDescriptor;

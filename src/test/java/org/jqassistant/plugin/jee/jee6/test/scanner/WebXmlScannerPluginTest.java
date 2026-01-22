@@ -7,37 +7,14 @@ import java.util.List;
 
 import javax.xml.transform.stream.StreamSource;
 
-import com.buschmais.jqassistant.plugin.common.api.model.FileDescriptor;
 import com.buschmais.jqassistant.plugin.common.api.scanner.filesystem.FileResource;
 import com.buschmais.jqassistant.plugin.java.api.model.ClassFileDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.scanner.TypeCache;
 import com.buschmais.jqassistant.plugin.java.api.scanner.TypeResolver;
+import com.buschmais.jqassistant.plugin.xml.api.model.XmlFileDescriptor;
 
-import org.jqassistant.plugin.jee.jee6.api.model.AuthConstraintDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.DescriptionDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.DisplayNameDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.ErrorPageDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.FilterDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.FilterMappingDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.FormLoginConfigDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.HttpMethodDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.IconDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.ListenerDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.LoginConfigDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.ParamValueDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.RoleNameDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.RunAsDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.SecurityConstraintDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.SecurityRoleDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.ServletDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.ServletMappingDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.SessionConfigDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.UrlPatternDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.UserDataConstraintDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.WebApplicationArchiveDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.WebResourceCollectionDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.WebXmlDescriptor;
+import org.jqassistant.plugin.jee.jee6.api.model.*;
 import org.jqassistant.plugin.jee.jee6.api.scanner.WebApplicationScope;
 import org.jqassistant.plugin.jee.jee6.impl.scanner.WebXmlScannerPlugin;
 import org.junit.jupiter.api.Test;
@@ -50,10 +27,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -63,10 +37,7 @@ class WebXmlScannerPluginTest extends AbstractXmlScannerTest {
     private TypeResolver typeResolver;
 
     @Mock
-    private WebApplicationArchiveDescriptor warDescriptor;
-
-    @Mock
-    private FileDescriptor fileDescriptor;
+    private XmlFileDescriptor xmlFileDescriptor;
 
     @Mock
     private WebXmlDescriptor webXmlDescriptor;
@@ -219,9 +190,10 @@ class WebXmlScannerPluginTest extends AbstractXmlScannerTest {
             }
         });
 
-        when(scannerContext.getCurrentDescriptor()).thenReturn(fileDescriptor);
-        when(store.addDescriptorType(fileDescriptor, WebXmlDescriptor.class)).thenReturn(webXmlDescriptor);
-        when(scanner.scan(Mockito.any(StreamSource.class), Mockito.eq("/jee6/WEB-INF/web.xml"), Mockito.eq(WebApplicationScope.WAR))).thenReturn(webXmlDescriptor);
+        when(scannerContext.getCurrentDescriptor()).thenReturn(xmlFileDescriptor);
+        when(store.addDescriptorType(xmlFileDescriptor, WebXmlDescriptor.class)).thenReturn(webXmlDescriptor);
+        when(scanner.scan(Mockito.any(StreamSource.class), Mockito.eq("/jee6/WEB-INF/web.xml"), Mockito.eq(WebApplicationScope.WAR))).thenReturn(
+                webXmlDescriptor);
         when(webXmlDescriptor.isXmlWellFormed()).thenReturn(true);
         when(webXmlDescriptor.getContextParams()).thenReturn(mock(List.class));
         when(webXmlDescriptor.getErrorPages()).thenReturn(mock(List.class));
@@ -309,11 +281,10 @@ class WebXmlScannerPluginTest extends AbstractXmlScannerTest {
 
         WebXmlScannerPlugin scannerPlugin = new WebXmlScannerPlugin();
         scannerPlugin.initialize();
-        scannerPlugin.configure(scannerContext, Collections.<String, Object> emptyMap());
+        scannerPlugin.configure(scannerContext, Collections.<String, Object>emptyMap());
         scannerPlugin.scan(fileResource, "/jee6/WEB-INF/web.xml", WebApplicationScope.WAR, scanner);
 
-        verify(store).addDescriptorType(fileDescriptor, WebXmlDescriptor.class);
-        verify(scanner).scan(Mockito.any(StreamSource.class), Mockito.eq("/jee6/WEB-INF/web.xml"), Mockito.eq(WebApplicationScope.WAR));
+        verify(store).addDescriptorType(xmlFileDescriptor, WebXmlDescriptor.class);
         verify(webXmlDescriptor).setVersion("3.0");
         verify(webXmlDescriptor).setSessionConfig(sessionConfigDescriptor);
         verify(webXmlDescriptor.getContextParams()).add(contextParamDescriptor);

@@ -1,64 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+-->
+
 <xsd:schema xmlns="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://java.sun.com/xml/ns/javaee"
-            xmlns:javaee="http://java.sun.com/xml/ns/javaee"
+            targetNamespace="https://jakarta.ee/xml/ns/jakartaee"
+            xmlns:jakartaee="https://jakarta.ee/xml/ns/jakartaee"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
-            version="2.2">
+            version="3.0">
+
     <xsd:annotation>
         <xsd:documentation>
-
-            DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-
-            Copyright 2003-2009 Sun Microsystems, Inc. All rights reserved.
-
-            The contents of this file are subject to the terms of either the
-            GNU General Public License Version 2 only ("GPL") or the Common
-            Development and Distribution License("CDDL") (collectively, the
-            "License"). You may not use this file except in compliance with
-            the License. You can obtain a copy of the License at
-            https://glassfish.dev.java.net/public/CDDL+GPL.html or
-            glassfish/bootstrap/legal/LICENSE.txt. See the License for the
-            specific language governing permissions and limitations under the
-            License.
-
-            When distributing the software, include this License Header
-            Notice in each file and include the License file at
-            glassfish/bootstrap/legal/LICENSE.txt. Sun designates this
-            particular file as subject to the "Classpath" exception as
-            provided by Sun in the GPL Version 2 section of the License file
-            that accompanied this code. If applicable, add the following
-            below the License Header, with the fields enclosed by brackets []
-            replaced by your own identifying information:
-            "Portions Copyrighted [year] [name of copyright owner]"
-
-            Contributor(s):
-
-            If you wish your version of this file to be governed by only the
-            CDDL or only the GPL Version 2, indicate your decision by adding
-            "[Contributor] elects to include this software in this
-            distribution under the [CDDL or GPL Version 2] license." If you
-            don't indicate a single choice of license, a recipient has the
-            option to distribute your version of this file under either the
-            CDDL, the GPL Version 2 or to extend the choice of license to its
-            licensees as provided above. However, if you add GPL Version 2
-            code and therefore, elected the GPL Version 2 license, then the
-            option applies only if the new code is made subject to such
-            option by the copyright holder.
-
+            <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="license.inc" parse="text"/>
         </xsd:documentation>
     </xsd:annotation>
 
     <xsd:annotation>
         <xsd:documentation>
 
-            This is the XML Schema for the JSP 2.2 deployment descriptor
-            types. The JSP 2.2 schema contains all the special
+            This is the XML Schema for the JSP 3.0 deployment descriptor
+            types.  The JSP 3.0 schema contains all the special
             structures and datatypes that are necessary to use JSP files
             from a web application.
 
-            The contents of this schema is used by the web-common_3_0.xsd
+            The contents of this schema is used by the web-common_3_1.xsd
             file to define JSP specific content.
 
         </xsd:documentation>
@@ -66,24 +47,13 @@
 
     <xsd:annotation>
         <xsd:documentation>
-
-            The following conventions apply to all Java EE
-            deployment descriptor elements unless indicated otherwise.
-
-            - In elements that specify a pathname to a file within the
-            same JAR file, relative filenames (i.e., those not
-            starting with "/") are considered relative to the root of
-            the JAR file's namespace. Absolute filenames (i.e., those
-            starting with "/") also specify names in the root of the
-            JAR file's namespace. In general, relative names are
-            preferred. The exception is .war files where absolute
-            names are preferred for consistency with the Servlet API.
-
+            <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="common.inc" parse="text"/>
         </xsd:documentation>
     </xsd:annotation>
 
-    <xsd:include schemaLocation="javaee_6.xsd"/>
+    <!-- **************************************************** -->
 
+    <xsd:include schemaLocation="jakartaee_9.xsd"/>
 
     <!-- **************************************************** -->
 
@@ -97,20 +67,19 @@
 
             </xsd:documentation>
         </xsd:annotation>
+
         <xsd:sequence>
             <xsd:element name="taglib"
-                         type="javaee:taglibType"
+                         type="jakartaee:taglibType"
                          minOccurs="0"
                          maxOccurs="unbounded"/>
             <xsd:element name="jsp-property-group"
-                         type="javaee:jsp-property-groupType"
+                         type="jakartaee:jsp-property-groupType"
                          minOccurs="0"
                          maxOccurs="unbounded"/>
         </xsd:sequence>
-        <xsd:attribute name="id"
-                       type="xsd:ID"/>
+        <xsd:attribute name="id" type="xsd:ID"/>
     </xsd:complexType>
-
 
     <!-- **************************************************** -->
 
@@ -123,11 +92,11 @@
 
             </xsd:documentation>
         </xsd:annotation>
+
         <xsd:simpleContent>
-            <xsd:restriction base="javaee:pathType"/>
+            <xsd:restriction base="jakartaee:pathType"/>
         </xsd:simpleContent>
     </xsd:complexType>
-
 
     <!-- **************************************************** -->
 
@@ -137,7 +106,7 @@
 
                 The jsp-property-groupType is used to group a number of
                 files so they can be given global property information.
-                All files so described are deemed to be JSP files. The
+                All files so described are deemed to be JSP files.  The
                 following additional properties can be described:
 
                 - Control whether EL is ignored.
@@ -146,29 +115,30 @@
                 - Indicate that a resource is a JSP document (XML).
                 - Prelude and Coda automatic includes.
                 - Control whether the character sequence #{ is allowed
-                when used as a String literal.
-                - Control whether template text containing only
-                whitespaces must be removed from the response output.
-                - Indicate the default contentType information.
-                - Indicate the default buffering model for JspWriter
-                - Control whether error should be raised for the use of
-                undeclared namespaces in a JSP page.
+              when used as a String literal.
+            - Control whether template text containing only
+              whitespaces must be removed from the response output.
+	    - Indicate the default contentType information.
+	    - Indicate the default buffering model for JspWriter
+	    - Control whether error should be raised for the use of
+	      undeclared namespaces in a JSP page.
 
             </xsd:documentation>
         </xsd:annotation>
+
         <xsd:sequence>
-            <xsd:group ref="javaee:descriptionGroup"/>
+            <xsd:group ref="jakartaee:descriptionGroup"/>
             <xsd:element name="url-pattern"
-                         type="javaee:url-patternType"
+                         type="jakartaee:url-patternType"
                          maxOccurs="unbounded"/>
             <xsd:element name="el-ignored"
-                         type="javaee:true-falseType"
+                         type="jakartaee:true-falseType"
                          minOccurs="0">
                 <xsd:annotation>
                     <xsd:documentation>
 
                         Can be used to easily set the isELIgnored
-                        property of a group of JSP pages. By default, the
+                        property of a group of JSP pages.  By default, the
                         EL evaluation is enabled for Web Applications using
                         a Servlet 2.4 or greater web.xml, and disabled
                         otherwise.
@@ -177,17 +147,17 @@
                 </xsd:annotation>
             </xsd:element>
             <xsd:element name="page-encoding"
-                         type="javaee:string"
+                         type="jakartaee:string"
                          minOccurs="0">
                 <xsd:annotation>
                     <xsd:documentation>
 
                         The valid values of page-encoding are those of the
-                        pageEncoding page directive. It is a
+                        pageEncoding page directive.  It is a
                         translation-time error to name different encodings
                         in the pageEncoding attribute of the page directive
                         of a JSP page and in a JSP configuration element
-                        matching the page. It is also a translation-time
+                        matching the page.  It is also a translation-time
                         error to name different encodings in the prolog
                         or text declaration of a document in XML syntax and
                         in a JSP configuration element matching the document.
@@ -198,20 +168,20 @@
                 </xsd:annotation>
             </xsd:element>
             <xsd:element name="scripting-invalid"
-                         type="javaee:true-falseType"
+                         type="jakartaee:true-falseType"
                          minOccurs="0">
                 <xsd:annotation>
                     <xsd:documentation>
 
                         Can be used to easily disable scripting in a
-                        group of JSP pages. By default, scripting is
+                        group of JSP pages.  By default, scripting is
                         enabled.
 
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
             <xsd:element name="is-xml"
-                         type="javaee:true-falseType"
+                         type="jakartaee:true-falseType"
                          minOccurs="0">
                 <xsd:annotation>
                     <xsd:documentation>
@@ -227,7 +197,7 @@
                 </xsd:annotation>
             </xsd:element>
             <xsd:element name="include-prelude"
-                         type="javaee:pathType"
+                         type="jakartaee:pathType"
                          minOccurs="0"
                          maxOccurs="unbounded">
                 <xsd:annotation>
@@ -235,7 +205,7 @@
 
                         The include-prelude element is a context-relative
                         path that must correspond to an element in the
-                        Web Application. When the element is present,
+                        Web Application.  When the element is present,
                         the given path will be automatically included (as
                         in an include directive) at the beginning of each
                         JSP page in this jsp-property-group.
@@ -244,7 +214,7 @@
                 </xsd:annotation>
             </xsd:element>
             <xsd:element name="include-coda"
-                         type="javaee:pathType"
+                         type="jakartaee:pathType"
                          minOccurs="0"
                          maxOccurs="unbounded">
                 <xsd:annotation>
@@ -252,7 +222,7 @@
 
                         The include-coda element is a context-relative
                         path that must correspond to an element in the
-                        Web Application. When the element is present,
+                        Web Application.  When the element is present,
                         the given path will be automatically included (as
                         in an include directive) at the end of each
                         JSP page in this jsp-property-group.
@@ -261,22 +231,22 @@
                 </xsd:annotation>
             </xsd:element>
             <xsd:element name="deferred-syntax-allowed-as-literal"
-                         type="javaee:true-falseType"
+                         type="jakartaee:true-falseType"
                          minOccurs="0">
                 <xsd:annotation>
                     <xsd:documentation>
 
                         The character sequence #{ is reserved for EL expressions.
-                        Consequently, a translation error occurs if the #{
-                        character sequence is used as a String literal, unless
-                        this element is enabled (true). Disabled (false) by
-                        default.
+             Consequently, a translation error occurs if the #{
+             character sequence is used as a String literal, unless
+             this element is enabled (true). Disabled (false) by
+             default.
 
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
             <xsd:element name="trim-directive-whitespaces"
-                         type="javaee:true-falseType"
+                         type="jakartaee:true-falseType"
                          minOccurs="0">
                 <xsd:annotation>
                     <xsd:documentation>
@@ -290,13 +260,13 @@
                 </xsd:annotation>
             </xsd:element>
             <xsd:element name="default-content-type"
-                         type="javaee:string"
+                         type="jakartaee:string"
                          minOccurs="0">
                 <xsd:annotation>
                     <xsd:documentation>
 
                         The valid values of default-content-type are those of the
-                        contentType page directive. It specifies the default
+                        contentType page directive.  It specifies the default
                         response contentType if the page directive does not include
                         a contentType attribute.
 
@@ -304,13 +274,13 @@
                 </xsd:annotation>
             </xsd:element>
             <xsd:element name="buffer"
-                         type="javaee:string"
+                         type="jakartaee:string"
                          minOccurs="0">
                 <xsd:annotation>
                     <xsd:documentation>
 
                         The valid values of buffer are those of the
-                        buffer page directive. It specifies if buffering should be
+                        buffer page directive.  It specifies if buffering should be
                         used for the output to response, and if so, the size of the
                         buffer to use.
 
@@ -318,25 +288,23 @@
                 </xsd:annotation>
             </xsd:element>
             <xsd:element name="error-on-undeclared-namespace"
-                         type="javaee:true-falseType"
+                         type="jakartaee:true-falseType"
                          minOccurs="0">
                 <xsd:annotation>
                     <xsd:documentation>
 
                         The default behavior when a tag with unknown namespace is used
-                        in a JSP page (regular syntax) is to silently ignore it. If
+                        in a JSP page (regular syntax) is to silently ignore it.  If
                         set to true, then an error must be raised during the translation
-                        time when an undeclared tag is used in a JSP page. Disabled
+                        time when an undeclared tag is used in a JSP page.  Disabled
                         (false) by default.
 
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
         </xsd:sequence>
-        <xsd:attribute name="id"
-                       type="xsd:ID"/>
+        <xsd:attribute name="id" type="xsd:ID"/>
     </xsd:complexType>
-
 
     <!-- **************************************************** -->
 
@@ -346,20 +314,21 @@
 
                 The taglibType defines the syntax for declaring in
                 the deployment descriptor that a tag library is
-                available to the application. This can be done
+                available to the application.  This can be done
                 to override implicit map entries from TLD files and
                 from the container.
 
             </xsd:documentation>
         </xsd:annotation>
+
         <xsd:sequence>
             <xsd:element name="taglib-uri"
-                         type="javaee:string">
+                         type="jakartaee:string">
                 <xsd:annotation>
                     <xsd:documentation>
 
                         A taglib-uri element describes a URI identifying a
-                        tag library used in the web application. The body
+                        tag library used in the web application.  The body
                         of the taglib-uri element may be either an
                         absolute URI specification, or a relative URI.
                         There should be no entries in web.xml with the
@@ -368,8 +337,9 @@
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
+
             <xsd:element name="taglib-location"
-                         type="javaee:pathType">
+                         type="jakartaee:pathType">
                 <xsd:annotation>
                     <xsd:documentation>
 
@@ -381,9 +351,9 @@
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
+
         </xsd:sequence>
-        <xsd:attribute name="id"
-                       type="xsd:ID"/>
+        <xsd:attribute name="id" type="xsd:ID"/>
     </xsd:complexType>
 
 </xsd:schema>

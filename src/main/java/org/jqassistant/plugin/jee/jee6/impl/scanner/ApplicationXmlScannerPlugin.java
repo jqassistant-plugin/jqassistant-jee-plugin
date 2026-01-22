@@ -5,15 +5,16 @@ import java.io.InputStream;
 import java.lang.String;
 
 import com.buschmais.jqassistant.core.scanner.api.Scanner;
+import com.buschmais.jqassistant.core.scanner.api.ScannerContext;
 import com.buschmais.jqassistant.core.scanner.api.ScannerPlugin.Requires;
 import com.buschmais.jqassistant.core.scanner.api.Scope;
 import com.buschmais.jqassistant.core.shared.xml.JAXBHelper;
 import com.buschmais.jqassistant.core.store.api.Store;
-import com.buschmais.jqassistant.plugin.common.api.model.FileDescriptor;
+import com.buschmais.jqassistant.plugin.common.api.scanner.AbstractScannerPlugin;
 import com.buschmais.jqassistant.plugin.common.api.scanner.filesystem.FileResource;
-import com.buschmais.jqassistant.plugin.xml.api.scanner.AbstractXmlFileScannerPlugin;
+import com.buschmais.jqassistant.plugin.xml.api.model.XmlFileDescriptor;
 
-import com.sun.java.xml.ns.javaee.*;
+import https.jakarta_ee.xml.ns.jakartaee.*;
 import org.jqassistant.plugin.jee.jee6.api.model.*;
 import org.jqassistant.plugin.jee.jee6.api.scanner.EnterpriseApplicationScope;
 
@@ -21,28 +22,32 @@ import org.jqassistant.plugin.jee.jee6.api.scanner.EnterpriseApplicationScope;
  * Scanner plugin for the content of application XML descriptors (i.e.
  * `APP-INF/application.xml`)
  */
-@Requires(FileDescriptor.class)
-public class ApplicationXmlScannerPlugin extends AbstractXmlFileScannerPlugin<ApplicationXmlDescriptor> {
+@Requires(XmlFileDescriptor.class)
+public class ApplicationXmlScannerPlugin extends AbstractScannerPlugin<FileResource, ApplicationXmlDescriptor> {
+
+    private static final String TARGET_NAMESPACE = "https://jakarta.ee/xml/ns/jakartaee";
 
     private JAXBHelper<ApplicationType> unmarshaller;
 
     @Override
     public void initialize() {
-        unmarshaller = new JAXBHelper<>(ApplicationType.class);
+        unmarshaller = new JAXBHelper<>(ApplicationType.class, TARGET_NAMESPACE);
     }
 
     @Override
-    public boolean accepts(FileResource item, String path, Scope scope) throws IOException {
+    public boolean accepts(FileResource item, String path, Scope scope) {
         return EnterpriseApplicationScope.EAR.equals(scope) && "/META-INF/application.xml".equals(path);
     }
 
     @Override
-    public ApplicationXmlDescriptor scan(FileResource item, ApplicationXmlDescriptor applicationXmlDescriptor, String path, Scope scope, Scanner scanner)
-            throws IOException {
+    public ApplicationXmlDescriptor scan(FileResource item, String path, Scope scope, Scanner scanner) throws IOException {
         ApplicationType applicationType = getApplicationType(item);
-        Store store = scanner.getContext()
-                .getStore();
-        com.sun.java.xml.ns.javaee.String applicationName = applicationType.getApplicationName();
+        ScannerContext context = scanner.getContext();
+        Store store = context.getStore();
+        XmlFileDescriptor xmlFileDescriptor = context.getCurrentDescriptor();
+        ApplicationXmlDescriptor applicationXmlDescriptor = context.getStore()
+                .addDescriptorType(xmlFileDescriptor, ApplicationXmlDescriptor.class);
+        https.jakarta_ee.xml.ns.jakartaee.String applicationName = applicationType.getApplicationName();
         if (applicationName != null) {
             applicationXmlDescriptor.setName(applicationName.getValue());
         }

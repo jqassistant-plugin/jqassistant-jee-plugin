@@ -2,8 +2,6 @@ package org.jqassistant.plugin.jee.jee6.api.model;
 
 import com.buschmais.xo.neo4j.api.annotation.Label;
 
-import com.sun.java.xml.ns.javaee.String;
-
 @Label("MultipartConfig")
 public interface MultipartConfigDescriptor extends WebDescriptor {
 

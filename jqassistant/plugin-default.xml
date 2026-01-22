@@ -13,8 +13,7 @@
                     (p:Package)-[:CONTAINS*]->(t:Type)
                 WHERE
                     p.fqn IN [
-                        "org.jcp.xmlns.xml.ns.javaee",
-                        "com.sun.java.xml.ns.javaee",
+                        "https.jakarta_ee.xml.ns.jakartaee",
                         "https.jakarta_ee.xml.ns.persistence"
                     ]
                 SET

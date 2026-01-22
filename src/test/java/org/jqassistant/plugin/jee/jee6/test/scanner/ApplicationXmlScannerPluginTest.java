@@ -7,41 +7,30 @@ import java.util.List;
 
 import javax.xml.transform.stream.StreamSource;
 
-import com.buschmais.jqassistant.plugin.common.api.model.FileDescriptor;
 import com.buschmais.jqassistant.plugin.common.api.scanner.filesystem.FileResource;
+import com.buschmais.jqassistant.plugin.xml.api.model.XmlFileDescriptor;
 
-import org.jqassistant.plugin.jee.jee6.api.model.ApplicationXmlDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.ClientModuleDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.ConnectorModuleDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.DescriptionDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.DisplayNameDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.EjbModuleDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.IconDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.RoleNameDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.SecurityRoleDescriptor;
-import org.jqassistant.plugin.jee.jee6.api.model.WebModuleDescriptor;
+import org.jqassistant.plugin.jee.jee6.api.model.*;
 import org.jqassistant.plugin.jee.jee6.api.scanner.EnterpriseApplicationScope;
 import org.jqassistant.plugin.jee.jee6.impl.scanner.ApplicationXmlScannerPlugin;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 class ApplicationXmlScannerPluginTest extends AbstractXmlScannerTest {
 
     @Mock
-    private FileDescriptor fileDescriptor;
+    private XmlFileDescriptor xmlFileDescriptor;
 
     @Mock
     private ApplicationXmlDescriptor applicationXmlDescriptor;
@@ -79,17 +68,13 @@ class ApplicationXmlScannerPluginTest extends AbstractXmlScannerTest {
     @Test
     void applicationXml() throws IOException {
         FileResource fileResource = mock(FileResource.class);
-        when(fileResource.createStream()).thenAnswer(new Answer<InputStream>() {
-            @Override
-            public InputStream answer(InvocationOnMock invocation) throws Throwable {
-                return ApplicationXmlScannerPluginTest.class.getResourceAsStream("/jee6/META-INF/application.xml");
-            }
-        });
+        when(fileResource.createStream()).thenAnswer(
+                (Answer<InputStream>) invocation -> ApplicationXmlScannerPluginTest.class.getResourceAsStream("/jee6/META-INF/application.xml"));
 
-        when(scannerContext.getCurrentDescriptor()).thenReturn(fileDescriptor);
-        when(store.addDescriptorType(fileDescriptor, ApplicationXmlDescriptor.class)).thenReturn(applicationXmlDescriptor);
-        when(scanner.scan(Mockito.any(StreamSource.class), Mockito.eq("/jee6/META-INF/application.xml"), Mockito.eq(EnterpriseApplicationScope.EAR)))
-                .thenReturn(applicationXmlDescriptor);
+        when(scannerContext.getCurrentDescriptor()).thenReturn(xmlFileDescriptor);
+        when(store.addDescriptorType(xmlFileDescriptor, ApplicationXmlDescriptor.class)).thenReturn(applicationXmlDescriptor);
+        when(scanner.scan(any(StreamSource.class), eq("/jee6/META-INF/application.xml"), eq(EnterpriseApplicationScope.EAR))).thenReturn(
+                applicationXmlDescriptor);
         when(applicationXmlDescriptor.isXmlWellFormed()).thenReturn(true);
         when(applicationXmlDescriptor.getDescriptions()).thenReturn(mock(List.class));
         when(applicationXmlDescriptor.getDisplayNames()).thenReturn(mock(List.class));
@@ -113,11 +98,10 @@ class ApplicationXmlScannerPluginTest extends AbstractXmlScannerTest {
 
         ApplicationXmlScannerPlugin scannerPlugin = new ApplicationXmlScannerPlugin();
         scannerPlugin.initialize();
-        scannerPlugin.configure(scannerContext, Collections.<String, Object> emptyMap());
+        scannerPlugin.configure(scannerContext, Collections.<String, Object>emptyMap());
         scannerPlugin.scan(fileResource, "/jee6/META-INF/application.xml", EnterpriseApplicationScope.EAR, scanner);
 
-        verify(store).addDescriptorType(fileDescriptor, ApplicationXmlDescriptor.class);
-        verify(scanner).scan(Mockito.any(StreamSource.class), Mockito.eq("/jee6/META-INF/application.xml"), Mockito.eq(EnterpriseApplicationScope.EAR));
+        verify(store).addDescriptorType(xmlFileDescriptor, ApplicationXmlDescriptor.class);
         verify(applicationXmlDescriptor).setVersion("6");
         verify(applicationXmlDescriptor).setName("TestApplication");
         verify(applicationXmlDescriptor).setInitializeInOrder("true");
