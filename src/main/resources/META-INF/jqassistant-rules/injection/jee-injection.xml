@@ -256,6 +256,7 @@
         <description>
             Field injection must be avoided. Constructor injection should be used instead. Field injection may only be used to provide beans for producers to enable constructor injection.
         </description>
+        <!-- Field injections targets must be field producers themselves or read by a method producer. Consistently with jee-injection:InjectablesMustNotBeInstantiated, the depth of the according call tree is limited to 1. -->
         <cypher><![CDATA[
             MATCH
               (artifact:Artifact)-[:CONTAINS]->(type:Type)-[:DECLARES]->(field:Field:InjectionPoint:JEE)-[:OF_TYPE]->(bean:Java:Type)
