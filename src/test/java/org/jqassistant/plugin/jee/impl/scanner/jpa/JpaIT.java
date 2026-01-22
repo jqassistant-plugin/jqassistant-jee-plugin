@@ -126,7 +126,7 @@ class JpaIT extends AbstractJavaPluginIT {
     @MethodSource("classesWithPersistenceContextAndEntityManager")
     void persistenceContext(Class<?> typeWithPersistenceContext, Class<?> entityManager) throws Exception {
         scanClasses(typeWithPersistenceContext);
-        assertThat(applyConcept("jpa:PersistenceContext").getStatus(), equalTo(SUCCESS));
+        assertThat(applyConcept("jpa:PersistenceContextField").getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         List<Object> members = query("MATCH (e:JPA:PersistenceContext:InjectionPoint:JEE) RETURN e").getColumn("e");
         assertThat(members, hasItem(fieldDescriptor(typeWithPersistenceContext, "entityManager")));

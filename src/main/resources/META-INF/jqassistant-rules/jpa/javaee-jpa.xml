@@ -66,8 +66,8 @@
         ]]></cypher>
     </concept>
 
-    <concept id="javaee-jpa:PersistenceContext">
-        <providesConcept refId="jpa:PersistenceContext"/>
+    <concept id="javaee-jpa:PersistenceContextField">
+        <providesConcept refId="jpa:PersistenceContextField"/>
         <providesConcept refId="jee-injection:Injectable"/>
         <providesConcept refId="jee-injection:InjectionPoint"/>
         <description>Labels all fields annotated with @javax.persistence.PersistenceContext with "JPA", "PersistenceContext", "JEE" and "InjectionPoint". The according type is labeled with "JEE" and "Injectable".</description>

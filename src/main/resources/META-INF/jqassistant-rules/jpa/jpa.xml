@@ -42,7 +42,7 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jpa:PersistenceContext">
+    <concept id="jpa:PersistenceContextField">
         <description>Abstract concept that returns all fields labeled with "JPA" and "PersistenceContext".</description>
         <cypher><![CDATA[
             MATCH
