@@ -20,10 +20,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import static com.buschmais.jqassistant.plugin.java.test.matcher.TypeDescriptorMatcher.typeDescriptor;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItems;
+import static com.buschmais.jqassistant.plugin.java.test.assertj.TypeDescriptorCondition.typeDescriptor;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
 /**
@@ -41,14 +39,18 @@ class BeansXmlScannerPluginIT extends AbstractJavaPluginIT {
         scanClassPathDirectory(new File(getClassesDirectory(BeansXmlScannerPluginIT.class), resourceRoot)); // for XML documents
         store.beginTransaction();
         List<Object> column = query("MATCH (beans:CDI:Beans:Xml:File) RETURN beans").getColumn("beans");
-        assertThat(column.size(), equalTo(1));
+        assertThat(column.size()).isEqualTo(1);
         BeansXmlDescriptor beansXmlDescriptor = (BeansXmlDescriptor) column.get(0);
-        assertThat(beansXmlDescriptor.getFileName(), equalTo("/META-INF/beans.xml"));
-        assertThat(beansXmlDescriptor.getVersion(), equalTo(expectedVersion));
-        assertThat(beansXmlDescriptor.getBeanDiscoveryMode(), equalTo("annotated"));
-        assertThat(beansXmlDescriptor.getAlternatives(), hasItems(typeDescriptor(expectedAlternativeBean), typeDescriptor(expectedAlternativeStereotype)));
-        assertThat(beansXmlDescriptor.getDecorators(), hasItems(typeDescriptor(expectedDecorator)));
-        assertThat(beansXmlDescriptor.getInterceptors(), hasItems(typeDescriptor(expectedInterceptor)));
+        assertThat(beansXmlDescriptor.getFileName()).isEqualTo("/META-INF/beans.xml");
+        assertThat(beansXmlDescriptor.getVersion()).isEqualTo(expectedVersion);
+        assertThat(beansXmlDescriptor.getBeanDiscoveryMode()).isEqualTo("annotated");
+        assertThat(beansXmlDescriptor.getAlternatives()).hasSize(2)
+                .haveExactly(1, typeDescriptor(expectedAlternativeBean))
+                .haveExactly(1, typeDescriptor(expectedAlternativeStereotype));
+        assertThat(beansXmlDescriptor.getDecorators()).hasSize(1)
+                .haveExactly(1, typeDescriptor(expectedDecorator));
+        assertThat(beansXmlDescriptor.getInterceptors()).hasSize(1)
+                .haveExactly(1, typeDescriptor(expectedInterceptor));
         store.commitTransaction();
     }
 
@@ -67,10 +69,10 @@ class BeansXmlScannerPluginIT extends AbstractJavaPluginIT {
         scanClassPathDirectory(new File(getClassesDirectory(BeansXmlScannerPluginIT.class), "cdi/empty"));
         store.beginTransaction();
         List<Object> column = query("MATCH (beans:CDI:Beans:Xml:File) RETURN beans").getColumn("beans");
-        assertThat(column.size(), equalTo(1));
+        assertThat(column.size()).isEqualTo(1);
         BeansXmlDescriptor beansXmlDescriptor = (BeansXmlDescriptor) column.get(0);
-        assertThat(beansXmlDescriptor.getFileName(), equalTo("/META-INF/beans.xml"));
-        assertThat(beansXmlDescriptor.isXmlWellFormed(), equalTo(true));
+        assertThat(beansXmlDescriptor.getFileName()).isEqualTo("/META-INF/beans.xml");
+        assertThat(beansXmlDescriptor.isXmlWellFormed()).isTrue();
         store.commitTransaction();
     }
 
@@ -82,10 +84,10 @@ class BeansXmlScannerPluginIT extends AbstractJavaPluginIT {
         scanClassPathDirectory(new File(getClassesDirectory(BeansXmlScannerPluginIT.class), "cdi/invalid"));
         store.beginTransaction();
         List<Object> column = query("MATCH (beans:CDI:Beans:Xml:File) RETURN beans").getColumn("beans");
-        assertThat(column.size(), equalTo(1));
+        assertThat(column.size()).isEqualTo(1);
         BeansXmlDescriptor beansXmlDescriptor = (BeansXmlDescriptor) column.get(0);
-        assertThat(beansXmlDescriptor.getFileName(), equalTo("/META-INF/beans.xml"));
-        assertThat(beansXmlDescriptor.isXmlWellFormed(), equalTo(false));
+        assertThat(beansXmlDescriptor.getFileName()).isEqualTo("/META-INF/beans.xml");
+        assertThat(beansXmlDescriptor.isXmlWellFormed()).isEqualTo(false);
         store.commitTransaction();
     }
 }
