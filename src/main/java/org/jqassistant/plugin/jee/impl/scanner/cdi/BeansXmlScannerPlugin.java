@@ -18,7 +18,10 @@ import com.buschmais.jqassistant.plugin.java.api.scanner.JavaScope;
 import com.buschmais.jqassistant.plugin.java.api.scanner.TypeResolver;
 import com.buschmais.jqassistant.plugin.xml.api.model.XmlFileDescriptor;
 
+import https.jakarta_ee.xml.ns.jakartaee.Alternatives;
 import https.jakarta_ee.xml.ns.jakartaee.Beans;
+import https.jakarta_ee.xml.ns.jakartaee.Decorators;
+import https.jakarta_ee.xml.ns.jakartaee.Interceptors;
 import org.jqassistant.plugin.jee.api.model.cdi.BeansXmlDescriptor;
 
 @Requires(XmlFileDescriptor.class)
@@ -47,26 +50,39 @@ public class BeansXmlScannerPlugin extends AbstractScannerPlugin<FileResource, B
         Beans beans = unmarshal(item);
         beansXmlDescriptor.setVersion(beans.getVersion());
         beansXmlDescriptor.setBeanDiscoveryMode(beans.getBeanDiscoveryMode());
-        addTypes(beans.getInterceptors()
-                .getClazz(), beansXmlDescriptor.getInterceptors(), context);
-        addTypes(beans.getDecorators()
-                .getClazz(), beansXmlDescriptor.getDecorators(), context);
-        List<JAXBElement<String>> clazzOrStereotype = beans.getAlternatives()
-                .getClazzOrStereotype();
-        for (JAXBElement<String> element : clazzOrStereotype) {
-            TypeDescriptor alternative = scanner.getContext()
-                    .peek(TypeResolver.class)
-                    .resolve(element.getValue(), context)
-                    .getTypeDescriptor();
-            beansXmlDescriptor.getAlternatives()
-                    .add(alternative);
-        }
+        addInterceptors(beans.getInterceptors(), beansXmlDescriptor, context);
+        addDecorators(beans.getDecorators(), beansXmlDescriptor, context);
+        addAlternatives(beans.getAlternatives(), beansXmlDescriptor, context);
         return beansXmlDescriptor;
     }
 
     private Beans unmarshal(FileResource item) throws IOException {
         try (InputStream inputStream = item.createStream()) {
             return unmarshaller.unmarshal(inputStream);
+        }
+    }
+
+    private void addInterceptors(Interceptors interceptors, BeansXmlDescriptor beansXmlDescriptor, ScannerContext context) {
+        if (interceptors != null) {
+            addTypes(interceptors.getClazz(), beansXmlDescriptor.getInterceptors(), context);
+        }
+    }
+
+    private void addDecorators(Decorators decorators, BeansXmlDescriptor beansXmlDescriptor, ScannerContext context) {
+        if (decorators != null) {
+            addTypes(decorators.getClazz(), beansXmlDescriptor.getDecorators(), context);
+        }
+    }
+
+    private static void addAlternatives(Alternatives alternatives, BeansXmlDescriptor beansXmlDescriptor, ScannerContext context) {
+        if (alternatives != null) {
+            for (JAXBElement<String> element : alternatives.getClazzOrStereotype()) {
+                TypeDescriptor alternative = context.peek(TypeResolver.class)
+                        .resolve(element.getValue(), context)
+                        .getTypeDescriptor();
+                beansXmlDescriptor.getAlternatives()
+                        .add(alternative);
+            }
         }
     }
 
