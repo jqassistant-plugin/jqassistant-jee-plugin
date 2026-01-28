@@ -24,8 +24,6 @@ import org.jqassistant.plugin.jee.impl.scanner.jpa.set.entity.jakarta.JakartaSin
 import org.jqassistant.plugin.jee.impl.scanner.jpa.set.entity.javax.JavaxJpaEmbeddable;
 import org.jqassistant.plugin.jee.impl.scanner.jpa.set.entity.javax.JavaxJpaEntity;
 import org.jqassistant.plugin.jee.impl.scanner.jpa.set.entity.javax.JavaxSingleNamedQueryEntity;
-import org.jqassistant.plugin.jee.jpa.test.set.persistencecontext.jakarta.JakartaTypeWithPersistenceContext;
-import org.jqassistant.plugin.jee.jpa.test.set.persistencecontext.javax.JavaxTypeWithPersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -46,7 +44,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 
 /**
- * Tests for the JPA concepts.
+ * Tests for the JPA-related scanner plugins.
  */
 class JpaIT extends AbstractJavaPluginIT {
 
@@ -120,25 +118,6 @@ class JpaIT extends AbstractJavaPluginIT {
         assertThat(members, hasItem(fieldDescriptor(classToScan, "id")));
         assertThat(members, hasItem(methodDescriptor(classToScan, "getId")));
         store.commitTransaction();
-    }
-
-    @ParameterizedTest
-    @MethodSource("classesWithPersistenceContextAndEntityManager")
-    void persistenceContext(Class<?> typeWithPersistenceContext, Class<?> entityManager) throws Exception {
-        scanClasses(typeWithPersistenceContext);
-        assertThat(applyConcept("jpa:PersistenceContextField").getStatus(), equalTo(SUCCESS));
-        store.beginTransaction();
-        List<Object> members = query("MATCH (e:JPA:PersistenceContext:InjectionPoint:JEE) RETURN e").getColumn("e");
-        assertThat(members, hasItem(fieldDescriptor(typeWithPersistenceContext, "entityManager")));
-        List<Object> injectables = query("MATCH (e:Type:Injectable) RETURN e").getColumn("e");
-        assertThat(injectables, hasItem(typeDescriptor(entityManager)));
-        store.commitTransaction();
-    }
-
-    private static Stream<Arguments> classesWithPersistenceContextAndEntityManager() {
-        return Stream.of(
-                Arguments.of(JavaxTypeWithPersistenceContext.class, javax.persistence.EntityManager.class),
-                Arguments.of(JakartaTypeWithPersistenceContext.class, jakarta.persistence.EntityManager.class));
     }
 
     private static Stream<Arguments> entityClasses() {
