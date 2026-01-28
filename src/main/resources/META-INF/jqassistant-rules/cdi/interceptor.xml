@@ -24,4 +24,19 @@
         ]]></cypher>
     </concept>
 
+    <concept id="interceptor:ActivatedInterceptor">
+        <providesConcept refId="jee-injection:Injectable"/>
+        <requiresConcept refId="interceptor:Interceptor"/>
+        <description>Adds the labels "Injectable" and "CDI" to all JEE interceptors that are activated by a CDI beans file.
+        </description>
+        <cypher><![CDATA[
+            MATCH
+              (:CDI:Beans:File)-[:HAS_INTERCEPTOR]->(interceptor:Type:Class:Interceptor:JEE)
+            SET
+              interceptor:CDI:Injectable
+            RETURN
+              interceptor AS Interceptor
+        ]]></cypher>
+    </concept>
+
 </jqassistant-rules>
