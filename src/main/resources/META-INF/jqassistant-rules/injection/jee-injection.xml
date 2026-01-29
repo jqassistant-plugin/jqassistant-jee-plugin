@@ -14,7 +14,6 @@
         <includeConstraint refId="jee-injection:InjectablesMustNotBeInstantiated" severity="critical"/>
         <includeConstraint refId="jee-injection:InjectablesMustOnlyBeHeldInInjectables" severity="critical"/>
         <includeConstraint refId="jee-injection:JdkClassesMustNotBeInjectables" severity="critical"/>
-        <includeConstraint refId="jee-injection:InjectableNotApplicableForCdiOrEjbInjection" severity="critical"/>
     </group>
 
     <concept id="jee-injection:Injectable">
@@ -273,6 +272,7 @@
         <report primaryColumn="Field"/>
     </constraint>
 
+    <!-- Prototype implementation, see https://github.com/jqassistant-plugin/jqassistant-jee-plugin/issues/80 -->
     <constraint id="jee-injection:InjectableNotApplicableForCdiOrEjbInjection">
         <requiresConcept refId="jee-injection:Injectable"/>
         <requiresConcept refId="java:GeneratedType"/>
@@ -289,7 +289,7 @@
               OR type:EJB
             )
             RETURN
-              type as Type
+             DISTINCT type as Type
         ]]></cypher>
         <report primaryColumn="Type"/>
     </constraint>
