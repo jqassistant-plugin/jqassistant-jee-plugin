@@ -85,6 +85,9 @@
         <resource>jsf/jsf.xml</resource>
         <resource>jsf/jakartaee-jsf.xml</resource>
         <resource>jsf/javaee-jsf.xml</resource>
+        <resource>resource/jee-resource.xml</resource>
+        <resource>resource/jakartaee-resource.xml</resource>
+        <resource>resource/javaee-resource.xml</resource>
         <resource>transaction/jee-transaction.xml</resource>
         <resource>transaction/jakartaee-transaction.xml</resource>
         <resource>transaction/javaee-transaction.xml</resource>

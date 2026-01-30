@@ -17,8 +17,8 @@
               (member:Field or member:Method)
               and producesType.fqn="javax.enterprise.inject.Produces"
             SET
-              type:JEE:Injectable,
-              member:JEE:BeanProducer
+              type:JEE:CDI:Injectable,
+              member:JEE:CDI:BeanProducer
             MERGE
               (member)-[:PRODUCES]->(type)
             RETURN
@@ -195,7 +195,7 @@
             WHERE
               a.fqn = "javax.inject.Singleton"
             SET
-              t:JEE:CDI:SingletonScoped:JEE:Injectable
+              t:JEE:CDI:SingletonScoped:Injectable
             RETURN
               t AS cdiSingleton
         ]]></cypher>
@@ -303,7 +303,6 @@
 
     <concept id="javaee-cdi:EventConsumer">
         <providesConcept refId="cdi:EventConsumer"/>
-        <requiresConcept refId="jee-injection:InjectionPoint"/>
         <description>Labels all beans declaring method that has parameter of type "javax.enterprise.event.Observes" with "JEE", "CDI" and "EventConsumer".
         </description>
         <cypher><![CDATA[

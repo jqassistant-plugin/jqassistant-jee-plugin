@@ -17,20 +17,34 @@ import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jqassistant.plugin.jee.injection.test.set.jakarta.persistence.*;
 import org.jqassistant.plugin.jee.injection.test.set.javax.JavaxApplicationResource;
 import org.jqassistant.plugin.jee.injection.test.set.jakarta.*;
 import org.jqassistant.plugin.jee.injection.test.set.javax.*;
+
+import org.jqassistant.plugin.jee.injection.test.set.javax.persistence.*;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static com.buschmais.jqassistant.core.report.api.model.Result.Status.SUCCESS;
+import static com.buschmais.jqassistant.core.report.api.model.Result.Status.*;
 import static com.buschmais.jqassistant.plugin.java.test.assertj.FieldDescriptorCondition.fieldDescriptor;
 import static com.buschmais.jqassistant.plugin.java.test.assertj.TypeDescriptorCondition.typeDescriptor;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.InstanceOfAssertFactories.type;
 
 public class InjectionIT extends AbstractJavaPluginIT {
+
+    private static final Class<?>[] persistenceContextTestSet = new Class[] {
+            JavaxTypeWithFieldInjectedPersistenceContext.class, JavaxEntityManagerWithoutProducer.class,
+            JavaxTypeWithConstructorInjectedPersistenceContexts.class, JavaxPersistenceConfiguration.class,
+            JavaxEntityManagerWithFieldProducer.class, JavaxEntityManagerWithMethodProducer.class,
+            JakartaTypeWithFieldInjectedPersistenceContext.class, JakartaEntityManagerWithoutProducer.class,
+            JakartaTypeWithConstructorInjectedPersistenceContexts.class, JakartaPersistenceConfiguration.class,
+            JakartaEntityManagerWithFieldProducer.class, JakartaEntityManagerWithMethodProducer.class
+    };
 
     /**
      * Verifies the concept "jee-injection:InjectionPoint".
@@ -371,6 +385,107 @@ public class InjectionIT extends AbstractJavaPluginIT {
         List<Row> violations = result.getRows();
         assertThat(violations).hasSize(0);
 
+        store.commitTransaction();
+    }
+
+    /**
+     * Verifies the constraint "jee-injection:BeansMustNotUseFieldInjection" results in violations for
+     * field injection out of configuration classes using @PersistenceContext.
+     */
+    @Test
+    void beansMustNotUseFieldInjectionForPersistenceContext() throws Exception {
+        scanClasses(persistenceContextTestSet);
+        String ruleName = "jee-injection:BeansMustNotUseFieldInjection";
+        assertThat(validateConstraint(ruleName).getStatus()).isEqualTo(FAILURE);
+        store.beginTransaction();
+
+        final List<Result<Constraint>> constraintViolations = new ArrayList<>(reportPlugin.getConstraintResults().values());
+        assertThat(constraintViolations).hasSize(1);
+        final Result<Constraint> result = constraintViolations.get(0);
+        assertThat(result.getRule().getId()).isEqualTo(ruleName);
+        final List<Row> violations = result.getRows();
+        assertThat(violations).hasSize(2);
+        final Map<TypeDescriptor, FieldDescriptor> properties = violations.stream()
+                .map(Row::getColumns)
+                .collect(Collectors.toMap(row -> (TypeDescriptor) row.get("Type").getValue(), row -> (FieldDescriptor) row.get("Field").getValue()));
+        assertThat(properties).hasEntrySatisfying(
+                typeDescriptor(JavaxTypeWithFieldInjectedPersistenceContext.class),
+                fieldDescriptor(JavaxTypeWithFieldInjectedPersistenceContext.class, "entityManagerWithoutProducer")
+        );
+        assertThat(properties).hasEntrySatisfying(
+                typeDescriptor(JakartaTypeWithFieldInjectedPersistenceContext.class),
+                fieldDescriptor(JakartaTypeWithFieldInjectedPersistenceContext.class, "entityManagerWithoutProducer")
+        );
+        store.commitTransaction();
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxResourceConfiguration.class, JakartaResourceConfiguration.class})
+    void beansMustNotUseFieldInjectionForResource(Class<?> configurationClass) throws Exception {
+        scanClasses(configurationClass); // Inner class is irrevelant for this test.
+        String ruleName = "jee-injection:BeansMustNotUseFieldInjection";
+        assertThat(validateConstraint(ruleName).getStatus()).isEqualTo(FAILURE);
+        store.beginTransaction();
+
+        final List<Result<Constraint>> constraintViolations = new ArrayList<>(reportPlugin.getConstraintResults().values());
+        assertThat(constraintViolations).hasSize(1);
+        final Result<Constraint> result = constraintViolations.get(0);
+        assertThat(result.getRule().getId()).isEqualTo(ruleName);
+        final List<Row> violations = result.getRows();
+        assertThat(violations).hasSize(1);
+        assertThat(violations.get(0).getColumns().get("Type").getValue()).asInstanceOf(type(TypeDescriptor.class))
+                .is(typeDescriptor(configurationClass));
+        assertThat(violations.get(0).getColumns().get("Field").getValue()).asInstanceOf(type(FieldDescriptor.class))
+                .is(fieldDescriptor(configurationClass, "someOtherResource"));
+        store.commitTransaction();
+    }
+
+    /**
+     * Verifies the constraint "jee-injection:InjectableNotApplicableForCdiOrEjbInjection" results in no violations when
+     * applied to bean types explicitly annotated with CDI- or EJB-specific annotations.
+     */
+    @ParameterizedTest
+    @ValueSource(classes = {JakartaApplicationResource.class, JakartaLocalEjb.class, JavaxApplicationResource.class, JavaxLocalEjb.class} )
+    void injectableNotApplicableForCdiOrEjbInjectionNoViolations(Class<?> injectable) throws Exception {
+        scanClasses(injectable);
+        String ruleName = "jee-injection:InjectableNotApplicableForCdiOrEjbInjection";
+        assertThat(validateConstraint(ruleName).getStatus()).isEqualTo(SUCCESS);
+        store.beginTransaction();
+
+        final List<Result<Constraint>> constraintViolations = new ArrayList<>(reportPlugin.getConstraintResults().values());
+        assertThat(constraintViolations).hasSize(1);
+        final Result<Constraint> result = constraintViolations.get(0);
+        assertThat(result.getRule().getId()).isEqualTo(ruleName);
+        final List<Row> violations = result.getRows();
+        assertThat(violations).hasSize(0);
+
+        store.commitTransaction();
+    }
+
+    /**
+     * Verifies the constraint "jee-injection:InjectableNotApplicableForCdiOrEjbInjection" results in violations for
+     * types of fields annotated by @PersistenceContext for which no bean producer exists.
+     */
+    @Test
+    void injectableNotApplicableForCdiOrEjbInjectionForPersistenceContext() throws Exception {
+        scanClasses(persistenceContextTestSet);
+        String ruleName = "jee-injection:InjectableNotApplicableForCdiOrEjbInjection";
+        assertThat(validateConstraint(ruleName).getStatus()).isEqualTo(FAILURE);
+        store.beginTransaction();
+
+        final List<Result<Constraint>> constraintViolations = new ArrayList<>(reportPlugin.getConstraintResults().values());
+        assertThat(constraintViolations).hasSize(1);
+        final Result<Constraint> result = constraintViolations.get(0);
+        assertThat(result.getRule().getId()).isEqualTo(ruleName);
+        final List<Row> violations = result.getRows();
+        assertThat(violations).hasSize(2);
+        final List<TypeDescriptor> types = violations.stream()
+                .map(Row::getColumns)
+                .map(row -> row.get("Type").getValue())
+                .map(TypeDescriptor.class::cast)
+                .collect(Collectors.toList());
+        assertThat(types).haveExactly(1, typeDescriptor(JavaxEntityManagerWithoutProducer.class));
+        assertThat(types).haveExactly(1, typeDescriptor(JakartaEntityManagerWithoutProducer.class));
         store.commitTransaction();
     }
 

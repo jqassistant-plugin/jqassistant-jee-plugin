@@ -44,7 +44,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 
 /**
- * Tests for the JPA concepts.
+ * Tests for the JPA-related scanner plugins.
  */
 class JpaIT extends AbstractJavaPluginIT {
 

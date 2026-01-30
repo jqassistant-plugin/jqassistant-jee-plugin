@@ -17,8 +17,8 @@
               (member:Field or member:Method)
               and producesType.fqn="jakarta.enterprise.inject.Produces"
             SET
-              type:JEE:Injectable,
-              member:JEE:BeanProducer
+              type:JEE:CDI:Injectable,
+              member:JEE:CDI:BeanProducer
             MERGE
               (member)-[:PRODUCES]->(type)
             RETURN
@@ -277,7 +277,7 @@
             WHERE
               decoratorType.fqn="jakarta.decorator.Decorator"
             SET
-              decorator:JEE:CDI:Decorator:JEE:Injectable
+              decorator:JEE:CDI:Decorator:Injectable
             RETURN
               decorator AS Decorator
         ]]></cypher>
@@ -303,7 +303,6 @@
 
     <concept id="jakartaee-cdi:EventConsumer">
         <providesConcept refId="cdi:EventConsumer"/>
-        <requiresConcept refId="jee-injection:InjectionPoint"/>
         <description>Labels all beans declaring method that has parameter of type "jakarta.enterprise.event.Observes" with "JEE", "CDI" and "EventConsumer".
         </description>
         <cypher><![CDATA[
