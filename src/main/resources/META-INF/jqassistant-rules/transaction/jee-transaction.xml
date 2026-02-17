@@ -15,20 +15,25 @@
         <cypher><![CDATA[
             MATCH
               (artifact:Artifact)-[:CONTAINS]->(callingType:Java:Type),
-              (callingType)-[:EXTENDS|IMPLEMENTS*0..]->(:Java:Type)-[:DECLARES]->(calledMethod:Method:JEE:Transactional),
-              (callingType)-[:DECLARES]->(callingMethod:Method)-[invokes:INVOKES]->(calledMethod)
-            WHERE NOT (
+              (callingType)<-[:DECLARES*0..]-(:Java:Type)-[:EXTENDS|IMPLEMENTS*0..]->(:Java:Type)-[:DECLARES]->(calledMethod:Method:JEE:Transactional),
+              (callingType)-[:DECLARES]->(callingMethod:Method),
+              path = (callingMethod)-[invokes:INVOKES*]->(calledMethod)
+            WHERE
+              // Violations are direct calls from callingMethod to calledMethods and those with synthetic methods in between
+              ALL(intermediateMethod IN nodes(path)[1..-1] WHERE (intermediateMethod.synthetic IS NOT NULL AND intermediateMethod.synthetic))
+            AND NOT (
               artifact:Test
               OR callingType:Generated
-              OR (callingMethod.synthetic IS NOT NULL and callingMethod.synthetic)
+              // Synthetic callers themselves are not handled as violations since the developer cannot control their generation
+              OR (callingMethod.synthetic IS NOT NULL AND callingMethod.synthetic)
             )
             RETURN
               DISTINCT callingType as Type,
               callingMethod as Method,
               calledMethod as TransactionalMethod,
-              invokes.lineNumber as LineNumber
+              invokes[0] as Invocation
         ]]></cypher>
-        <report primaryColumn="Method"/>
+        <report primaryColumn="Invocation"/>
     </constraint>
 
     <constraint id="jee-transaction:PrivateMethodMustNotBeAnnotatedWithTransactional">
