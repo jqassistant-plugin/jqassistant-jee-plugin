@@ -31,9 +31,9 @@
               DISTINCT callingType as Type,
               callingMethod as Method,
               calledMethod as TransactionalMethod,
-              invokes[0] as Invocation
+              invokes[0].lineNumber as LineNumber
         ]]></cypher>
-        <report primaryColumn="Invocation"/>
+        <report primaryColumn="Method"/>
     </constraint>
 
     <constraint id="jee-transaction:PrivateMethodMustNotBeAnnotatedWithTransactional">
