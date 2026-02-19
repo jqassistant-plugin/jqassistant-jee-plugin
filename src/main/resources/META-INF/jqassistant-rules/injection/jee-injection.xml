@@ -66,12 +66,12 @@
         <description>Fields of injectable types must not be manipulated, except from constructors.</description>
         <cypher><![CDATA[
             MATCH
-              (artifact:Artifact)-[:CONTAINS]->(injectable:Type:Injectable:JEE),
+              (artifact:Artifact)-[:CONTAINS]->(injectable:Type:Injectable:JEE:CDI),
               (injectable)-[:DECLARES]->(field:Field)-[:OF_TYPE]->(fieldType:Type),
               (injectable)-[:DECLARES]->(method:Method),
               (method)-[writes:WRITES]->(field)
             WHERE
-              (fieldType)-[:ASSIGNABLE_FROM*0..]->(:Injectable:JEE)
+              (fieldType)-[:ASSIGNABLE_FROM*0..]->(:Injectable:JEE:CDI)
             AND NOT (
               artifact:Test
               OR injectable:Generated
@@ -94,8 +94,8 @@
         <description>Fields holding injectables should be declared final if written by the constructor.</description>
         <cypher><![CDATA[
             MATCH
-              (artifact:Artifact)-[:CONTAINS]->(type:Type:Injectable:JEE),
-              (type)-[:DECLARES]->(field:Field)-[:OF_TYPE]->(injectedType:Type:Injectable:JEE),
+              (artifact:Artifact)-[:CONTAINS]->(type:Type:Injectable:JEE:CDI),
+              (type)-[:DECLARES]->(field:Field)-[:OF_TYPE]->(injectedType:Type:Injectable:JEE:CDI),
               (type)-[:DECLARES]->(constructor:Method:Constructor),
               (constructor)-[:WRITES]->(field)
             WHERE NOT (
@@ -122,7 +122,7 @@
               (artifact:Artifact)-[:CONTAINS]->(:Type)-[:DECLARES]->(field:Field)-[:OF_TYPE]->(fieldType:Type),
               (type:Type)-[:DECLARES]->(method:Method)-[:WRITES|READS]->(field)
             WHERE
-              (fieldType)-[:ASSIGNABLE_FROM*0..]->(:Injectable:JEE)
+              (fieldType)-[:ASSIGNABLE_FROM*0..]->(:Injectable:JEE:CDI)
               AND field.static
               AND NOT (
                 artifact:Test
@@ -143,7 +143,7 @@
             MATCH
               (artifact:Artifact)-[:CONTAINS]->(type:Type)-[:DECLARES]->(field:Field)-[:OF_TYPE]->(fieldType:Type)
             WHERE
-              (fieldType)-[:ASSIGNABLE_FROM*0..]->(:Injectable:JEE)
+              (fieldType)-[:ASSIGNABLE_FROM*0..]->(:Injectable:JEE:CDI)
               AND field.static
               AND NOT (
                 artifact:Test
@@ -166,8 +166,8 @@
         </description>
         <cypher><![CDATA[
             MATCH
-              (injectable:Injectable:JEE:Type)-[:DECLARES]->(constructor:Constructor),
-              (artifact:Artifact)-[:CONTAINS]->(type:Injectable:JEE:Type)-[:DECLARES]->(method:Method),
+              (injectable:Injectable:JEE:CDI:Type)-[:DECLARES]->(constructor:Constructor),
+              (artifact:Artifact)-[:CONTAINS]->(type:Injectable:JEE:CDI:Type)-[:DECLARES]->(method:Method),
               shortestPath((method)-[:INVOKES*]->(constructor))
             WHERE NOT (
               artifact:Test
@@ -196,7 +196,7 @@
         <description>Injectable classes must not be held as fields in non-injectable classes.</description>
         <cypher><![CDATA[
             MATCH
-              (artifact:Artifact)-[:CONTAINS]->(t:Type)-[:DECLARES]->(f:Field)-[:OF_TYPE]->(fType:Type:JEE:Injectable)
+              (artifact:Artifact)-[:CONTAINS]->(t:Type)-[:DECLARES]->(f:Field)-[:OF_TYPE]->(fType:Type:JEE:Injectable:CDI)
             WHERE NOT (
               artifact:Test
               or t:Generated
@@ -206,7 +206,7 @@
             WITH
               t, collect(DISTINCT fType.fqn) AS fields
             OPTIONAL MATCH
-              (t)<-[:EXTENDS|IMPLEMENTS*]-(injectableImpl:Type:JEE:Injectable)
+              (t)<-[:EXTENDS|IMPLEMENTS*]-(injectableImpl:Type:JEE:CDI:Injectable)
             WITH
               t, fields, count(DISTINCT injectableImpl) AS injectableImplCnt
             WHERE
@@ -218,11 +218,11 @@
 
     <constraint id="jee-injection:JdkClassesMustNotBeInjectables">
         <requiresConcept refId="jee-injection:Injectable"/>
-        <description>JDK classes must not be injectables. Only exception is java.time.Clock, since the documentation of
+        <description>JDK classes must not be CDI-injectables. Only exception is java.time.Clock, since the documentation of
             the named class explicitly recommends using dependency injection.</description>
         <cypher><![CDATA[
             MATCH
-              (type:Type:JEE:Injectable)
+              (type:Type:JEE:Injectable:CDI)
             WHERE
               type.fqn STARTS WITH "java."
               AND NOT type.fqn = "java.time.Clock"

@@ -7,6 +7,8 @@ public class JakartaInjectableA {
 
     private JakartaInjectableB fieldOfInjectableB;
 
+    private JakartaNonCdiInjectable nonCdiInjectable;
+
     private static JakartaInjectableC fieldOfInjectableC;
 
     private final JakartaInjectableD fieldOfInjectableD;
@@ -20,6 +22,11 @@ public class JakartaInjectableA {
         this.fieldOfInjectableD = injectableD;
     }
 
+    public JakartaInjectableA(JakartaNonCdiInjectable nonCdiInjectable, JakartaInjectableD fieldOfInjectableD) {
+        this.nonCdiInjectable = nonCdiInjectable;
+        this.fieldOfInjectableD = fieldOfInjectableD;
+    }
+
     public void manipulateField() {
         // Illegal modification
         fieldOfInjectableB = null;
@@ -30,7 +37,18 @@ public class JakartaInjectableA {
         fieldOfInjectableC = null;
     }
 
+    public void manipulateNonCdi() {
+        // Legal modification
+        nonCdiInjectable = null;
+    }
+
     public void injectableInstantiation() {
+        // Illegal instantiation
         JakartaInjectableB jakartaInjectableB = new JakartaInjectableB();
+    }
+
+    public void nonCdiInjectableInstantiation() {
+        // Legal instantiation
+        JakartaNonCdiInjectable jakartaNonCdiInjectable = new JakartaNonCdiInjectable();
     }
 }
