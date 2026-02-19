@@ -153,13 +153,13 @@
         <providesConcept refId="jee-injection:Injectable"/>
         <requiresConcept refId="ejb:EJB" />
         <description>
-            Labels EJBs with "Injectable".
+            Labels EJBs with "Injectable" and "CDI". The label "CDI" is set as CDI-injection is also applicable to EJBs.
         </description>
         <cypher><![CDATA[
            MATCH
              (type:Java:Type:JEE:EJB)
            SET
-             type:Injectable
+             type:Injectable:CDI
            RETURN
              type as EJB
         ]]></cypher>

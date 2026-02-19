@@ -1,5 +1,6 @@
 package org.jqassistant.plugin.jee.injection.test.set.jakarta;
 
+import jakarta.annotation.Resource;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
 
@@ -10,6 +11,12 @@ public class JakartaBeanProducerWithConstraintViolations {
 
     @Inject
     private JakartaLocalEjb ejb;
+
+    @Resource
+    private JakartaNonCdiInjectable nonCdiInjectable;
+
+    @Resource
+    private Long nonCdiInjectableJdkType;
 
     @Inject
     public void test() {}
