@@ -24,23 +24,9 @@ import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.javax.Java
 import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.javax.JavaxOverridingSubClassOfGenericClassWithTransactionalMethod;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.javax.JavaxOverridingSubClassOfGenericNonTransactionalClass;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.javax.JavaxOverridingSubClassOfGenericTransactionalClass;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.jakarta.JakartaCallingSubClassOfSimpleClassWithTransactionalMethod;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.jakarta.JakartaCallingSubClassOfSimpleNonTransactionalClass;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.jakarta.JakartaCallingSubClassOfSimpleTransactionalClass;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.jakarta.JakartaOverridingSubClassOfSimpleClassWithTransactionalMethod;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.jakarta.JakartaOverridingSubClassOfSimpleNonTransactionalClass;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.jakarta.JakartaOverridingSubClassOfSimpleTransactionalClass;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.jakarta.JakartaSimpleClassWithTransactionalMethod;
+import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.jakarta.*;
 import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.SimpleNonTransactionalClass;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.jakarta.JakartaSimpleTransactionalClass;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.javax.JavaxCallingSubClassOfSimpleClassWithTransactionalMethod;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.javax.JavaxCallingSubClassOfSimpleNonTransactionalClass;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.javax.JavaxCallingSubClassOfSimpleTransactionalClass;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.javax.JavaxOverridingSubClassOfSimpleClassWithTransactionalMethod;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.javax.JavaxOverridingSubClassOfSimpleNonTransactionalClass;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.javax.JavaxOverridingSubClassOfSimpleTransactionalClass;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.javax.JavaxSimpleClassWithTransactionalMethod;
-import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.javax.JavaxSimpleTransactionalClass;
+import org.jqassistant.plugin.jee.transaction.set.inheritance.simple.javax.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -285,6 +271,69 @@ class TransactionalMethodMustNotBeInvokedFromSameClassOrSubclassIT extends Abstr
                 .is(methodDescriptor(JavaxOverridingSubClassOfGenericClassWithTransactionalMethod.class, "method", Long.class));
         assertThat(overridingSubClassOfGenericClassWithTransactionalMethodResult.getColumns().get("TransactionalMethod").getValue()).asInstanceOf(type(MethodDescriptor.class))
                 .is(methodDescriptor(JavaxGenericClassWithTransactionalMethod.class, "method", Object.class));
+
+        store.commitTransaction();
+    }
+
+
+
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxTransactionalClassWithNestedClass.class, JakartaTransactionalClassWithNestedClass.class})
+    void transactionalMethodMustNotBeInvokedFromNestedClass(Class<?> clazz) throws Exception {
+        final Class<?> nestedClass = clazz.getDeclaredClasses()[0];
+        scanClasses(clazz, nestedClass);
+        assertThat(validateConstraint("jee-transaction:TransactionalMethodMustNotBeInvokedFromSameClassOrSubclass")
+                .getStatus()).isEqualTo(FAILURE);
+
+        store.beginTransaction();
+
+        final List<Result<Constraint>> constraintViolations =
+                new ArrayList<>(reportPlugin.getConstraintResults().values());
+        assertThat(constraintViolations).hasSize(1);
+
+        assertThat(constraintViolations.get(0).getRule().getId())
+                .isEqualTo("jee-transaction:TransactionalMethodMustNotBeInvokedFromSameClassOrSubclass");
+
+        final Result<Constraint> result = constraintViolations.get(0);
+        assertThat(result.getRows()).hasSize(1);
+        final Row row = result.getRows().get(0);
+        assertThat(row.getColumns().get("Type").getValue()).asInstanceOf(type(TypeDescriptor.class))
+                .is(typeDescriptor(nestedClass));
+        assertThat(row.getColumns().get("Method").getValue()).asInstanceOf(type(MethodDescriptor.class))
+                .is(methodDescriptor(nestedClass, "callingTransactional"));
+        assertThat(row.getColumns().get("TransactionalMethod").getValue()).asInstanceOf(type(MethodDescriptor.class))
+                .is(methodDescriptor(clazz, "transactionalMethod"));
+
+        store.commitTransaction();
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {JavaxSubClassWithCallingNestedClass.class, JakartaSubClassWithCallingNestedClass.class})
+    void transactionalMethodMustNotBeInvokedFromNestedClassInSubClass(Class<?> clazz) throws Exception {
+        final Class<?> nestedClass = clazz.getDeclaredClasses()[0];
+        final Class<?> superClass = clazz.getSuperclass();
+        scanClasses(clazz, nestedClass, superClass);
+        assertThat(validateConstraint("jee-transaction:TransactionalMethodMustNotBeInvokedFromSameClassOrSubclass")
+                .getStatus()).isEqualTo(FAILURE);
+
+        store.beginTransaction();
+
+        final List<Result<Constraint>> constraintViolations =
+                new ArrayList<>(reportPlugin.getConstraintResults().values());
+        assertThat(constraintViolations).hasSize(1);
+
+        assertThat(constraintViolations.get(0).getRule().getId())
+                .isEqualTo("jee-transaction:TransactionalMethodMustNotBeInvokedFromSameClassOrSubclass");
+
+        final Result<Constraint> result = constraintViolations.get(0);
+        assertThat(result.getRows()).hasSize(1);
+        final Row row = result.getRows().get(0);
+        assertThat(row.getColumns().get("Type").getValue()).asInstanceOf(type(TypeDescriptor.class))
+                .is(typeDescriptor(nestedClass));
+        assertThat(row.getColumns().get("Method").getValue()).asInstanceOf(type(MethodDescriptor.class))
+                .is(methodDescriptor(nestedClass, "callingTransactional"));
+        assertThat(row.getColumns().get("TransactionalMethod").getValue()).asInstanceOf(type(MethodDescriptor.class))
+                .is(methodDescriptor(superClass, "method"));
 
         store.commitTransaction();
     }
