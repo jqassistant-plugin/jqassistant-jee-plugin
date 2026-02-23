@@ -43,15 +43,10 @@
         <class>org.jqassistant.plugin.jee.api.model.ConnectorModuleDescriptor</class>
         <class>org.jqassistant.plugin.jee.api.model.ClientModuleDescriptor</class>
         <class>org.jqassistant.plugin.jee.api.model.WebModuleDescriptor</class>
-        <class>org.jqassistant.plugin.jee.api.model.JsfFaceletDescriptor</class>
 
         <class>org.jqassistant.plugin.jee.api.model.jpa.PersistenceXmlDescriptor</class>
         <class>org.jqassistant.plugin.jee.api.model.jpa.PersistenceUnitDescriptor</class>
     </model>
-    <scope>
-        <class>org.jqassistant.plugin.jee.api.scope.WebApplicationScope</class>
-        <class>org.jqassistant.plugin.jee.api.scope.EnterpriseApplicationScope</class>
-    </scope>
     <scanner>
         <class>org.jqassistant.plugin.jee.impl.scanner.cdi.BeansXmlScannerPlugin</class>
 
@@ -62,7 +57,6 @@
         <class>org.jqassistant.plugin.jee.impl.scanner.WarClassesDirectoryScannerPlugin</class>
         <class>org.jqassistant.plugin.jee.impl.scanner.WebXmlScannerPlugin</class>
         <class>org.jqassistant.plugin.jee.impl.scanner.ApplicationXmlScannerPlugin</class>
-        <class>org.jqassistant.plugin.jee.impl.scanner.JsfFaceletScannerPlugin</class>
 
         <class>org.jqassistant.plugin.jee.impl.scanner.jpa.PersistenceXmlScannerPlugin</class>
     </scanner>

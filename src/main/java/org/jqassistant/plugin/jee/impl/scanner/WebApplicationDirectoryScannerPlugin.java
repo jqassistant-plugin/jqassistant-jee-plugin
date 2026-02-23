@@ -1,7 +1,6 @@
 package org.jqassistant.plugin.jee.impl.scanner;
 
 import java.io.File;
-import java.io.IOException;
 
 import com.buschmais.jqassistant.core.scanner.api.ScannerContext;
 import com.buschmais.jqassistant.core.scanner.api.Scope;
@@ -9,14 +8,15 @@ import com.buschmais.jqassistant.plugin.common.api.scanner.AbstractDirectoryScan
 
 import org.jqassistant.plugin.jee.api.model.WebApplicationDescriptor;
 import org.jqassistant.plugin.jee.api.model.WebApplicationDirectoryDescriptor;
-import org.jqassistant.plugin.jee.api.scope.WebApplicationScope;
+
+import static com.buschmais.jqassistant.core.scanner.api.DefaultScope.NONE;
 
 public class WebApplicationDirectoryScannerPlugin
         extends AbstractDirectoryScannerPlugin<WebApplicationDirectoryDescriptor> {
 
     @Override
     protected Scope getRequiredScope() {
-        return WebApplicationScope.WAR;
+        return NONE;
     }
 
     @Override
@@ -25,12 +25,12 @@ public class WebApplicationDirectoryScannerPlugin
     }
 
     @Override
-    protected void enterContainer(File container, WebApplicationDirectoryDescriptor containerDescriptor, ScannerContext scannerContext) throws IOException {
+    protected void enterContainer(File container, WebApplicationDirectoryDescriptor containerDescriptor, ScannerContext scannerContext) {
         scannerContext.push(WebApplicationDescriptor.class, containerDescriptor);
     }
 
     @Override
-    protected void leaveContainer(File container, WebApplicationDirectoryDescriptor containerDescriptor, ScannerContext scannerContext) throws IOException {
+    protected void leaveContainer(File container, WebApplicationDirectoryDescriptor containerDescriptor, ScannerContext scannerContext) {
         scannerContext.pop(WebApplicationDescriptor.class);
     }
 }

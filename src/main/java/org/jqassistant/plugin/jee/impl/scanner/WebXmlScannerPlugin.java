@@ -25,7 +25,8 @@ import com.buschmais.jqassistant.plugin.xml.api.model.XmlFileDescriptor;
 
 import https.jakarta_ee.xml.ns.jakartaee.*;
 import org.jqassistant.plugin.jee.api.model.*;
-import org.jqassistant.plugin.jee.api.scope.WebApplicationScope;
+
+import static com.buschmais.jqassistant.core.shared.xml.XmlHelper.rootElementMatches;
 
 /**
  * Scanner plugin for the content of web application XML descriptors (i.e.
@@ -45,7 +46,7 @@ public class WebXmlScannerPlugin extends AbstractScannerPlugin<FileResource, Web
 
     @Override
     public boolean accepts(FileResource item, String path, Scope scope) {
-        return WebApplicationScope.WAR.equals(scope) && "/WEB-INF/web.xml".equals(path);
+        return "/WEB-INF/web.xml".equals(path) && rootElementMatches(item::createStream, qname -> "web-app".equals(qname.getLocalPart()));
     }
 
     @Override

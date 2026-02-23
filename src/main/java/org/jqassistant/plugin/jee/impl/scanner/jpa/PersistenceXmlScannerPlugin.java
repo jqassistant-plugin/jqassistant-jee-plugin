@@ -24,6 +24,8 @@ import https.jakarta_ee.xml.ns.persistence.PersistenceUnitValidationModeType;
 import org.jqassistant.plugin.jee.api.model.jpa.PersistenceUnitDescriptor;
 import org.jqassistant.plugin.jee.api.model.jpa.PersistenceXmlDescriptor;
 
+import static com.buschmais.jqassistant.core.shared.xml.XmlHelper.rootElementMatches;
+
 /**
  * A scanner for JPA model units.
  */
@@ -41,7 +43,8 @@ public class PersistenceXmlScannerPlugin extends AbstractScannerPlugin<FileResou
 
     @Override
     public boolean accepts(FileResource item, String path, Scope scope) {
-        return JavaScope.CLASSPATH.equals(scope) && "/META-INF/persistence.xml".equals(path) || "/WEB-INF/persistence.xml".equals(path);
+        return ((JavaScope.CLASSPATH.equals(scope) && "/META-INF/persistence.xml".equals(path)) || "/WEB-INF/persistence.xml".equals(path))
+                && rootElementMatches(item::createStream, qname -> "persistence".equals(qname.getLocalPart()));
     }
 
     @Override
