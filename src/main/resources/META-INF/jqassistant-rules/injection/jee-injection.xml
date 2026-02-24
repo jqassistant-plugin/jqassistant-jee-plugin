@@ -272,26 +272,4 @@
         <report primaryColumn="Field"/>
     </constraint>
 
-    <!-- Prototype implementation, see https://github.com/jqassistant-plugin/jqassistant-jee-plugin/issues/80 -->
-    <constraint id="jee-injection:InjectableNotApplicableForCdiOrEjbInjection">
-        <requiresConcept refId="jee-injection:Injectable"/>
-        <requiresConcept refId="java:GeneratedType"/>
-        <description>
-            Each injectable type must be applicable for CDI or EJB injection. Violations are usually caused by missing CDI bean producers.
-        </description>
-        <!-- Artifacts containing the type are not matched, because this would exclude framework types including those that are typically used with @Resource and @PersistenceContext and hence candidates for violations. -->
-        <cypher><![CDATA[
-            MATCH
-              (type:Type:JEE:Injectable)
-            WHERE NOT (
-              type:Generated
-              OR type:CDI
-              OR type:EJB
-            )
-            RETURN
-             DISTINCT type as Type
-        ]]></cypher>
-        <report primaryColumn="Type"/>
-    </constraint>
-
 </jqassistant-rules>
