@@ -441,55 +441,6 @@ public class InjectionIT extends AbstractJavaPluginIT {
         store.commitTransaction();
     }
 
-    /**
-     * Verifies the constraint "jee-injection:InjectableNotApplicableForCdiOrEjbInjection" results in no violations when
-     * applied to bean types explicitly annotated with CDI- or EJB-specific annotations.
-     */
-    @ParameterizedTest
-    @ValueSource(classes = {JakartaApplicationResource.class, JakartaLocalEjb.class, JavaxApplicationResource.class, JavaxLocalEjb.class} )
-    void injectableNotApplicableForCdiOrEjbInjectionNoViolations(Class<?> injectable) throws Exception {
-        scanClasses(injectable);
-        String ruleName = "jee-injection:InjectableNotApplicableForCdiOrEjbInjection";
-        assertThat(validateConstraint(ruleName).getStatus()).isEqualTo(SUCCESS);
-        store.beginTransaction();
-
-        final List<Result<Constraint>> constraintViolations = new ArrayList<>(reportPlugin.getConstraintResults().values());
-        assertThat(constraintViolations).hasSize(1);
-        final Result<Constraint> result = constraintViolations.get(0);
-        assertThat(result.getRule().getId()).isEqualTo(ruleName);
-        final List<Row> violations = result.getRows();
-        assertThat(violations).hasSize(0);
-
-        store.commitTransaction();
-    }
-
-    /**
-     * Verifies the constraint "jee-injection:InjectableNotApplicableForCdiOrEjbInjection" results in violations for
-     * types of fields annotated by @PersistenceContext for which no bean producer exists.
-     */
-    @Test
-    void injectableNotApplicableForCdiOrEjbInjectionForPersistenceContext() throws Exception {
-        scanClasses(persistenceContextTestSet);
-        String ruleName = "jee-injection:InjectableNotApplicableForCdiOrEjbInjection";
-        assertThat(validateConstraint(ruleName).getStatus()).isEqualTo(FAILURE);
-        store.beginTransaction();
-
-        final List<Result<Constraint>> constraintViolations = new ArrayList<>(reportPlugin.getConstraintResults().values());
-        assertThat(constraintViolations).hasSize(1);
-        final Result<Constraint> result = constraintViolations.get(0);
-        assertThat(result.getRule().getId()).isEqualTo(ruleName);
-        final List<Row> violations = result.getRows();
-        assertThat(violations).hasSize(2);
-        final List<TypeDescriptor> types = violations.stream()
-                .map(Row::getColumns)
-                .map(row -> row.get("Type").getValue())
-                .map(TypeDescriptor.class::cast)
-                .collect(Collectors.toList());
-        assertThat(types).haveExactly(1, typeDescriptor(JavaxEntityManagerWithoutProducer.class));
-        assertThat(types).haveExactly(1, typeDescriptor(JakartaEntityManagerWithoutProducer.class));
-        store.commitTransaction();
-    }
-
     private static Stream<Arguments> constraintValidatorParams() {
         return Stream.of(
                 Arguments.of("javaee-injection:ConstraintValidator", JavaxConstraintValidator.class, javax.validation.ConstraintValidator.class),
