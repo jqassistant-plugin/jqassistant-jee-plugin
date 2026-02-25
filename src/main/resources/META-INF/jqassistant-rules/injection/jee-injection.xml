@@ -57,6 +57,8 @@
         <report primaryColumn="Invocation"/>
     </constraint>
 
+    <!-- The following constraints ensure the correct usage of dependency injection in the context of CDI. Hence, the rules are applied only to injectables that are identified as CDI injectables. -->
+
     <constraint id="jee-injection:FieldsOfInjectablesMustNotBeManipulated">
         <requiresConcept refId="jee-injection:Injectable"/>
         <requiresConcept refId="java:TypeAssignableFrom"/>

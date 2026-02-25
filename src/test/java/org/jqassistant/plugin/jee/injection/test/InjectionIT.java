@@ -126,8 +126,8 @@ public class InjectionIT extends AbstractJavaPluginIT {
     @ParameterizedTest
     @MethodSource("beanProducerWithConstraintViolationsAndInjectablesAndApplicationResource")
     void finalFieldsForInjectables(Class<?> producerWithViolations, Class<?> injectableA, Class<?> injectableB,
-                                   Class<?> injectableC, Class<?> injectableD, Class<?> resource, Class<?> nonCdiOrInjectable) throws Exception {
-        scanClasses(producerWithViolations, injectableA, injectableB, injectableC, injectableD, resource, nonCdiOrInjectable);
+                                   Class<?> injectableC, Class<?> injectableD, Class<?> resource, Class<?> nonCdiInjectable) throws Exception {
+        scanClasses(producerWithViolations, injectableA, injectableB, injectableC, injectableD, resource, nonCdiInjectable);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesShouldBeHeldInFinalFields");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
