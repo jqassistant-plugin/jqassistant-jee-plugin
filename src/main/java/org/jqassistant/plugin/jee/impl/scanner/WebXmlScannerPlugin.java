@@ -19,7 +19,6 @@ import com.buschmais.jqassistant.plugin.common.api.model.NamedDescriptor;
 import com.buschmais.jqassistant.plugin.common.api.scanner.AbstractScannerPlugin;
 import com.buschmais.jqassistant.plugin.common.api.scanner.filesystem.FileResource;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
-import com.buschmais.jqassistant.plugin.java.api.scanner.TypeCache;
 import com.buschmais.jqassistant.plugin.java.api.scanner.TypeResolver;
 import com.buschmais.jqassistant.plugin.xml.api.model.XmlFileDescriptor;
 
@@ -218,10 +217,10 @@ public class WebXmlScannerPlugin extends AbstractScannerPlugin<FileResource, Web
             listenerDescriptor.getIcons()
                     .add(XmlDescriptorHelper.createIcon(iconType, store));
         }
-        TypeResolver typeResolver = context.peek(TypeResolver.class);
-        FullyQualifiedClassType listenerClass = listenerType.getListenerClass();
-        TypeCache.CachedType<TypeDescriptor> listenerClassDescriptor = typeResolver.resolve(listenerClass.getValue(), context);
-        listenerDescriptor.setType(listenerClassDescriptor.getTypeDescriptor());
+        String value = listenerType.getListenerClass()
+                .getValue();
+        TypeDescriptor listenerClassDescriptor = resolveType(value, context);
+        listenerDescriptor.setType(listenerClassDescriptor);
         return listenerDescriptor;
     }
 
@@ -235,9 +234,8 @@ public class WebXmlScannerPlugin extends AbstractScannerPlugin<FileResource, Web
         }
         FullyQualifiedClassType exceptionType = errorPageType.getExceptionType();
         if (exceptionType != null) {
-            TypeResolver typeResolver = context.peek(TypeResolver.class);
-            TypeCache.CachedType<TypeDescriptor> cachedType = typeResolver.resolve(exceptionType.getValue(), context);
-            errorPageDescriptor.setExceptionType(cachedType.getTypeDescriptor());
+            TypeDescriptor cachedType = resolveType(exceptionType.getValue(), context);
+            errorPageDescriptor.setExceptionType(cachedType);
         }
         errorPageDescriptor.setErrorPage(errorPageType.getLocation()
                 .getValue());
@@ -268,9 +266,8 @@ public class WebXmlScannerPlugin extends AbstractScannerPlugin<FileResource, Web
         }
         FullyQualifiedClassType filterClass = filterType.getFilterClass();
         if (filterClass != null) {
-            TypeResolver typeResolver = context.peek(TypeResolver.class);
-            TypeCache.CachedType<TypeDescriptor> filterClassDescriptor = typeResolver.resolve(filterClass.getValue(), context);
-            filterDescriptor.setType(filterClassDescriptor.getTypeDescriptor());
+            TypeDescriptor filterClassDescriptor = resolveType(filterClass.getValue(), context);
+            filterDescriptor.setType(filterClassDescriptor);
         }
         for (IconType iconType : filterType.getIcon()) {
             IconDescriptor iconDescriptor = XmlDescriptorHelper.createIcon(iconType, store);
@@ -422,11 +419,23 @@ public class WebXmlScannerPlugin extends AbstractScannerPlugin<FileResource, Web
         }
         FullyQualifiedClassType servletClass = servletType.getServletClass();
         if (servletClass != null) {
-            TypeCache.CachedType<TypeDescriptor> servletClassType = context.peek(TypeResolver.class)
-                    .resolve(servletClass.getValue(), context);
-            servletDescriptor.setType(servletClassType.getTypeDescriptor());
+            TypeDescriptor servletClassType = resolveType(servletClass.getValue(), context);
+            servletDescriptor.setType(servletClassType);
         }
         return servletDescriptor;
+    }
+
+    private static TypeDescriptor resolveType(String fqn, ScannerContext context) {
+        TypeResolver typeResolver = context.peekOrDefault(TypeResolver.class, null);
+        if (typeResolver != null) {
+            return typeResolver.resolve(fqn, context)
+                    .getTypeDescriptor();
+        }
+        // TOOD verify if a default type resolver can be provided instead
+        TypeDescriptor typeDescriptor = context.getStore()
+                .create(TypeDescriptor.class);
+        typeDescriptor.setFullQualifiedName(fqn);
+        return typeDescriptor;
     }
 
     /**
