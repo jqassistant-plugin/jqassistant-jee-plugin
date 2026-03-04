@@ -6,10 +6,12 @@
         <description>Abstract concept that returns all fields labeled with "JEE" and "Resource".</description>
         <cypher><![CDATA[
             MATCH
-              (field:JEE:Resource)
+              (declaringType:Type)-[:DECLARES]->(field:Field:JEE:Resource)
             RETURN
-              field AS PersistenceContext
+              declaringType AS DeclaringType,
+              field AS ResourceField
         ]]></cypher>
+        <report primaryColumn="ResourceField"/>
     </concept>
 
 </jqassistant-rules>
