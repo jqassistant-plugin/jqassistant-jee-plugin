@@ -1,6 +1,7 @@
 package org.jqassistant.plugin.jee.resource;
 
 import com.buschmais.jqassistant.core.report.api.model.Result;
+import com.buschmais.jqassistant.core.report.api.model.Row;
 import com.buschmais.jqassistant.core.rule.api.model.Concept;
 import com.buschmais.jqassistant.plugin.java.api.model.FieldDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
@@ -13,6 +14,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.buschmais.jqassistant.core.report.api.model.Result.Status.SUCCESS;
@@ -34,14 +37,22 @@ class ResourceIT extends AbstractJavaPluginIT {
 
     @ParameterizedTest
     @MethodSource("classesWithResourceAndQueue")
-    void resourceField(Class<?> typeWithPersistenceContext, Class<?> resourceType) throws Exception {
-        scanClasses(typeWithPersistenceContext);
+    void resourceField(Class<?> typeWithResource, Class<?> resourceType) throws Exception {
+        scanClasses(typeWithResource);
         final Result<Concept> conceptResult = applyConcept("jee-resource:ResourceField");
-        assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
+        assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
+        assertThat(conceptResult.getColumnNames()).containsExactlyInAnyOrder("DeclaringType", "ResourceField");
+        final Map<TypeDescriptor, FieldDescriptor> resultRows = conceptResult.getRows().stream()
+                .map(Row::getColumns)
+                .collect(Collectors.toMap(row -> (TypeDescriptor) row.get("DeclaringType").getValue(), row -> (FieldDescriptor) row.get("ResourceField").getValue()));
+        assertThat(resultRows).hasEntrySatisfying(
+                typeDescriptor(typeWithResource),
+                fieldDescriptor(typeWithResource, "queue")
+        );
         final List<FieldDescriptor> members = query("MATCH (e:JEE:InjectionPoint:Resource) RETURN e").getColumn("e");
         assertThat(members).hasSize(1);
-        assertThat(members).haveExactly(1, fieldDescriptor(typeWithPersistenceContext, "queue"));
+        assertThat(members).haveExactly(1, fieldDescriptor(typeWithResource, "queue"));
         final List<TypeDescriptor> injectables = query("MATCH (e:Type:Injectable) RETURN e").getColumn("e");
         // Total number of injectables is not asserted, since it might depend on the set of other executed concepts.
         assertThat(injectables).haveExactly(1, typeDescriptor(resourceType));
