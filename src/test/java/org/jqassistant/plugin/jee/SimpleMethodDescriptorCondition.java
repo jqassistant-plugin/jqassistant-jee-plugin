@@ -7,7 +7,9 @@ import org.assertj.core.api.Condition;
  * A {@link Condition} of type {@link MethodDescriptor} that can be created using the method's signature without the
  * method being checked for existence. This can be useful to check nodes of inherited methods. This class should be part
  * of the jqassistant testing api.
+ * @deprecated To be replaced by MethodDescriptorCondition
  */
+@Deprecated
 public class SimpleMethodDescriptorCondition extends Condition<MethodDescriptor> {
     private final String expectedTypeName;
     private final String expectedSignature;
