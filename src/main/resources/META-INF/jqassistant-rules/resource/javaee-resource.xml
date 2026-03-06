@@ -10,15 +10,18 @@
         <!-- CDI label is not set, since these types are not applicable for CDI-injection unless explicit CDI bean producers exist for them -->
         <cypher><![CDATA[
             MATCH
-              (field:Field)-[:OF_TYPE]->(fieldType:Type),
+              (declaringType:Type)-[:DECLARES]->(field:Field),
+              (field)-[:OF_TYPE]->(fieldType:Type),
               (field)-[:ANNOTATED_BY]->(:Annotation)-[:OF_TYPE]->(:Type {fqn: 'javax.annotation.Resource'})
             SET
               field:JEE:InjectionPoint:Resource
             SET
               fieldType:JEE:Injectable
             RETURN
-              field AS Field
+              declaringType AS DeclaringType,
+              field AS ResourceField
         ]]></cypher>
+        <report primaryColumn="ResourceField"/>
     </concept>
 
 </jqassistant-rules>
