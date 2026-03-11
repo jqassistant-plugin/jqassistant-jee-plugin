@@ -5,7 +5,11 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class JakartaGenericTransactionalClass<T> {
 
-    public void method(T parameter) {
+    public void methodWithRequiredSemantics(T parameter) {
+
+    }
+
+    public void methodWithOverriddenSemantics(T parameter) {
 
     }
 

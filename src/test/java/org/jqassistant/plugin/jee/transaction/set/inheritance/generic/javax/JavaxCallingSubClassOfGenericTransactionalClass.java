@@ -5,8 +5,14 @@ import javax.transaction.Transactional;
 @Transactional
 public class JavaxCallingSubClassOfGenericTransactionalClass extends JavaxGenericTransactionalClass<Long> {
 
-    public void anotherMethod() {
-        method(1L);
+    public void anotherMethodWithRequiredSemantics() {
+        methodWithRequiredSemantics(1L);
+    }
+
+    // This method always runs without a transaction. The REQUIRED semantic of methodWithOverriddenSemantics() would have no effect if called.
+    @Transactional(Transactional.TxType.NEVER)
+    public void callingMethodWithNeverSemantics() {
+        methodWithOverriddenSemantics(1L);
     }
 
 }

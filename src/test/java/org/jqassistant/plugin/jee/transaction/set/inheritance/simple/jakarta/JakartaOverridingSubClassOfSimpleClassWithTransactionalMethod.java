@@ -7,8 +7,16 @@ import jakarta.transaction.Transactional;
 public class JakartaOverridingSubClassOfSimpleClassWithTransactionalMethod extends JakartaSimpleClassWithTransactionalMethod{
 
     @Override
-    public void method() {
-        super.method();
+    public void methodWithRequiredSemantics() {
+        super.methodWithRequiredSemantics();
+    }
+
+    // This method always runs without a transaction. The REQUIRED semantics of methodWithOverriddenSemantics() would have no effect if called.
+    // Transaction semantics is overridden.
+    @Override
+    @Transactional(Transactional.TxType.NEVER)
+    public void methodWithOverriddenSemantics() {
+        super.methodWithOverriddenSemantics();
     }
 
 }

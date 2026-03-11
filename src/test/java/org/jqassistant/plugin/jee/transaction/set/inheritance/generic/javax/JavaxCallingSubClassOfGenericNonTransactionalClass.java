@@ -6,7 +6,7 @@ import javax.transaction.Transactional;
 @Transactional
 public class JavaxCallingSubClassOfGenericNonTransactionalClass extends GenericNonTransactionalClass<Long> {
 
-    public void anotherMethod() {
+    public void methodWithRequiredSemantics() {
         method(1L);
     }
 

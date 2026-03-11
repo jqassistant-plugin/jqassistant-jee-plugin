@@ -5,8 +5,14 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class JakartaCallingSubClassOfGenericTransactionalClass extends JakartaGenericTransactionalClass<Long> {
 
-    public void anotherMethod() {
-        method(1L);
+    public void anotherMethodWithRequiredSemantics() {
+        methodWithRequiredSemantics(1L);
+    }
+
+    // This method always runs without a transaction. The REQUIRED semantic of methodWithOverriddenSemantics() would have no effect if called.
+    @Transactional(Transactional.TxType.NEVER)
+    public void callingMethodWithNeverSemantics() {
+        methodWithOverriddenSemantics(1L);
     }
 
 }

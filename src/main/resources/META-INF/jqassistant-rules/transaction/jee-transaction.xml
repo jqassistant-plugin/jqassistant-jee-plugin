@@ -3,35 +3,59 @@
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v2.2 https://jqassistant.github.io/jqassistant/current/schema/jqassistant-rule-v2.2.xsd">
 
     <group id="jee-transaction:Default">
-        <includeConstraint refId="jee-transaction:TransactionalMethodMustNotBeInvokedFromSameClassOrSubclass"/>
+        <includeConstraint refId="jee-transaction:TransactionChangingMethodMustNotBeInvokedFromSameClassOrSubclass"/>
         <includeConstraint refId="jee-transaction:PrivateMethodMustNotBeAnnotatedWithTransactional"/>
     </group>
 
-    <constraint id="jee-transaction:TransactionalMethodMustNotBeInvokedFromSameClassOrSubclass">
+    <constraint id="jee-transaction:TransactionChangingMethodMustNotBeInvokedFromSameClassOrSubclass">
         <requiresConcept refId="jee-transaction:TransactionalMethod"/>
         <requiresConcept refId="java:GeneratedType"/>
         <requiresConcept refId="java:MemberInheritedFrom"/>
-        <description>Transactional methods must not be invoked from the same class or from a subclass within the inheritance hierarchy.</description>
+        <description>Transactional methods must not be invoked from the same class or from a subclass within the inheritance hierarchy if the transactional semantics of the invoked method requires a change to the current transaction handling.</description>
         <cypher><![CDATA[
+            // If the target transaction semantics is SUPPORTS, the transaction handling will not change regardless of the source transaction semantics. It is therefore handled separately in the WHERE clause.
+            WITH [
+              {sourceTx: 'REQUIRED', targetTx: 'REQUIRED'},
+              {sourceTx: 'REQUIRES_NEW', targetTx: 'REQUIRED'},
+              {sourceTx: 'MANDATORY', targetTx: 'REQUIRED'},
+              {sourceTx: 'NESTED', targetTx: 'REQUIRED'},
+              {sourceTx: 'NEVER', targetTx: 'NEVER'},
+              {sourceTx: 'NOT_SUPPORTED', targetTx: 'NEVER'},
+              {sourceTx: 'NEVER', targetTx: 'NOT_SUPPORTED'},
+              {sourceTx: 'NOT_SUPPORTED', targetTx: 'NOT_SUPPORTED'},
+              {sourceTx: 'REQUIRED', targetTx: 'MANDATORY'},
+              {sourceTx: 'REQUIRES_NEW', targetTx: 'MANDATORY'},
+              {sourceTx: 'MANDATORY', targetTx: 'MANDATORY'},
+              {sourceTx: 'NESTED', targetTx: 'MANDATORY'}
+            ] as semanticsCombinationsWithoutTransactionChange
             MATCH
               (artifact:Artifact)-[:CONTAINS]->(callingType:Java:Type),
-              (callingType)<-[:DECLARES*0..]-(:Java:Type)-[:EXTENDS|IMPLEMENTS*0..]->(:Java:Type)-[:DECLARES]->(calledMethod:Method:JEE:Transactional),
-              (callingType)-[:DECLARES]->(callingMethod:Method),
-              path = (callingMethod)-[invokes:INVOKES*]->(calledMethod)
+              (callingType)-[:DECLARES]->(sourceTxMethod:Method:JEE:Transactional),
+              (callingType)<-[:DECLARES*0..]-(:Java:Type)-[:EXTENDS|IMPLEMENTS*0..]->(:Java:Type)-[:DECLARES]->(targetTxMethod:Method:JEE:Transactional),
+              path = (sourceTxMethod)-[invokes:INVOKES*]->(targetTxMethod)
             WHERE
-              // Violations are direct calls from callingMethod to calledMethods and those with synthetic methods in between
-              ALL(intermediateMethod IN nodes(path)[1..-1] WHERE (intermediateMethod.synthetic IS NOT NULL AND intermediateMethod.synthetic))
+              // Violations are direct calls from callingMethod to calledMethods and those with synthetic or private methods in between
+              ALL(intermediateMethod IN nodes(path)[1..-1] WHERE (intermediateMethod.synthetic IS NOT NULL AND intermediateMethod.synthetic OR intermediateMethod.visibility = 'private'))
             AND NOT (
               artifact:Test
               OR callingType:Generated
               // Synthetic callers themselves are not handled as violations since the developer cannot control their generation
-              OR (callingMethod.synthetic IS NOT NULL AND callingMethod.synthetic)
+              OR (sourceTxMethod.synthetic IS NOT NULL AND sourceTxMethod.synthetic)
+              OR (
+                {sourceTx: sourceTxMethod.transactionPropagation, targetTx: targetTxMethod.transactionPropagation} IN semanticsCombinationsWithoutTransactionChange
+              )
+              // If the targetTxMethod has the SUPPORTS semantics, it never changes the current transaction
+              OR targetTxMethod.transactionPropagation = 'SUPPORTS'
             )
             RETURN
               DISTINCT callingType as Type,
-              callingMethod as Method,
-              calledMethod as TransactionalMethod,
+              sourceTxMethod AS SourceTransactionalMethod,
+              sourceTxMethod.transactionPropagation AS SourceSemantics,
+              targetTxMethod AS TargetTransactionalMethod,
+              targetTxMethod.transactionPropagation AS TargetSemantics,
               invokes[0].lineNumber as LineNumber
+            ORDER BY
+              Type.fqn, SourceTransactionalMethod.name, TargetTransactionalMethod.name
         ]]></cypher>
         <report primaryColumn="Method"/>
     </constraint>

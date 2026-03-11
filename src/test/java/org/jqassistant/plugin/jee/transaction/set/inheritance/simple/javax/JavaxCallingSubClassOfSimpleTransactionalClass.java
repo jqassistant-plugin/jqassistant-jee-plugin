@@ -5,7 +5,13 @@ import javax.transaction.Transactional;
 @Transactional
 public class JavaxCallingSubClassOfSimpleTransactionalClass extends JavaxSimpleTransactionalClass {
 
-    public void anotherMethod() {
-        method();
+    public void anotherMethodWithRequiredSemantics() {
+        methodWithRequiredSemantics();
+    }
+
+    // This method always runs without a transaction. The REQUIRED semantic of methodWithRequiredSemantics() would have no effect if called.
+    @Transactional(Transactional.TxType.NEVER)
+    public void transactionalMethodWithNeverSemantics() {
+        methodWithRequiredSemantics();
     }
 }
