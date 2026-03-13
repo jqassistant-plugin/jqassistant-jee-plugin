@@ -39,7 +39,7 @@
             WITH
               callingType,
               sourceMethod,
-              CASE sourceMethod.transactionPropagation WHEN IS NULL THEN 'NONE' ELSE sourceMethod.transactionPropagation END AS sourceTxSemantics,
+              COALESCE(sourceMethod.transactionPropagation, 'NONE') AS sourceTxSemantics,
               targetTxMethod,
               targetTxMethod.transactionPropagation AS targetTxSemantics,
               path,
