@@ -2,7 +2,6 @@ package org.jqassistant.plugin.jee.impl.scanner;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.List;
 
 import javax.xml.transform.stream.StreamSource;
@@ -15,22 +14,28 @@ import com.buschmais.jqassistant.plugin.java.api.scanner.TypeResolver;
 import com.buschmais.jqassistant.plugin.xml.api.model.XmlFileDescriptor;
 
 import org.jqassistant.plugin.jee.api.model.*;
-import org.jqassistant.plugin.jee.api.scope.WebApplicationScope;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
 
+import static com.buschmais.jqassistant.core.scanner.api.DefaultScope.NONE;
+import static java.util.Collections.emptyMap;
 import static org.mockito.Mockito.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 class WebXmlScannerPluginTest extends AbstractXmlScannerTest {
+
+    private static final String TEST_SERVLET = "com.buschmais.jqassistant.TestServlet";
+
+    private static final String TEST_FILTER = "com.buschmais.jqassistant.TestFilter";
+
+    private static final String TEST_LISTENER = "com.buschmais.jqassistant.TestListener";
 
     @Mock
     private TypeResolver typeResolver;
@@ -178,21 +183,37 @@ class WebXmlScannerPluginTest extends AbstractXmlScannerTest {
     private FormLoginConfigDescriptor formLoginConfigDescriptor;
 
     @Test
-    void webXml() throws IOException {
-        when(scannerContext.peek(TypeResolver.class)).thenReturn(typeResolver);
+    void webXmlWithTypeResolver() throws IOException {
+        when(scannerContext.peekOrDefault(TypeResolver.class, null)).thenReturn(typeResolver);
+        when(typeResolver.resolve(TEST_SERVLET, scannerContext)).thenReturn(cachedServletClassDescriptor);
+        when(typeResolver.resolve(TEST_FILTER, scannerContext)).thenReturn(cachedFilterClassDescriptor);
+        when(typeResolver.resolve(TEST_LISTENER, scannerContext)).thenReturn(cachedListenerClassDescriptor);
 
+        verifyWebXml();
+
+        verify(typeResolver).resolve(TEST_SERVLET, scannerContext);
+        verify(typeResolver).resolve(TEST_LISTENER, scannerContext);
+        verify(typeResolver).resolve(TEST_FILTER, scannerContext);
+    }
+
+    @Test
+    void webXmlWithoutTypeResolver() throws IOException {
+        doReturn(servletClassDescriptor, listenerClassDescriptor, filterClassDescriptor).when(store)
+                .create(TypeDescriptor.class);
+
+        verifyWebXml();
+
+        verify(store, times(3)).create(TypeDescriptor.class);
+    }
+
+    private void verifyWebXml() throws IOException {
         FileResource fileResource = mock(FileResource.class);
-        when(fileResource.createStream()).thenAnswer(new Answer<InputStream>() {
-            @Override
-            public InputStream answer(InvocationOnMock invocation) throws Throwable {
-                return WebXmlScannerPluginTest.class.getResourceAsStream("/jee/WEB-INF/web.xml");
-            }
-        });
+        when(fileResource.createStream()).thenAnswer(
+                (Answer<InputStream>) invocation -> WebXmlScannerPluginTest.class.getResourceAsStream("/jee/WEB-INF/web.xml"));
 
         when(scannerContext.getCurrentDescriptor()).thenReturn(xmlFileDescriptor);
         when(store.addDescriptorType(xmlFileDescriptor, WebXmlDescriptor.class)).thenReturn(webXmlDescriptor);
-        when(scanner.scan(Mockito.any(StreamSource.class), Mockito.eq("/jee/WEB-INF/web.xml"), Mockito.eq(WebApplicationScope.WAR))).thenReturn(
-                webXmlDescriptor);
+        when(scanner.scan(Mockito.any(StreamSource.class), Mockito.eq("/jee/WEB-INF/web.xml"), Mockito.eq(NONE))).thenReturn(webXmlDescriptor);
         when(webXmlDescriptor.isXmlWellFormed()).thenReturn(true);
         when(webXmlDescriptor.getContextParams()).thenReturn(mock(List.class));
         when(webXmlDescriptor.getErrorPages()).thenReturn(mock(List.class));
@@ -224,7 +245,6 @@ class WebXmlScannerPluginTest extends AbstractXmlScannerTest {
         when(store.create(IconDescriptor.class)).thenReturn(servletIconDescriptor, filterIconDescriptor, null);
 
         when(store.create(ParamValueDescriptor.class)).thenReturn(contextParamDescriptor, servletInitParamDescriptor, filterInitParamDescriptor, null);
-        when(typeResolver.resolve("com.buschmais.jqassistant.TestServlet", scannerContext)).thenReturn(cachedServletClassDescriptor);
         when(cachedServletClassDescriptor.getTypeDescriptor()).thenReturn(servletClassDescriptor);
 
         // Servlet Mapping
@@ -236,7 +256,6 @@ class WebXmlScannerPluginTest extends AbstractXmlScannerTest {
         // Filter
         when(store.create(FilterDescriptor.class)).thenReturn(filterDescriptor);
         when(webXmlDescriptor.getFilters()).thenReturn(mock(List.class));
-        when(typeResolver.resolve("com.buschmais.jqassistant.TestFilter", scannerContext)).thenReturn(cachedFilterClassDescriptor);
         when(cachedFilterClassDescriptor.getTypeDescriptor()).thenReturn(filterClassDescriptor);
         when(filterDescriptor.getDescriptions()).thenReturn(mock(List.class));
         when(filterDescriptor.getDisplayNames()).thenReturn(mock(List.class));
@@ -249,7 +268,6 @@ class WebXmlScannerPluginTest extends AbstractXmlScannerTest {
         when(filterMappingDescriptor.getUrlPatterns()).thenReturn(mock(List.class));
 
         // Listener
-        when(typeResolver.resolve("com.buschmais.jqassistant.TestListener", scannerContext)).thenReturn(cachedListenerClassDescriptor);
         when(cachedListenerClassDescriptor.getTypeDescriptor()).thenReturn(listenerClassDescriptor);
         when(store.create(ListenerDescriptor.class)).thenReturn(listenerDescriptor);
 
@@ -280,8 +298,8 @@ class WebXmlScannerPluginTest extends AbstractXmlScannerTest {
 
         WebXmlScannerPlugin scannerPlugin = new WebXmlScannerPlugin();
         scannerPlugin.initialize();
-        scannerPlugin.configure(scannerContext, Collections.<String, Object>emptyMap());
-        scannerPlugin.scan(fileResource, "/jee/WEB-INF/web.xml", WebApplicationScope.WAR, scanner);
+        scannerPlugin.configure(scannerContext, emptyMap());
+        scannerPlugin.scan(fileResource, "/jee/WEB-INF/web.xml", NONE, scanner);
 
         verify(store).addDescriptorType(xmlFileDescriptor, WebXmlDescriptor.class);
         verify(webXmlDescriptor).setVersion("3.0");
