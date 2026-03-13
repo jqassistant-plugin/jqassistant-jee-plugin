@@ -5,7 +5,12 @@ import javax.transaction.Transactional;
 public class JavaxSubClassWithCallingNestedClass extends JavaxSimpleTransactionalClass {
 
     class InnerClass {
-        void callingTransactional() {
+        void nonTransactionalMethod() {
+            JavaxSubClassWithCallingNestedClass.super.methodWithRequiredSemantics();
+        }
+
+        @Transactional
+        void transactionalMethodWithRequiredSemantics() {
             JavaxSubClassWithCallingNestedClass.super.methodWithRequiredSemantics();
         }
 

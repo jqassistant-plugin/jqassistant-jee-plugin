@@ -14,6 +14,7 @@
         <description>Transactional methods must not be invoked from the same class or from a subclass within the inheritance hierarchy if the transactional semantics of the invoked method requires a change to the current transaction handling.</description>
         <cypher><![CDATA[
             // If the target transaction semantics is SUPPORTS, the transaction handling will not change regardless of the source transaction semantics. It is therefore handled separately in the WHERE clause.
+            // The transaction semantics 'NONE' is assigned to methods neither implicitly (class-level) nor explicitly (method-level) annotated as transactional.
             WITH [
               {sourceTx: 'REQUIRED', targetTx: 'REQUIRED'},
               {sourceTx: 'REQUIRES_NEW', targetTx: 'REQUIRED'},
@@ -26,13 +27,23 @@
               {sourceTx: 'REQUIRED', targetTx: 'MANDATORY'},
               {sourceTx: 'REQUIRES_NEW', targetTx: 'MANDATORY'},
               {sourceTx: 'MANDATORY', targetTx: 'MANDATORY'},
-              {sourceTx: 'NESTED', targetTx: 'MANDATORY'}
+              {sourceTx: 'NESTED', targetTx: 'MANDATORY'},
+              {sourceTx: 'NONE', targetTx: 'NEVER'},
+              {sourceTx: 'NONE', targetTx: 'NOT_SUPPORTED'}
             ] as semanticsCombinationsWithoutTransactionChange
             MATCH
               (artifact:Artifact)-[:CONTAINS]->(callingType:Java:Type),
-              (callingType)-[:DECLARES]->(sourceTxMethod:Method:JEE:Transactional),
+              (callingType)-[:DECLARES]->(sourceMethod:Method),
               (callingType)<-[:DECLARES*0..]-(:Java:Type)-[:EXTENDS|IMPLEMENTS*0..]->(:Java:Type)-[:DECLARES]->(targetTxMethod:Method:JEE:Transactional),
-              path = (sourceTxMethod)-[invokes:INVOKES*]->(targetTxMethod)
+              path = (sourceMethod)-[invokes:INVOKES*]->(targetTxMethod)
+            WITH
+              callingType,
+              sourceMethod,
+              CASE sourceMethod.transactionPropagation WHEN IS NULL THEN 'NONE' ELSE sourceMethod.transactionPropagation END AS sourceTxSemantics,
+              targetTxMethod,
+              targetTxMethod.transactionPropagation AS targetTxSemantics,
+              path,
+              invokes
             WHERE
               // Violations are direct calls from callingMethod to calledMethods and those with synthetic or private methods in between
               ALL(intermediateMethod IN nodes(path)[1..-1] WHERE (intermediateMethod.synthetic IS NOT NULL AND intermediateMethod.synthetic OR intermediateMethod.visibility = 'private'))
@@ -40,22 +51,24 @@
               artifact:Test
               OR callingType:Generated
               // Synthetic callers themselves are not handled as violations since the developer cannot control their generation
-              OR (sourceTxMethod.synthetic IS NOT NULL AND sourceTxMethod.synthetic)
+              OR (sourceMethod.synthetic IS NOT NULL AND sourceMethod.synthetic)
+              // Private callers themselves are not handled as violations since they are only non-private callers are relevant regarding transaction handling
+              OR sourceMethod.visibility = 'private'
               OR (
-                {sourceTx: sourceTxMethod.transactionPropagation, targetTx: targetTxMethod.transactionPropagation} IN semanticsCombinationsWithoutTransactionChange
+                {sourceTx: sourceTxSemantics, targetTx: targetTxSemantics} IN semanticsCombinationsWithoutTransactionChange
               )
               // If the targetTxMethod has the SUPPORTS semantics, it never changes the current transaction
               OR targetTxMethod.transactionPropagation = 'SUPPORTS'
             )
             RETURN
               DISTINCT callingType as Type,
-              sourceTxMethod AS SourceTransactionalMethod,
-              sourceTxMethod.transactionPropagation AS SourceSemantics,
+              sourceMethod AS SourceMethod,
+              sourceTxSemantics AS SourceSemantics,
               targetTxMethod AS TargetTransactionalMethod,
-              targetTxMethod.transactionPropagation AS TargetSemantics,
+              targetTxSemantics AS TargetSemantics,
               invokes[0].lineNumber as LineNumber
             ORDER BY
-              Type.fqn, SourceTransactionalMethod.name, TargetTransactionalMethod.name
+              Type.fqn, SourceMethod.name, TargetTransactionalMethod.name
         ]]></cypher>
         <report primaryColumn="Method"/>
     </constraint>

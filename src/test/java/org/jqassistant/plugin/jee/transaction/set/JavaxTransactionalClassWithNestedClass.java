@@ -6,7 +6,12 @@ import javax.transaction.Transactional;
 public class JavaxTransactionalClassWithNestedClass {
 
     class InnerClass {
-        void callingTransactional() {
+        void nonTransactionalMethod() {
+            JavaxTransactionalClassWithNestedClass.this.transactionalMethodWithRequiredSemantics();
+        }
+
+        @Transactional
+        void transactionalMethodWithRequiredSemantics() {
             JavaxTransactionalClassWithNestedClass.this.transactionalMethodWithRequiredSemantics();
         }
 

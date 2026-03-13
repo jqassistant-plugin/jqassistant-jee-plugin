@@ -6,7 +6,12 @@ import jakarta.transaction.Transactional;
 public class JakartaTransactionalClassWithNestedClass {
 
     class InnerClass {
-        void callingTransactional() {
+        void nonTransactionalMethod() {
+            JakartaTransactionalClassWithNestedClass.this.transactionalMethodWithRequiredSemantics();
+        }
+
+        @Transactional
+        void transactionalMethodWithRequiredSemantics() {
             JakartaTransactionalClassWithNestedClass.this.transactionalMethodWithRequiredSemantics();
         }
 

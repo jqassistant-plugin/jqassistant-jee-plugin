@@ -4,7 +4,12 @@ import jakarta.transaction.Transactional;
 
 public class JakartaSubClassWithCallingNestedClass extends JakartaSimpleTransactionalClass {
     class InnerClass {
-        void callingTransactional() {
+        void nonTransactionalMethod() {
+            JakartaSubClassWithCallingNestedClass.super.methodWithRequiredSemantics();
+        }
+
+        @Transactional
+        void transactionalMethodWithRequiredSemantics() {
             JakartaSubClassWithCallingNestedClass.super.methodWithRequiredSemantics();
         }
 
