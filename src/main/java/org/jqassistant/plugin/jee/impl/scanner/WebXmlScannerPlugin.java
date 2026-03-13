@@ -237,8 +237,10 @@ public class WebXmlScannerPlugin extends AbstractScannerPlugin<FileResource, Web
             TypeDescriptor cachedType = resolveType(exceptionType.getValue(), context);
             errorPageDescriptor.setExceptionType(cachedType);
         }
-        errorPageDescriptor.setErrorPage(errorPageType.getLocation()
-                .getValue());
+        WarPathType location = errorPageType.getLocation();
+        if (location != null) {
+            errorPageDescriptor.setErrorPage(location.getValue());
+        }
         return errorPageDescriptor;
     }
 
@@ -381,8 +383,10 @@ public class WebXmlScannerPlugin extends AbstractScannerPlugin<FileResource, Web
             if (fileSizeThreshold != null) {
                 multipartConfigDescriptor.setFileSizeThreshold(fileSizeThreshold.longValue());
             }
-            multipartConfigDescriptor.setLocation(multipartConfig.getLocation()
-                    .getValue());
+            https.jakarta_ee.xml.ns.jakartaee.String location = multipartConfig.getLocation();
+            if (location != null) {
+                multipartConfigDescriptor.setLocation(location.getValue());
+            }
             multipartConfigDescriptor.setMaxFileSize(multipartConfig.getMaxFileSize());
             multipartConfigDescriptor.setMaxRequestSize(multipartConfig.getMaxRequestSize());
             servletDescriptor.setMultipartConfig(multipartConfigDescriptor);
