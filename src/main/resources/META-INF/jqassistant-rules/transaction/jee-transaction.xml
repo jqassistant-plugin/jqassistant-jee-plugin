@@ -16,20 +16,20 @@
             // If the target transaction semantics is SUPPORTS, the transaction handling will not change regardless of the source transaction semantics. It is therefore handled separately in the WHERE clause.
             // The transaction semantics 'NONE' is assigned to methods neither implicitly (class-level) nor explicitly (method-level) annotated as transactional.
             WITH [
-              {sourceTx: 'REQUIRED', targetTx: 'REQUIRED'},
-              {sourceTx: 'REQUIRES_NEW', targetTx: 'REQUIRED'},
-              {sourceTx: 'MANDATORY', targetTx: 'REQUIRED'},
-              {sourceTx: 'NESTED', targetTx: 'REQUIRED'},
-              {sourceTx: 'NEVER', targetTx: 'NEVER'},
-              {sourceTx: 'NOT_SUPPORTED', targetTx: 'NEVER'},
-              {sourceTx: 'NEVER', targetTx: 'NOT_SUPPORTED'},
-              {sourceTx: 'NOT_SUPPORTED', targetTx: 'NOT_SUPPORTED'},
-              {sourceTx: 'REQUIRED', targetTx: 'MANDATORY'},
-              {sourceTx: 'REQUIRES_NEW', targetTx: 'MANDATORY'},
-              {sourceTx: 'MANDATORY', targetTx: 'MANDATORY'},
-              {sourceTx: 'NESTED', targetTx: 'MANDATORY'},
-              {sourceTx: 'NONE', targetTx: 'NEVER'},
-              {sourceTx: 'NONE', targetTx: 'NOT_SUPPORTED'}
+              {sourceTxSemantics: 'REQUIRED', targetTxSemantics: 'REQUIRED'},
+              {sourceTxSemantics: 'REQUIRES_NEW', targetTxSemantics: 'REQUIRED'},
+              {sourceTxSemantics: 'MANDATORY', targetTxSemantics: 'REQUIRED'},
+              {sourceTxSemantics: 'NESTED', targetTxSemantics: 'REQUIRED'},
+              {sourceTxSemantics: 'NEVER', targetTxSemantics: 'NEVER'},
+              {sourceTxSemantics: 'NOT_SUPPORTED', targetTxSemantics: 'NEVER'},
+              {sourceTxSemantics: 'NEVER', targetTxSemantics: 'NOT_SUPPORTED'},
+              {sourceTxSemantics: 'NOT_SUPPORTED', targetTxSemantics: 'NOT_SUPPORTED'},
+              {sourceTxSemantics: 'REQUIRED', targetTxSemantics: 'MANDATORY'},
+              {sourceTxSemantics: 'REQUIRES_NEW', targetTxSemantics: 'MANDATORY'},
+              {sourceTxSemantics: 'MANDATORY', targetTxSemantics: 'MANDATORY'},
+              {sourceTxSemantics: 'NESTED', targetTxSemantics: 'MANDATORY'},
+              {sourceTxSemantics: 'NONE', targetTxSemantics: 'NEVER'},
+              {sourceTxSemantics: 'NONE', targetTxSemantics: 'NOT_SUPPORTED'}
             ] as semanticsCombinationsWithoutTransactionChange
             MATCH
               (artifact:Artifact)-[:CONTAINS]->(callingType:Java:Type),
@@ -55,7 +55,7 @@
               // Private callers themselves are not handled as violations since they are only non-private callers are relevant regarding transaction handling
               OR sourceMethod.visibility = 'private'
               OR (
-                {sourceTx: sourceTxSemantics, targetTx: targetTxSemantics} IN semanticsCombinationsWithoutTransactionChange
+                {sourceTxSemantics: sourceTxSemantics, targetTxSemantics: targetTxSemantics} IN semanticsCombinationsWithoutTransactionChange
               )
               // If the targetTxMethod has the SUPPORTS semantics, it never changes the current transaction
               OR targetTxMethod.transactionPropagation = 'SUPPORTS'
@@ -63,9 +63,9 @@
             RETURN
               DISTINCT callingType as Type,
               sourceMethod AS SourceMethod,
-              sourceTxSemantics AS SourceSemantics,
+              sourceTxSemantics AS SourceTransactionalSemantics,
               targetTxMethod AS TargetTransactionalMethod,
-              targetTxSemantics AS TargetSemantics,
+              targetTxSemantics AS TargetTransactionalSemantics,
               invokes[0].lineNumber as LineNumber
             ORDER BY
               Type.fqn, SourceMethod.name, TargetTransactionalMethod.name
