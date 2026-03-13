@@ -6,16 +6,27 @@ import javax.transaction.Transactional;
 public class JavaxTransactionalClassWithNestedClass {
 
     class InnerClass {
-        void callingTransactional() {
-            JavaxTransactionalClassWithNestedClass.this.transactionalMethod();
+        void nonTransactionalMethod() {
+            JavaxTransactionalClassWithNestedClass.this.transactionalMethodWithRequiredSemantics();
+        }
+
+        @Transactional
+        void transactionalMethodWithRequiredSemantics() {
+            JavaxTransactionalClassWithNestedClass.this.transactionalMethodWithRequiredSemantics();
         }
 
         void callingPrivateMethod() {
             JavaxTransactionalClassWithNestedClass.this.privateMethod();
         }
+
+        // This method always runs without a transaction. The REQUIRED semantics of transactionalMethodWithRequiredSemantics() would have no effect if called.
+        @Transactional(Transactional.TxType.NEVER)
+        void transactionalMethodWithNeverSemantics() {
+            JavaxTransactionalClassWithNestedClass.this.transactionalMethodWithRequiredSemantics();
+        }
     }
 
-    void transactionalMethod(){
+    void transactionalMethodWithRequiredSemantics(){
     }
 
     private void privateMethod() {
