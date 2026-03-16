@@ -11,7 +11,6 @@ import com.buschmais.jqassistant.core.scanner.api.Scanner;
 import com.buschmais.jqassistant.core.scanner.api.ScannerContext;
 import com.buschmais.jqassistant.core.scanner.api.Scope;
 import com.buschmais.jqassistant.core.store.api.Store;
-import com.buschmais.jqassistant.core.test.mockito.MethodNotMockedAnswer;
 import com.buschmais.jqassistant.plugin.common.api.model.PropertyDescriptor;
 import com.buschmais.jqassistant.plugin.common.api.scanner.filesystem.FileResource;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
@@ -155,29 +154,26 @@ class PersistenceXmlScannerPluginTest {
 
     @Test
     void scannerAcceptsIfInClasspathScope() {
-        FileResource item = mock(FileResource.class, new MethodNotMockedAnswer());
         String path = "/META-INF/persistence.xml";
         Scope scope = JavaScope.CLASSPATH;
 
-        assertThat(plugin.accepts(item, path, scope), is(true));
+        assertThat(plugin.accepts(item4V20, path, scope), is(true));
     }
 
     @Test
     void scannerAcceptsIfPersistenceXMLIsInMETAINF() {
-        FileResource item = mock(FileResource.class, new MethodNotMockedAnswer());
         String path = "/META-INF/persistence.xml";
         Scope scope = JavaScope.CLASSPATH;
 
-        assertThat(plugin.accepts(item, path, scope), is(true));
+        assertThat(plugin.accepts(item4V20, path, scope), is(true));
     }
 
     @Test
     void scannerAcceptsIfPersistenceXMLIsInWEBINF() {
-        FileResource item = mock(FileResource.class, new MethodNotMockedAnswer());
         String path = "/WEB-INF/persistence.xml";
         Scope scope = JavaScope.CLASSPATH;
 
-        assertThat(plugin.accepts(item, path, scope), is(true));
+        assertThat(plugin.accepts(item4V20, path, scope), is(true));
     }
 
     @Test

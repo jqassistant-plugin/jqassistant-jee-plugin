@@ -38,7 +38,8 @@ public class BeansXmlScannerPlugin extends AbstractScannerPlugin<FileResource, B
 
     @Override
     public boolean accepts(FileResource item, String path, Scope scope) {
-        return JavaScope.CLASSPATH.equals(scope) && ("/META-INF/beans.xml".equals(path) || "/WEB-INF/beans.xml".equals(path));
+        // not checking for root element "beans" here as CDI 1.0 allows empty beans.xml files
+        return (JavaScope.CLASSPATH.equals(scope) && "/META-INF/beans.xml".equals(path)) || "/WEB-INF/beans.xml".equals(path);
     }
 
     @Override

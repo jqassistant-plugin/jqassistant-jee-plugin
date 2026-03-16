@@ -16,7 +16,8 @@ import com.buschmais.jqassistant.plugin.xml.api.model.XmlFileDescriptor;
 
 import https.jakarta_ee.xml.ns.jakartaee.*;
 import org.jqassistant.plugin.jee.api.model.*;
-import org.jqassistant.plugin.jee.api.scope.EnterpriseApplicationScope;
+
+import static com.buschmais.jqassistant.core.shared.xml.XmlHelper.rootElementMatches;
 
 /**
  * Scanner plugin for the content of application XML descriptors (i.e.
@@ -36,7 +37,7 @@ public class ApplicationXmlScannerPlugin extends AbstractScannerPlugin<FileResou
 
     @Override
     public boolean accepts(FileResource item, String path, Scope scope) {
-        return EnterpriseApplicationScope.EAR.equals(scope) && "/META-INF/application.xml".equals(path);
+        return "/META-INF/application.xml".equals(path) && rootElementMatches(item::createStream, qname -> "application".equals(qname.getLocalPart()));
     }
 
     @Override

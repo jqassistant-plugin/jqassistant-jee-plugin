@@ -7,7 +7,6 @@ import com.buschmais.jqassistant.plugin.java.api.scanner.ArtifactScopedTypeResol
 import com.buschmais.jqassistant.plugin.java.api.scanner.TypeResolver;
 
 import org.jqassistant.plugin.jee.api.model.WebApplicationArchiveDescriptor;
-import org.jqassistant.plugin.jee.api.scope.WebApplicationScope;
 
 public class WebApplicationArchiveScannerPlugin extends AbstractZipArchiveScannerPlugin<WebApplicationArchiveDescriptor> {
 
@@ -20,7 +19,7 @@ public class WebApplicationArchiveScannerPlugin extends AbstractZipArchiveScanne
     protected Scope createScope(Scope currentScope, WebApplicationArchiveDescriptor archiveDescriptor, ScannerContext scannerContext) {
         TypeResolver typeResolver = new ArtifactScopedTypeResolver(archiveDescriptor, AbstractWarClassesResourceScannerPlugin.CLASSES_DIRECTORY);
         scannerContext.push(TypeResolver.class, typeResolver);
-        return WebApplicationScope.WAR;
+        return currentScope;
     }
 
     @Override

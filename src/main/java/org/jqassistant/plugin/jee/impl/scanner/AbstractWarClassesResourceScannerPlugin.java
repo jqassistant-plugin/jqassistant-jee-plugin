@@ -9,8 +9,6 @@ import com.buschmais.jqassistant.plugin.common.api.scanner.AbstractResourceScann
 import com.buschmais.jqassistant.plugin.common.api.scanner.filesystem.Resource;
 import com.buschmais.jqassistant.plugin.java.api.scanner.JavaScope;
 
-import org.jqassistant.plugin.jee.api.scope.WebApplicationScope;
-
 /**
  *
  */
@@ -29,8 +27,8 @@ public class AbstractWarClassesResourceScannerPlugin<R extends Resource, F exten
     }
 
     @Override
-    public boolean accepts(R item, String path, Scope scope) throws IOException {
-        return WebApplicationScope.WAR.equals(scope) && path.startsWith(CLASSES_DIRECTORY + "/");
+    public boolean accepts(R item, String path, Scope scope) {
+        return path.startsWith(CLASSES_DIRECTORY + "/");
     }
 
     @Override

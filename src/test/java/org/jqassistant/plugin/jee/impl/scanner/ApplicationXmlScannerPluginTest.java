@@ -2,7 +2,6 @@ package org.jqassistant.plugin.jee.impl.scanner;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.List;
 
 import javax.xml.transform.stream.StreamSource;
@@ -11,7 +10,6 @@ import com.buschmais.jqassistant.plugin.common.api.scanner.filesystem.FileResour
 import com.buschmais.jqassistant.plugin.xml.api.model.XmlFileDescriptor;
 
 import org.jqassistant.plugin.jee.api.model.*;
-import org.jqassistant.plugin.jee.api.scope.EnterpriseApplicationScope;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -20,6 +18,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
 
+import static com.buschmais.jqassistant.core.scanner.api.DefaultScope.NONE;
+import static java.util.Collections.emptyMap;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -72,8 +72,7 @@ class ApplicationXmlScannerPluginTest extends AbstractXmlScannerTest {
 
         when(scannerContext.getCurrentDescriptor()).thenReturn(xmlFileDescriptor);
         when(store.addDescriptorType(xmlFileDescriptor, ApplicationXmlDescriptor.class)).thenReturn(applicationXmlDescriptor);
-        when(scanner.scan(any(StreamSource.class), eq("/jee/META-INF/application.xml"), eq(EnterpriseApplicationScope.EAR))).thenReturn(
-                applicationXmlDescriptor);
+        when(scanner.scan(any(StreamSource.class), eq("/jee/META-INF/application.xml"), eq(NONE))).thenReturn(applicationXmlDescriptor);
         when(applicationXmlDescriptor.isXmlWellFormed()).thenReturn(true);
         when(applicationXmlDescriptor.getDescriptions()).thenReturn(mock(List.class));
         when(applicationXmlDescriptor.getDisplayNames()).thenReturn(mock(List.class));
@@ -97,8 +96,8 @@ class ApplicationXmlScannerPluginTest extends AbstractXmlScannerTest {
 
         ApplicationXmlScannerPlugin scannerPlugin = new ApplicationXmlScannerPlugin();
         scannerPlugin.initialize();
-        scannerPlugin.configure(scannerContext, Collections.<String, Object>emptyMap());
-        scannerPlugin.scan(fileResource, "/jee/META-INF/application.xml", EnterpriseApplicationScope.EAR, scanner);
+        scannerPlugin.configure(scannerContext, emptyMap());
+        scannerPlugin.scan(fileResource, "/jee/META-INF/application.xml", NONE, scanner);
 
         verify(store).addDescriptorType(xmlFileDescriptor, ApplicationXmlDescriptor.class);
         verify(applicationXmlDescriptor).setVersion("6");
