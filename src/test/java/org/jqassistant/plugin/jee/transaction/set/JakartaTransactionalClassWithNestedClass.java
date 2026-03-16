@@ -6,16 +6,27 @@ import jakarta.transaction.Transactional;
 public class JakartaTransactionalClassWithNestedClass {
 
     class InnerClass {
-        void callingTransactional() {
-            JakartaTransactionalClassWithNestedClass.this.transactionalMethod();
+        void nonTransactionalMethod() {
+            JakartaTransactionalClassWithNestedClass.this.transactionalMethodWithRequiredSemantics();
+        }
+
+        @Transactional
+        void transactionalMethodWithRequiredSemantics() {
+            JakartaTransactionalClassWithNestedClass.this.transactionalMethodWithRequiredSemantics();
         }
 
         void callingPrivateMethod() {
             JakartaTransactionalClassWithNestedClass.this.privateMethod();
         }
+
+        // This method always runs without a transaction. The REQUIRED semantics of transactionalMethodWithRequiredSemantics() would have no effect if called.
+        @Transactional(Transactional.TxType.NEVER)
+        void transactionalMethodWithNeverSemantics() {
+            JakartaTransactionalClassWithNestedClass.this.transactionalMethodWithRequiredSemantics();
+        }
     }
 
-    void transactionalMethod(){
+    void transactionalMethodWithRequiredSemantics(){
     }
 
     private void privateMethod() {

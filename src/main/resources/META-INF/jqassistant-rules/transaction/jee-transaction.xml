@@ -3,37 +3,74 @@
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v2.2 https://jqassistant.github.io/jqassistant/current/schema/jqassistant-rule-v2.2.xsd">
 
     <group id="jee-transaction:Default">
-        <includeConstraint refId="jee-transaction:TransactionalMethodMustNotBeInvokedFromSameClassOrSubclass"/>
+        <includeConstraint refId="jee-transaction:TransactionChangingMethodMustNotBeInvokedFromSameClassOrSubclass"/>
         <includeConstraint refId="jee-transaction:PrivateMethodMustNotBeAnnotatedWithTransactional"/>
     </group>
 
-    <constraint id="jee-transaction:TransactionalMethodMustNotBeInvokedFromSameClassOrSubclass">
+    <constraint id="jee-transaction:TransactionChangingMethodMustNotBeInvokedFromSameClassOrSubclass">
         <requiresConcept refId="jee-transaction:TransactionalMethod"/>
         <requiresConcept refId="java:GeneratedType"/>
         <requiresConcept refId="java:MemberInheritedFrom"/>
-        <description>Transactional methods must not be invoked from the same class or from a subclass within the inheritance hierarchy.</description>
+        <description>Transactional methods must not be invoked from the same class or from a subclass within the inheritance hierarchy if the transactional semantics of the invoked method requires a change to the current transaction handling.</description>
         <cypher><![CDATA[
+            // If the target transaction semantics is SUPPORTS, the transaction handling will not change regardless of the source transaction semantics. It is therefore handled separately in the WHERE clause.
+            // The transaction semantics 'NONE' is assigned to methods neither implicitly (class-level) nor explicitly (method-level) annotated as transactional.
+            WITH [
+              {sourceTxSemantics: 'REQUIRED', targetTxSemantics: 'REQUIRED'},
+              {sourceTxSemantics: 'REQUIRES_NEW', targetTxSemantics: 'REQUIRED'},
+              {sourceTxSemantics: 'MANDATORY', targetTxSemantics: 'REQUIRED'},
+              {sourceTxSemantics: 'NESTED', targetTxSemantics: 'REQUIRED'},
+              {sourceTxSemantics: 'NEVER', targetTxSemantics: 'NEVER'},
+              {sourceTxSemantics: 'NOT_SUPPORTED', targetTxSemantics: 'NEVER'},
+              {sourceTxSemantics: 'NEVER', targetTxSemantics: 'NOT_SUPPORTED'},
+              {sourceTxSemantics: 'NOT_SUPPORTED', targetTxSemantics: 'NOT_SUPPORTED'},
+              {sourceTxSemantics: 'REQUIRED', targetTxSemantics: 'MANDATORY'},
+              {sourceTxSemantics: 'REQUIRES_NEW', targetTxSemantics: 'MANDATORY'},
+              {sourceTxSemantics: 'MANDATORY', targetTxSemantics: 'MANDATORY'},
+              {sourceTxSemantics: 'NESTED', targetTxSemantics: 'MANDATORY'},
+              {sourceTxSemantics: 'NONE', targetTxSemantics: 'NEVER'},
+              {sourceTxSemantics: 'NONE', targetTxSemantics: 'NOT_SUPPORTED'}
+            ] as semanticsCombinationsWithoutTransactionChange
             MATCH
               (artifact:Artifact)-[:CONTAINS]->(callingType:Java:Type),
-              (callingType)<-[:DECLARES*0..]-(:Java:Type)-[:EXTENDS|IMPLEMENTS*0..]->(:Java:Type)-[:DECLARES]->(calledMethod:Method:JEE:Transactional),
-              (callingType)-[:DECLARES]->(callingMethod:Method),
-              path = (callingMethod)-[invokes:INVOKES*]->(calledMethod)
+              (callingType)-[:DECLARES]->(sourceMethod:Method),
+              (callingType)<-[:DECLARES*0..]-(:Java:Type)-[:EXTENDS|IMPLEMENTS*0..]->(:Java:Type)-[:DECLARES]->(targetTxMethod:Method:JEE:Transactional),
+              path = (sourceMethod)-[invokes:INVOKES*]->(targetTxMethod)
+            WITH
+              callingType,
+              sourceMethod,
+              COALESCE(sourceMethod.transactionPropagation, 'NONE') AS sourceTxSemantics,
+              targetTxMethod,
+              targetTxMethod.transactionPropagation AS targetTxSemantics,
+              path,
+              invokes
             WHERE
-              // Violations are direct calls from callingMethod to calledMethods and those with synthetic methods in between
-              ALL(intermediateMethod IN nodes(path)[1..-1] WHERE (intermediateMethod.synthetic IS NOT NULL AND intermediateMethod.synthetic))
+              // Violations are direct calls from callingMethod to calledMethods and those with synthetic or private methods in between
+              ALL(intermediateMethod IN nodes(path)[1..-1] WHERE (intermediateMethod.synthetic IS NOT NULL AND intermediateMethod.synthetic OR intermediateMethod.visibility = 'private'))
             AND NOT (
               artifact:Test
               OR callingType:Generated
               // Synthetic callers themselves are not handled as violations since the developer cannot control their generation
-              OR (callingMethod.synthetic IS NOT NULL AND callingMethod.synthetic)
+              OR (sourceMethod.synthetic IS NOT NULL AND sourceMethod.synthetic)
+              // Private callers themselves are not handled as violations since only non-private callers are relevant regarding transaction handling
+              OR sourceMethod.visibility = 'private'
+              OR (
+                {sourceTxSemantics: sourceTxSemantics, targetTxSemantics: targetTxSemantics} IN semanticsCombinationsWithoutTransactionChange
+              )
+              // If the targetTxMethod has the SUPPORTS semantics, it never changes the current transaction
+              OR targetTxMethod.transactionPropagation = 'SUPPORTS'
             )
             RETURN
               DISTINCT callingType as Type,
-              callingMethod as Method,
-              calledMethod as TransactionalMethod,
+              sourceMethod AS SourceMethod,
+              sourceTxSemantics AS SourceTransactionalSemantics,
+              targetTxMethod AS TargetTransactionalMethod,
+              targetTxSemantics AS TargetTransactionalSemantics,
               invokes[0].lineNumber as LineNumber
+            ORDER BY
+              Type.fqn, SourceMethod.name, TargetTransactionalMethod.name
         ]]></cypher>
-        <report primaryColumn="Method"/>
+        <report primaryColumn="SourceMethod"/>
     </constraint>
 
     <constraint id="jee-transaction:PrivateMethodMustNotBeAnnotatedWithTransactional">

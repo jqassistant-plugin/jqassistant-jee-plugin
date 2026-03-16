@@ -5,5 +5,8 @@ import javax.transaction.Transactional;
 public class JavaxSimpleClassWithTransactionalMethod {
 
     @Transactional
-    public void method() {}
+    public void methodWithRequiredSemantics() {}
+
+    @Transactional
+    public void methodWithOverriddenSemantics() {}
 }

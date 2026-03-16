@@ -6,7 +6,7 @@ import org.jqassistant.plugin.jee.transaction.set.inheritance.generic.GenericNon
 @Transactional
 public class JakartaCallingSubClassOfGenericNonTransactionalClass extends GenericNonTransactionalClass<Long> {
 
-    public void anotherMethod() {
+    public void methodWithRequiredSemantics() {
         method(1L);
     }
 

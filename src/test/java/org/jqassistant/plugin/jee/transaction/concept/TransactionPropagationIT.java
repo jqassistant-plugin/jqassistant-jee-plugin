@@ -7,6 +7,8 @@ import com.buschmais.jqassistant.core.rule.api.model.RuleException;
 import com.buschmais.jqassistant.plugin.java.api.model.MethodDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
+import com.buschmais.jqassistant.plugin.java.test.assertj.MethodDescriptorCondition;
+import com.buschmais.jqassistant.plugin.java.test.assertj.TypeDescriptorCondition;
 import org.jqassistant.plugin.jee.transaction.set.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -26,17 +28,27 @@ public class TransactionPropagationIT extends AbstractJavaPluginIT {
         store.beginTransaction();
 
         assertThat(conceptResult.getStatus()).isEqualTo(Result.Status.SUCCESS);
-        assertThat(conceptResult.getRows().size()).isEqualTo(1);
+        assertThat(conceptResult.getRows().size()).isEqualTo(5);
 
         Row row1  = conceptResult.getRows().get(0);
-        assertThat((TypeDescriptor) row1.getColumns().get("Type").getValue())
-                .is(typeDescriptor(testClass));
-        assertThat((MethodDescriptor) row1.getColumns().get("TransactionalMethod").getValue())
-                .is(methodDescriptor(testClass, "transactionalMethod"));
-        assertThat(row1.getColumns().get("TransactionPropagation").getLabel()).isEqualTo("REQUIRED");
+        assertTransactionalMethodWithTxSemantics(row1, typeDescriptor(testClass), methodDescriptor(testClass, "anotherTransactionalMethodWithRequiredSemantics"), "REQUIRED");
+
+        Row row2  = conceptResult.getRows().get(1);
+        assertTransactionalMethodWithTxSemantics(row2, typeDescriptor(testClass), methodDescriptor(testClass, "neverTransactionalCallingRequiredTransactionalTransitively"), "NEVER");
+
+        Row row3  = conceptResult.getRows().get(2);
+        assertTransactionalMethodWithTxSemantics(row3, typeDescriptor(testClass), methodDescriptor(testClass, "requiredTransactionalCallingRequiredTransactionalTransitively"), "REQUIRED");
+
+        Row row4  = conceptResult.getRows().get(3);
+        assertTransactionalMethodWithTxSemantics(row4, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodWithNeverSemantics"), "NEVER");
+
+        Row row5  = conceptResult.getRows().get(4);
+        assertTransactionalMethodWithTxSemantics(row5, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodWithRequiredSemantics"), "REQUIRED");
 
         store.commitTransaction();
     }
+
+
 
     @ParameterizedTest
     @ValueSource(classes = {JavaxEjbTypeAndMethodLevelTransactionPropagation.class, JakartaEjbTypeAndMethodLevelTransactionPropagation.class})
@@ -50,25 +62,13 @@ public class TransactionPropagationIT extends AbstractJavaPluginIT {
         assertThat(conceptResult.getRows().size()).isEqualTo(3);
 
         Row row1  = conceptResult.getRows().get(0);
-        assertThat((TypeDescriptor) row1.getColumns().get("Type").getValue())
-                .is(typeDescriptor(testClass));
-        assertThat((MethodDescriptor) row1.getColumns().get("TransactionalMethod").getValue())
-                .is(methodDescriptor(testClass, "transactionalMethodMandatory"));
-        assertThat(row1.getColumns().get("TransactionPropagation").getLabel()).isEqualTo("MANDATORY");
+        assertTransactionalMethodWithTxSemantics(row1, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodMandatory"), "MANDATORY");
 
         Row row2  = conceptResult.getRows().get(1);
-        assertThat((TypeDescriptor) row2.getColumns().get("Type").getValue())
-                .is(typeDescriptor(testClass));
-        assertThat((MethodDescriptor) row2.getColumns().get("TransactionalMethod").getValue())
-                .is(methodDescriptor(testClass, "transactionalMethodNever"));
-        assertThat(row2.getColumns().get("TransactionPropagation").getLabel()).isEqualTo("NEVER");
+        assertTransactionalMethodWithTxSemantics(row2, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodNever"), "NEVER");
 
         Row row3  = conceptResult.getRows().get(2);
-        assertThat((TypeDescriptor) row3.getColumns().get("Type").getValue())
-                .is(typeDescriptor(testClass));
-        assertThat((MethodDescriptor) row3.getColumns().get("TransactionalMethod").getValue())
-                .is(methodDescriptor(testClass, "transactionalMethodRequired"));
-        assertThat(row3.getColumns().get("TransactionPropagation").getLabel()).isEqualTo("REQUIRED");
+        assertTransactionalMethodWithTxSemantics(row3, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodRequired"), "REQUIRED");
 
         store.commitTransaction();
     }
@@ -85,11 +85,7 @@ public class TransactionPropagationIT extends AbstractJavaPluginIT {
         assertThat(conceptResult.getRows().size()).isEqualTo(1);
 
         Row row1  = conceptResult.getRows().get(0);
-        assertThat((TypeDescriptor) row1.getColumns().get("Type").getValue())
-                .is(typeDescriptor(testClass));
-        assertThat((MethodDescriptor) row1.getColumns().get("TransactionalMethod").getValue())
-                .is(methodDescriptor(testClass, "transactionalMethodMandatory"));
-        assertThat(row1.getColumns().get("TransactionPropagation").getLabel()).isEqualTo("MANDATORY");
+        assertTransactionalMethodWithTxSemantics(row1, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodMandatory"), "MANDATORY");
 
         store.commitTransaction();
     }
@@ -106,25 +102,13 @@ public class TransactionPropagationIT extends AbstractJavaPluginIT {
         assertThat(conceptResult.getRows().size()).isEqualTo(3);
 
         Row row1  = conceptResult.getRows().get(0);
-        assertThat((TypeDescriptor) row1.getColumns().get("Type").getValue())
-                .is(typeDescriptor(testClass));
-        assertThat((MethodDescriptor) row1.getColumns().get("TransactionalMethod").getValue())
-                .is(methodDescriptor(testClass, "transactionalMethodMandatory"));
-        assertThat(row1.getColumns().get("TransactionPropagation").getLabel()).isEqualTo("MANDATORY");
+        assertTransactionalMethodWithTxSemantics(row1, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodMandatory"), "MANDATORY");
 
         Row row2  = conceptResult.getRows().get(1);
-        assertThat((TypeDescriptor) row2.getColumns().get("Type").getValue())
-                .is(typeDescriptor(testClass));
-        assertThat((MethodDescriptor) row2.getColumns().get("TransactionalMethod").getValue())
-                .is(methodDescriptor(testClass, "transactionalMethodNever"));
-        assertThat(row2.getColumns().get("TransactionPropagation").getLabel()).isEqualTo("NEVER");
+        assertTransactionalMethodWithTxSemantics(row2, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodNever"), "NEVER");
 
         Row row3  = conceptResult.getRows().get(2);
-        assertThat((TypeDescriptor) row3.getColumns().get("Type").getValue())
-                .is(typeDescriptor(testClass));
-        assertThat((MethodDescriptor) row3.getColumns().get("TransactionalMethod").getValue())
-                .is(methodDescriptor(testClass, "transactionalMethodRequiresNew"));
-        assertThat(row3.getColumns().get("TransactionPropagation").getLabel()).isEqualTo("REQUIRES_NEW");
+        assertTransactionalMethodWithTxSemantics(row3, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodRequiresNew"), "REQUIRES_NEW");
 
         store.commitTransaction();
     }
@@ -141,19 +125,17 @@ public class TransactionPropagationIT extends AbstractJavaPluginIT {
         assertThat(conceptResult.getRows().size()).isEqualTo(2);
 
         Row row1  = conceptResult.getRows().get(0);
-        assertThat((TypeDescriptor) row1.getColumns().get("Type").getValue())
-                .is(typeDescriptor(testClass));
-        assertThat((MethodDescriptor) row1.getColumns().get("TransactionalMethod").getValue())
-                .is(methodDescriptor(testClass, "transactionalMethodRequired"));
-        assertThat(row1.getColumns().get("TransactionPropagation").getLabel()).isEqualTo("REQUIRED");
+        assertTransactionalMethodWithTxSemantics(row1, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodRequired"), "REQUIRED");
 
         Row row2  = conceptResult.getRows().get(1);
-        assertThat((TypeDescriptor) row2.getColumns().get("Type").getValue())
-                .is(typeDescriptor(testClass));
-        assertThat((MethodDescriptor) row2.getColumns().get("TransactionalMethod").getValue())
-                .is(methodDescriptor(testClass, "transactionalMethodRequiresNew"));
-        assertThat(row2.getColumns().get("TransactionPropagation").getLabel()).isEqualTo("REQUIRES_NEW");
+        assertTransactionalMethodWithTxSemantics(row2, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodRequiresNew"), "REQUIRES_NEW");
 
         store.commitTransaction();
+    }
+
+    private void assertTransactionalMethodWithTxSemantics(Row row, TypeDescriptorCondition typeDescriptorCondition, MethodDescriptorCondition methodDescriptorCondition, String transactionPropagation) {
+        assertThat((TypeDescriptor) row.getColumns().get("Type").getValue()).is(typeDescriptorCondition);
+        assertThat((MethodDescriptor) row.getColumns().get("TransactionalMethod").getValue()).is(methodDescriptorCondition);
+        assertThat(row.getColumns().get("TransactionPropagation").getLabel()).isEqualTo(transactionPropagation);
     }
 }

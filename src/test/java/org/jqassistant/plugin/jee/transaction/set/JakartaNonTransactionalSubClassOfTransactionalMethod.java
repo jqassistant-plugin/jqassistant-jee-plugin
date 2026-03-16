@@ -4,5 +4,5 @@ public class JakartaNonTransactionalSubClassOfTransactionalMethod extends Jakart
 
     // Method is not transactional, since method-level annotations are not inherited.
     @Override
-    public void transactionalMethod() {}
+    public void transactionalMethodWithRequiredSemantics() {}
 }
