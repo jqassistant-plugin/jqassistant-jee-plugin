@@ -1,5 +1,7 @@
 package org.jqassistant.plugin.jee.injection.test.set.javax;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 
@@ -28,6 +30,18 @@ public class JavaxInjectableA {
     }
 
     public void manipulateField() {
+        // Illegal modification
+        fieldOfInjectableB = null;
+    }
+
+    @PostConstruct
+    public void manipulateFieldViaPostConstruct() {
+        // Illegal modification
+        fieldOfInjectableB = null;
+    }
+
+    @PreDestroy
+    public void manipulateFieldViaPreDestroy() {
         // Illegal modification
         fieldOfInjectableB = null;
     }
