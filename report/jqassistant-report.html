@@ -1,0 +1,1787 @@
+<html>
+    <head>
+        <META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+        <title>jQAssistant Report</title>
+    </head>
+    <body>
+        <script type="text/javascript" xmlns:tns="http://schema.jqassistant.org/report/v2.9">
+            function getResultElement(id) {
+                return document.getElementById('resultOf' + id);
+            }
+
+            function showResult(ruleId) {
+                if (!ruleId) return;
+                    var details = document.getElementById(ruleId);
+                if (!details) return;
+                details.open = true;
+                details.scrollIntoView({
+                    block: "start"
+                    });
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                document.querySelectorAll(".timeStamp").forEach(stamp => {
+                    const date = new Date(stamp.textContent);
+                    const options = {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                        timeZoneName: "short"
+                    }
+                    const parts = new Intl.DateTimeFormat("en-US", options).formatToParts(date);
+                    function getValue(type) {
+                        for (var i = 0; i < parts.length; i++) {
+                            if (parts[i].type === type){
+                                return parts[i].value;
+                            }
+                        }
+                        return "";
+                    }
+                    stamp.textContent =
+                        `${getValue("day")}.`
+                        +`${getValue("month")}.`
+                        +`${getValue("year")} `
+                        +`${getValue("hour")}:`
+                        +`${getValue("minute")} `
+                        +`(${getValue("timeZoneName")})`;
+                });
+            });
+        </script>
+        <style type="text/css">
+            body {
+                font-family:'Open Sans', sans-serif;
+                line-height:1.5;
+                color:#3d3a37;
+                background-color:#FFFCF0
+                overflow: auto;
+                width:80%
+            }
+
+            a, a:link, a:visited, a:hover, a:focus, a:active {
+                color:#000;
+            }
+
+            h1 {
+                margin: 0;
+            }
+
+            h5 {
+            margin: 0;
+            }
+
+            h6 {
+                color:#747270;
+                font-weight:normal;
+                margin: 0;
+                }
+
+            h3 {
+                margin-bottom: 0;
+            }
+
+            ul {
+                margin-top: 0;
+                margin-left: 25px;
+                padding-left: 0;
+            }
+
+            .abstractRule {
+                font-style: italic;
+            }
+
+            table {
+                border-collapse:collapse;
+                background-color:#e0ddd1;
+                }
+
+            table th {
+            background-color:#aba9a1;
+                color:#fff;
+                }
+
+            table tr td, th {
+                border-style:solid;
+                border-width:1.5px;
+                border-color:#aba9a1;
+                padding:5px;
+                white-space: nowrap;
+            }
+
+            table tr th {
+                text-align:left;
+            }
+
+            #footer {
+                color:#747270;
+            }
+
+            .report-table {
+                display:inline-block;
+                width: max-content
+                border-collapse:collapse;
+                background-color:#e0ddd1;
+                border-radius: 10px;
+                white-space: normal;
+                overflow-wrap: anywhere;
+                overflow: hidden;
+                margin-right:10px;
+
+            }
+
+            .header-row {
+                background: #7a7974;
+                font-weight: 600;
+                border-bottom: 1px solid #ccc;
+                background-color:#aba9a1;
+                color:#fff;
+            }
+
+            .columns-grid {
+                display: grid;
+                grid-template-columns:  55px 65px 80px 90px minmax(350px,1Fr);
+                padding: 6px;
+            }
+
+            .groups-grid {
+                display: grid;
+                grid-template-columns:  40px 350px minmax(300px,1Fr);
+                padding: 6px;
+            }
+
+            .details-content {
+                margin: 10px;
+            }
+
+            .row-separator {
+                border-bottom: 1px solid #ddd;
+            }
+
+            .rule-name {
+                cursor:pointer;
+                text-decoration:underline;
+            }
+
+            .result {
+                margin-bottom: 12px;
+                color:#3d3a37;
+            }
+
+            .success {
+                background-color:#43a047; 
+                color:#fff;
+            }
+
+            .failure {
+                background-color:#ce413c; 
+                color:#fff;
+            }
+
+            .warning {
+                background-color:#e3ad24; 
+                color:#fff;
+            }
+
+            .skipped {
+                background-color:#bfbdb4; 
+            }
+        </style>
+        <h1>
+            jQAssistant Report - jQAssistant JEE Plugin</h1>
+        <h5>
+                        Timestamp:
+            <span class="timeStamp">2026-04-16T10:51:53.841Z</span>
+        </h5>
+        <div>
+            <h3>Constraints</h3>
+            <h6>
+                <ul>
+                    <li>Move the mouse over a constraint to view a description.</li>
+                    <li>Click on a constraint to open a details view.</li>
+                </ul>
+            </h6>
+            <section class="report-table">
+                <div class="header-row columns-grid">
+                    <div>#</div>
+                    <div>Status</div>
+                    <div>Severity</div>
+                    <div>Count</div>
+                    <div>Constraint</div>
+                </div>
+                <details id="jqassistant-plugin-maven:GroupId" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>1</div>
+                        <div>
+                            <span title="No Violations Found">&#9728;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>major</div>
+                        <div>0</div>
+                        <div>
+                            <span title="The groupId for jQAssistant plugin Maven projects must follow the pattern 'org.jqassistant.plugin.<project>'." class="rule-name">jqassistant-plugin-maven:GroupId</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjqassistant-plugin-maven:GroupId" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">The groupId for jQAssistant plugin Maven projects must follow the pattern 'org.jqassistant.plugin.&lt;project&gt;'.</pre>
+                        <p> (no result)</p>
+                    </div>
+                </details>
+                <details id="jqassistant-plugin-maven:MavenModulesMustUseParentGroupId" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>2</div>
+                        <div>
+                            <span title="No Violations Found">&#9728;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>major</div>
+                        <div>0</div>
+                        <div>
+                            <span title="All Maven projects must define the same groupId as the parent of the plugin project." class="rule-name">jqassistant-plugin-maven:MavenModulesMustUseParentGroupId</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjqassistant-plugin-maven:MavenModulesMustUseParentGroupId" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">All Maven projects must define the same groupId as the parent of the plugin project.</pre>
+                        <p> (no result)</p>
+                        <table>
+                            <tr>
+                                <th>Required Concept</th><th>Status</th>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('jqassistant-plugin-maven:ParentProject')">jqassistant-plugin-maven:ParentProject</span></td><td><span class="success">success</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </details>
+                <details id="jqassistant-plugin-maven:ParentProjectMustDefineDeveloper" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>3</div>
+                        <div>
+                            <span title="No Violations Found">&#9728;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>major</div>
+                        <div>0</div>
+                        <div>
+                            <span title="At least one developer must be specified in the &quot;developers&quot; section of the parent pom.xml of a plugin project." class="rule-name">jqassistant-plugin-maven:ParentProjectMustDefineDeveloper</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjqassistant-plugin-maven:ParentProjectMustDefineDeveloper" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">At least one developer must be specified in the "developers" section of the parent pom.xml of a plugin project.</pre>
+                        <p> (no result)</p>
+                        <table>
+                            <tr>
+                                <th>Required Concept</th><th>Status</th>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('jqassistant-plugin-maven:ParentProject')">jqassistant-plugin-maven:ParentProject</span></td><td><span class="success">success</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </details>
+                <details id="jqassistant-plugin-maven:ParentProjectMustDefineScmSection" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>4</div>
+                        <div>
+                            <span title="No Violations Found">&#9728;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>major</div>
+                        <div>0</div>
+                        <div>
+                            <span title="A SCM section having both connection and developerConnection set to &quot;scm:git:https://github.com/jqassistant-plugin/_repository-name_&quot; must be specified in the parent pom.xml of a plugin project." class="rule-name">jqassistant-plugin-maven:ParentProjectMustDefineScmSection</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjqassistant-plugin-maven:ParentProjectMustDefineScmSection" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">A SCM section having both connection and developerConnection set to "scm:git:https://github.com/jqassistant-plugin/_repository-name_" must be specified in the parent pom.xml of a plugin project.</pre>
+                        <p> (no result)</p>
+                        <table>
+                            <tr>
+                                <th>Required Concept</th><th>Status</th>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('jqassistant-plugin-maven:ParentProject')">jqassistant-plugin-maven:ParentProject</span></td><td><span class="success">success</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </details>
+                <details id="jqassistant-plugin-maven:ParentProjectMustDefineUrl" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>5</div>
+                        <div>
+                            <span title="No Violations Found">&#9728;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>major</div>
+                        <div>0</div>
+                        <div>
+                            <span title="The project URL must be defined in the parent pom.xml of a plugin project." class="rule-name">jqassistant-plugin-maven:ParentProjectMustDefineUrl</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjqassistant-plugin-maven:ParentProjectMustDefineUrl" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">The project URL must be defined in the parent pom.xml of a plugin project.</pre>
+                        <p> (no result)</p>
+                        <table>
+                            <tr>
+                                <th>Required Concept</th><th>Status</th>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('jqassistant-plugin-maven:ParentProject')">jqassistant-plugin-maven:ParentProject</span></td><td><span class="success">success</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </details>
+                <details id="jqassistant-plugin-package:PackagesMustHaveGroupIdPrefix" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>6</div>
+                        <div>
+                            <span title="No Violations Found">&#9728;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>major</div>
+                        <div>0</div>
+                        <div>
+                            <span title="All package names used in a Maven project must start with the groupId." class="rule-name">jqassistant-plugin-package:PackagesMustHaveGroupIdPrefix</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjqassistant-plugin-package:PackagesMustHaveGroupIdPrefix" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">All package names used in a Maven project must start with the groupId.</pre>
+                        <p> (no result)</p>
+                        <table>
+                            <tr>
+                                <th>Required Concept</th><th>Status</th>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('java:GeneratedType')">java:GeneratedType</span></td><td><span class="success">success</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </details>
+                <details id="jqassistant-plugin-plugin:Neo4jProceduresMustBeRegistered" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>7</div>
+                        <div>
+                            <span title="No Violations Found">&#9728;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>major</div>
+                        <div>0</div>
+                        <div>
+                            <span title="Types declaring Neo4j procedures must be registered." class="rule-name">jqassistant-plugin-plugin:Neo4jProceduresMustBeRegistered</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjqassistant-plugin-plugin:Neo4jProceduresMustBeRegistered" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">Types declaring Neo4j procedures must be registered.</pre>
+                        <p> (no result)</p>
+                        <table>
+                            <tr>
+                                <th>Required Concept</th><th>Status</th>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('neo4j:Procedure')">neo4j:Procedure</span></td><td><span class="success">success</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('jqassistant-plugin-plugin:PluginRegistersProcedure')">jqassistant-plugin-plugin:PluginRegistersProcedure</span></td><td><span class="success">success</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </details>
+                <details id="jqassistant-plugin-plugin:Neo4jUserFunctionsMustBeRegistered" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>8</div>
+                        <div>
+                            <span title="No Violations Found">&#9728;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>major</div>
+                        <div>0</div>
+                        <div>
+                            <span title="Types declaring Neo4j user functions must be registered." class="rule-name">jqassistant-plugin-plugin:Neo4jUserFunctionsMustBeRegistered</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjqassistant-plugin-plugin:Neo4jUserFunctionsMustBeRegistered" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">Types declaring Neo4j user functions must be registered.</pre>
+                        <p> (no result)</p>
+                        <table>
+                            <tr>
+                                <th>Required Concept</th><th>Status</th>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('neo4j:UserFunction')">neo4j:UserFunction</span></td><td><span class="success">success</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('jqassistant-plugin-plugin:PluginRegistersUserFunction')">jqassistant-plugin-plugin:PluginRegistersUserFunction</span></td><td><span class="success">success</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </details>
+                <details id="jqassistant-plugin-test:IntegrationTestClassSuffix" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>9</div>
+                        <div>
+                            <span title="No Violations Found">&#9728;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>major</div>
+                        <div>0</div>
+                        <div>
+                            <span title="All integration test classes must have the name suffix &quot;IT&quot; for being executed using the Maven Failsafe Plugin." class="rule-name">jqassistant-plugin-test:IntegrationTestClassSuffix</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjqassistant-plugin-test:IntegrationTestClassSuffix" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">All integration test classes must have the name suffix "IT" for being executed using the Maven Failsafe Plugin.</pre>
+                        <p> (no result)</p>
+                        <table>
+                            <tr>
+                                <th>Required Concept</th><th>Status</th>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('jqassistant-plugin-test:IT')">jqassistant-plugin-test:IT</span></td><td><span class="success">success</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </details>
+                <details id="jqassistant-plugin-plugin:PluginDescriptorShouldProvideVersion" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>10</div>
+                        <div>
+                            <span title="No Violations Found">&#9728;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>minor</div>
+                        <div>0</div>
+                        <div>
+                            <span title="The jQAssistant XML Plugin descriptor (&quot;/META-INF/jqassistant-plugin.xml&quot;) should provide a &quot;version&quot; attribute for its root element." class="rule-name">jqassistant-plugin-plugin:PluginDescriptorShouldProvideVersion</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjqassistant-plugin-plugin:PluginDescriptorShouldProvideVersion" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">The jQAssistant XML Plugin descriptor ("/META-INF/jqassistant-plugin.xml") should provide a "version" attribute for its root element.</pre>
+                        <p> (no result)</p>
+                        <table>
+                            <tr>
+                                <th>Required Concept</th><th>Status</th>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('jqassistant-plugin-plugin:PluginDescriptor')">jqassistant-plugin-plugin:PluginDescriptor</span></td><td><span class="success">success</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </details>
+            </section>
+        </div>
+        <div>
+            <h3>Concepts</h3>
+            <h6>
+                <ul>
+                    <li>Move the mouse over a concept to view a description.</li>
+                    <li>Click on a concept to open a details view.</li>
+                    <li>Abstract concepts are shown in italics.</li>
+                </ul>
+            </h6>
+            <section class="report-table">
+                <div class="header-row columns-grid">
+                    <div>#</div>
+                    <div>Status</div>
+                    <div>Severity</div>
+                    <div>Count</div>
+                    <div>Concept</div>
+                </div>
+                <details id="java:GeneratedLombokType" class="row-separator">
+                    <summary class="warning columns-grid">
+                        <div>1</div>
+                        <div>
+                            <span title="No Matches Found">&#127783;&nbsp;</span><span title="Warning (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#128901;</span>
+                        </div>
+                        <div>minor</div>
+                        <div>0</div>
+                        <div>
+                            <span title="Labels types generated by Lombok as 'Generated' (requires 'lombok.addLombokGeneratedAnnotation=true' in 'lombok.config')." class="rule-name">java:GeneratedLombokType</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjava:GeneratedLombokType" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">Labels types generated by Lombok as 'Generated' (requires 'lombok.addLombokGeneratedAnnotation=true' in 'lombok.config').</pre>
+                        <div class="result">
+                            <table>
+                                <tr>
+                                    <th>GeneratedTypes</th>
+                                </tr>
+                                <tr>
+                                    <td>0</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </details>
+                <details id="jqassistant-plugin-plugin:PluginRegistersProcedure" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>1</div>
+                        <div>
+                            <span title="No Matches Found">&#127783;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>info</div>
+                        <div>0</div>
+                        <div>
+                            <span title="Creates a `REGISTERS` relation between all procedure class elements of the jQAssistant plugin
+            descriptor to the matching Java type." class="rule-name">jqassistant-plugin-plugin:PluginRegistersProcedure</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjqassistant-plugin-plugin:PluginRegistersProcedure" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">Creates a `REGISTERS` relation between all procedure class elements of the jQAssistant plugin
+            descriptor to the matching Java type.</pre>
+                        <p> (no result)</p>
+                        <table>
+                            <tr>
+                                <th>Required Concept</th><th>Status</th>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('jqassistant-plugin-plugin:PluginDescriptor')">jqassistant-plugin-plugin:PluginDescriptor</span></td><td><span class="success">success</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </details>
+                <details id="jqassistant-plugin-plugin:PluginRegistersUserFunction" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>2</div>
+                        <div>
+                            <span title="No Matches Found">&#127783;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>info</div>
+                        <div>0</div>
+                        <div>
+                            <span title="Creates a `REGISTERS` relation between all function class elements of the jQAssistant plugin
+            descriptor to the matching Java type." class="rule-name">jqassistant-plugin-plugin:PluginRegistersUserFunction</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjqassistant-plugin-plugin:PluginRegistersUserFunction" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">Creates a `REGISTERS` relation between all function class elements of the jQAssistant plugin
+            descriptor to the matching Java type.</pre>
+                        <p> (no result)</p>
+                        <table>
+                            <tr>
+                                <th>Required Concept</th><th>Status</th>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('jqassistant-plugin-plugin:PluginDescriptor')">jqassistant-plugin-plugin:PluginDescriptor</span></td><td><span class="success">success</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </details>
+                <details id="jqassistant-plugin-test:IT" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>3</div>
+                        <div>
+                            <span title="No Matches Found">&#127783;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>info</div>
+                        <div>0</div>
+                        <div>
+                            <span title="Adds a label &quot;IntegrationTest&quot; to all non-abstract classes deriving from AbstractPluginIT or AbstractJavaPluginIT." class="rule-name">jqassistant-plugin-test:IT</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjqassistant-plugin-test:IT" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">Adds a label "IntegrationTest" to all non-abstract classes deriving from AbstractPluginIT or AbstractJavaPluginIT.</pre>
+                        <p> (no result)</p>
+                        <table>
+                            <tr>
+                                <th>Required Concept</th><th>Status</th>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('junit5:TestClass')">junit5:TestClass</span></td><td><span class="success">success</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </details>
+                <details id="junit5:RepeatedTestMethod" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>4</div>
+                        <div>
+                            <span title="No Matches Found">&#127783;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>info</div>
+                        <div>0</div>
+                        <div>
+                            <span title="Finds all test methods (i.e. annotated with &quot;@org.junit.jupiter.api.RepeatedTest&quot;) and
+labels them with &quot;Test&quot;, &quot;Repeated&quot;, and &quot;Junit5&quot;." class="rule-name">junit5:RepeatedTestMethod</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjunit5:RepeatedTestMethod" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">Finds all test methods (i.e. annotated with "@org.junit.jupiter.api.RepeatedTest") and
+labels them with "Test", "Repeated", and "Junit5".</pre>
+                        <p> (no result)</p>
+                    </div>
+                </details>
+                <details id="junit5:TestTemplateMethod" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>5</div>
+                        <div>
+                            <span title="No Matches Found">&#127783;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>info</div>
+                        <div>0</div>
+                        <div>
+                            <span title="Labels all methods annotated by &quot;@org.junit.jupiter.api.TestTemplate&quot;
+with &quot;Junit5&quot;, &quot;Test&quot; and &quot;Template&quot;." class="rule-name">junit5:TestTemplateMethod</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjunit5:TestTemplateMethod" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">Labels all methods annotated by "@org.junit.jupiter.api.TestTemplate"
+with "Junit5", "Test" and "Template".</pre>
+                        <p> (no result)</p>
+                    </div>
+                </details>
+                <details id="neo4j:Procedure" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>6</div>
+                        <div>
+                            <span title="No Matches Found">&#127783;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>info</div>
+                        <div>0</div>
+                        <div>
+                            <span title="Labels all types annotated with &quot;@org.neo4j.procedure.Procedure&quot; with `Neo4j` and `Procedure`." class="rule-name">neo4j:Procedure</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfneo4j:Procedure" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">Labels all types annotated with "@org.neo4j.procedure.Procedure" with `Neo4j` and `Procedure`.</pre>
+                        <p> (no result)</p>
+                    </div>
+                </details>
+                <details id="neo4j:UserFunction" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>7</div>
+                        <div>
+                            <span title="No Matches Found">&#127783;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>info</div>
+                        <div>0</div>
+                        <div>
+                            <span title="Labels all types annotated with &quot;@org.neo4j.procedure.UserFunction&quot; with `Neo4j` and
+            `UserFunction`." class="rule-name">neo4j:UserFunction</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfneo4j:UserFunction" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">Labels all types annotated with "@org.neo4j.procedure.UserFunction" with `Neo4j` and
+            `UserFunction`.</pre>
+                        <p> (no result)</p>
+                    </div>
+                </details>
+                <details id="java:GeneratedType" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>8</div>
+                        <div>
+                            <span title="Matches Found">&#9728;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>minor</div>
+                        <div>0</div>
+                        <div>
+                            <span title="Reports the count of types labeled with `Generated`, grouped by containing artifact." class="rule-name">java:GeneratedType</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjava:GeneratedType" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">Reports the count of types labeled with `Generated`, grouped by containing artifact.</pre>
+                        <p> (no result)</p>
+                        <table>
+                            <tr>
+                                <th>Providing Concept</th><th>Status</th>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('plugin:GeneratedType')">plugin:GeneratedType</span></td><td><span class="success">success</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('java:GeneratedLombokType')">java:GeneratedLombokType</span></td><td><span class="failure">failure</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </details>
+                <details id="plugin:GeneratedType" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>9</div>
+                        <div>
+                            <span title="Matches Found">&#9728;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>minor</div>
+                        <div>131</div>
+                        <div>
+                            <span title="Marks all generated classes with the label :Generated." class="rule-name">plugin:GeneratedType</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfplugin:GeneratedType" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">Marks all generated classes with the label :Generated.</pre>
+                        <div class="result">
+                            <table>
+                                <tr>
+                                    <th>GeneratedType</th>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.XsdIntegerType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.Alternatives</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.SecurityRoleRefType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.LocalHomeType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.ListenerType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.EjbRefNameType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.ErrorCodeType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.JspFileType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.PersistenceUnitRefType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.WelcomeFileListType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.AbsoluteOrderingType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.Interceptors</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.Beans</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.MessageDestinationType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.JavaIdentifierType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.CookieConfigType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.Decorators</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.ApplicationType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.WebType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.TransactionSupportType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.SecurityConstraintType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.AuthConstraintType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.XsdStringType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.RoleNameType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.JspPropertyGroupType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.DataSourceType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.DisplayNameType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.ServletNameType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.AdministeredObjectType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.InjectionTargetType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.JmsConnectionFactoryType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.EjbRefType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.AddressingType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.JndiNameType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.ObjectFactory</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.SessionConfigType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.LocaleEncodingMappingType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.EjbRefTypeType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.MimeMappingType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.JmsDestinationType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.AuthMethodType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.XsdNonNegativeIntegerType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.ConnectionFactoryResourceType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.FormLoginConfigType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.XsdBooleanType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.ResourceRefType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.JdbcUrlType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.PersistenceContextRefType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.IconType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.SecurityRoleType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.CookiePathType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.TaglibType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.Scan$Exclude$IfClassNotAvailable</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.MailSessionType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.EmptyType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.PortComponentRefType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.FullyQualifiedClassType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.CookieDomainType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.PathType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.ServletType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.RunAsType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.MimeTypeType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.MessageDestinationRefType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.XsdAnyURIType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.TransportGuaranteeType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.PersistenceContextSynchronizationType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.FilterType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.TrueFalseType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.GenericBooleanType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.WarPathType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.ServletMappingType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.XsdPositiveIntegerType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.RemoteType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.DescriptionType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.WebResourceCollectionType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.RespectBindingType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.LocaleEncodingMappingListType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.CookieCommentType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.HomeType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.OrderingOthersType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.XsdNMTOKENType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.DispatcherType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.FilterMappingType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.JavaTypeType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.EnvEntryType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.ParamValueType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.ServiceRefType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.LoginConfigType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.PropertyType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.Scan$Exclude$IfSystemProperty</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.EjbLocalRefType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.ResAuthType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.TrackingModeType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.ErrorPageType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.MessageDestinationLinkType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.NonEmptyStringType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.String</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.HandlerType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.MessageDestinationUsageType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.UrlPatternType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.XsdQNameType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.ResourceEnvRefType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.ModuleType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.HandlerChainType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.EnvEntryTypeValuesType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.EjbLinkType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.WebAppType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.LocalType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.FilterNameType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.Scan</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.CookieNameType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.AddressingResponsesType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.MessageDestinationTypeType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.HandlerChainsType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.Scan$Exclude</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.PersistenceContextTypeType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.LifecycleCallbackType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.IsolationLevelType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.UserDataConstraintType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.Scan$Exclude$IfClassAvailable</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.JspConfigType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.ResSharingScopeType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.jakartaee.MultipartConfigType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.persistence.PersistenceUnitValidationModeType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.persistence.PersistenceUnitTransactionType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.persistence.Persistence$PersistenceUnit$Properties$Property</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.persistence.PersistenceUnitCachingType</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.persistence.Persistence$PersistenceUnit$Properties</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.persistence.ObjectFactory</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.persistence.Persistence</td>
+                                </tr>
+                                <tr>
+                                    <td>https.jakarta_ee.xml.ns.persistence.Persistence$PersistenceUnit</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </details>
+                <details id="jqassistant-plugin-maven:ParentProject" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>10</div>
+                        <div>
+                            <span title="Matches Found">&#9728;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>info</div>
+                        <div>1</div>
+                        <div>
+                            <span title="Labels all Maven projects which declare &quot;org.jqassistant.plugin:parent&quot; as parent module with &quot;Parent&quot;." class="rule-name">jqassistant-plugin-maven:ParentProject</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjqassistant-plugin-maven:ParentProject" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">Labels all Maven projects which declare "org.jqassistant.plugin:parent" as parent module with "Parent".</pre>
+                        <div class="result">
+                            <table>
+                                <tr>
+                                    <th>parent</th>
+                                </tr>
+                                <tr>
+                                    <td>jQAssistant JEE Plugin</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </details>
+                <details id="jqassistant-plugin-plugin:PluginDescriptor" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>11</div>
+                        <div>
+                            <span title="Matches Found">&#9728;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>info</div>
+                        <div>1</div>
+                        <div>
+                            <span title="Labels jQAssistant plugin descriptor files with `jQAssistant` and `PluginDescriptor`." class="rule-name">jqassistant-plugin-plugin:PluginDescriptor</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjqassistant-plugin-plugin:PluginDescriptor" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">Labels jQAssistant plugin descriptor files with `jQAssistant` and `PluginDescriptor`.</pre>
+                        <div class="result">
+                            <table>
+                                <tr>
+                                    <th>Artifact</th><th>PluginDescriptor</th>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin:jqassistant-jee-plugin:jar:2.1.0-SNAPSHOT</td><td>/META-INF/jqassistant-plugin.xml</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </details>
+                <details id="junit5:ParameterizedTestMethod" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>12</div>
+                        <div>
+                            <span title="Matches Found">&#9728;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>info</div>
+                        <div>90</div>
+                        <div>
+                            <span title="Finds all test methods (i.e. annotated with &quot;@org.junit.jupiter.api.ParameterizedTest&quot;) and
+labels them with &quot;Test&quot;, &quot;Parameterized&quot;, and &quot;Junit5&quot;." class="rule-name">junit5:ParameterizedTestMethod</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjunit5:ParameterizedTestMethod" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">Finds all test methods (i.e. annotated with "@org.junit.jupiter.api.ParameterizedTest") and
+labels them with "Test", "Parameterized", and "Junit5".</pre>
+                        <div class="result">
+                            <table>
+                                <tr>
+                                    <th>Test</th>
+                                </tr>
+                                <tr>
+                                    <td>void transactionalMethodMustNotBeInvokedFromNestedClassInSubClass(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void fullPersistenceDescriptorV21(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void combinationOfBeanProducersAndApplicationCodeWithoutViolation(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void validationModeSpecifiedV21(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void remoteSessionBean(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void scheduleMethodWithoutEjb_No_Violation(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void embeddedId(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void minimalPersistenceDescriptorV20(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void scheduleMethodWithoutEjb(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void alternative(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void transactionPropagationEjbTypeAndMethodLevel(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void providedConceptInjectable(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void transactionPropagationType(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void embeddable(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void disposesUnique(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void injectableFieldManipulation(java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void validationModeNotSpecifiedV21(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void combinationOfBeanProducersAndApplicationCodeWithViolation(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void namedQueryUniqueSameQuery(java.lang.Class,java.lang.Class,java.lang.String,java.lang.String,java.lang.String,java.lang.String)</td>
+                                </tr>
+                                <tr>
+                                    <td>void injectableClassType(java.util.List,java.lang.Class,java.lang.String)</td>
+                                </tr>
+                                <tr>
+                                    <td>void qualifier(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void staticAccessOfInjectables(java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void fieldInjectionWithEjb_No_Violation(java.lang.Class,java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void producesUnique(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void fieldInjectionWithEjb_Violation(java.lang.Class,java.lang.Class,java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void transactionPropagationMethod(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void transactionalMethodMustNotBeInvokedFromNestedClass(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void validationModeAutoV20(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void requestScoped(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void ejbInjectable(java.lang.Class[],java.lang.Class[])</td>
+                                </tr>
+                                <tr>
+                                    <td>void injectableInstantiationWithoutViolations(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void eventConsumerConcept(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void injectableOfNonInjectable(java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void named(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void interceptor(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void entity(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void persistenceContext(java.lang.Class,java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void stereotype(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void singletonBean(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void resourceField(java.lang.Class,java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void statefulSessionBean(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void eventProducerConcept(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void namedQueryUniqueWithoutQuery(java.lang.Class,java.lang.Class,java.lang.String,java.lang.String,java.lang.String,java.lang.String)</td>
+                                </tr>
+                                <tr>
+                                    <td>void beansMustNotUseFieldInjectionForResource(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void namedQueries(java.lang.Class,java.lang.Class,java.lang.String,java.lang.String,java.lang.String,java.lang.String)</td>
+                                </tr>
+                                <tr>
+                                    <td>void any(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void validationModeNotSpecifiedV20(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void beansDescriptor(java.lang.String,java.lang.String,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void interceptorBinding(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void injectableInstantiation(java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void clockAsInjectable(java.lang.Class[])</td>
+                                </tr>
+                                <tr>
+                                    <td>void sessionScoped(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void transactionPropagationEjbMethodLevel(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void constraintValidator(java.lang.String,java.lang.Class,java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void transactionMethodsMustNotBeCalledDirectlyWithViolations(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void conversationScoped(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void providedConceptJeeInjectable(java.lang.Class[],java.lang.Class[])</td>
+                                </tr>
+                                <tr>
+                                    <td>void beanProducerAccess(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void validationModeAutoV21(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void disposes(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void injectionPointIdentification(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void statelessSessionBean(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void activatedInterceptor(java.lang.String,java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void minimalPersistenceDescriptorV21(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void embedded(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void privateMethodMustNotBeAnnotatedWithTransactional(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void nonTransactionalMethodCallingTransactionalMethod(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void namedQueryUniqueDifferentQuery(java.lang.Class,java.lang.Class,java.lang.String,java.lang.String,java.lang.String,java.lang.String)</td>
+                                </tr>
+                                <tr>
+                                    <td>void providedConceptEjb(java.lang.Class[],java.lang.Class[])</td>
+                                </tr>
+                                <tr>
+                                    <td>void providedConceptJeeInjectable(java.lang.Class[],java.lang.Class[])</td>
+                                </tr>
+                                <tr>
+                                    <td>void validationModeSpecifiedV20(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void dependent(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void fullPersistenceDescriptorV32(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void singletonScoped(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void specializes(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void transactionPropagationEjbDefault(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void finalFieldsForInjectables(java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void produces(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void jdkClassesAsInjectables(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void validationModeAutoV32(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void fullPersistenceDescriptorV20(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void localSessionBean(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void staticVariablesForInjectables(java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void constraintValidatorProvidedConceptInjectable(java.lang.Class,java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void applicationScoped(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void decorator(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void messageDrivenBean(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void delegate(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void scheduleMethod(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>void defaultQualifier(java.lang.Class)</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </details>
+                <details id="junit5:TestClass" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>13</div>
+                        <div>
+                            <span title="Matches Found">&#9728;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>info</div>
+                        <div>20</div>
+                        <div>
+                            <span title="Labels all classes containing test methods with &quot;Test&quot; and &quot;Junit5&quot;." class="rule-name">junit5:TestClass</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjunit5:TestClass" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">Labels all classes containing test methods with "Test" and "Junit5".</pre>
+                        <div class="result">
+                            <table>
+                                <tr>
+                                    <th>TestClass</th><th>TestMethods</th>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.resource.ResourceIT</td><td>void resourceField(java.lang.Class,java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.impl.scanner.WarClassesResourceScannerPluginTest</td><td>void accepts(), void scan()</td>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.impl.scanner.ApplicationXmlScannerPluginTest</td><td>void applicationXml()</td>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.impl.scanner.jpa.PersistenceXmlScannerPluginTest</td><td>void scannerAcceptsIfInClasspathScope(), void scannerAcceptsIfPersistenceXMLIsInMETAINF(), void scannerAcceptsIfPersistenceXMLIsInWEBINF(), void scannerFindAllPropertiesInPersistenceXMLV20(), void scannerFindAllPropertiesInPersistenceXMLV21(), void scannerFindVersionInPersistenceXMLV20(), void scannerFindVersionInPersistenceXMLV21(), void scannerFindsOnePersistenceUnitInPersistenceXMLV20(), void scannerFindsOnePersistenceUnitInPersistenceXMLV21(), void scannerSetsCorrectNameForPersistenceUnitInPersistenceXMLV20(), void scannerSetsCorrectNameForPersistenceUnitInPersistenceXMLV21(), void scannerSetcCorrectTransactionTypeForPersistenceUnitInPersistenceXMLV20(), void scannerSetcCorrectTransactionTypeForPersistenceUnitInPersistenceXMLV21(), void scannerSetsCorrectDescriptionFoundInPersistenceUnitInPersistenceXMLV20(), void scannerSetsCorrectDescriptionFoundInPersistenceUnitInPersistenceXMLV21(), void scannerSetsCorrectJTADataSourceFromPersistenceUnitInPersistenceXMLV20(), void scannerSetsCorrectJTADataSourceFromPersistenceUnitInPersistenceXMLV21(), void scannerSetsCorrectNonJTADataSourceFromPersistenceUnitInPersistenceXMLV20(), void scannerSetsCorrectNonJTADataSourceFromPersistenceUnitInPersistenceXMLV21(), void scannerSetsCorrectProviderFromPersistenceUnitInPersistenceXMLV20(), void scannerSetsCorrectProviderFromPersistenceUnitInPersistenceXMLV21(), void scannerSetsCorrectValidationModeFromPersistenceUnitInPersistenceXMLV20(), void scannerSetsCorrectValidationModeFromPersistenceUnitInPersistenceXMLV21(), void scannerSetsCorrectSharedCacheModeFromPersistenceUnitInPersistenceXMLV20(), void scannerSetsCorrectSharedCacheModeFromPersistenceUnitInPersistenceXMLV21(), void scannerAddsAllClasseseFromPersistenceUnitInPersistenceXMLV20(), void scannerAddsAllClasseseFromPersistenceUnitInPersistenceXMLV21(), void scannerSetsExcludeUnlistedClassesToTrueIfNotSpecifiedXMLV20(), void scannerSetsExcludeUnlistedClassesToTrueIfNotSpecifiedXMLV21(), void scannerSetsExcludeUnlistedClassesAsSpecifiedXMLV20(), void scannerSetsExcludeUnlistedClassesAsSpecifiedXMLV21()</td>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.impl.scanner.jpa.JpaIT</td><td>void entity(java.lang.Class), void embeddable(java.lang.Class), void embedded(java.lang.Class), void embeddedId(java.lang.Class), void namedQueries(java.lang.Class,java.lang.Class,java.lang.String,java.lang.String,java.lang.String,java.lang.String), void namedQueryUniqueDifferentQuery(java.lang.Class,java.lang.Class,java.lang.String,java.lang.String,java.lang.String,java.lang.String), void namedQueryUniqueSameQuery(java.lang.Class,java.lang.Class,java.lang.String,java.lang.String,java.lang.String,java.lang.String), void namedQueryUniqueWithoutQuery(java.lang.Class,java.lang.Class,java.lang.String,java.lang.String,java.lang.String,java.lang.String), void fullPersistenceDescriptorV20(java.lang.Class), void fullPersistenceDescriptorV21(java.lang.Class), void fullPersistenceDescriptorV32(java.lang.Class), void minimalPersistenceDescriptorV20(java.lang.Class), void minimalPersistenceDescriptorV21(java.lang.Class), void fullPersistenceUnitDescriptorV20(), void fullPersistenceUnitDescriptorV21(), void fullPersistenceUnitDescriptorV32(), void validationModeNotSpecifiedV20(java.lang.Class), void validationModeNotSpecifiedV21(java.lang.Class), void validationModeAutoV20(java.lang.Class), void validationModeAutoV21(java.lang.Class), void validationModeAutoV32(java.lang.Class), void validationModeSpecifiedV20(java.lang.Class), void validationModeSpecifiedV21(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.impl.scanner.WebXmlScannerPluginTest</td><td>void webXmlWithTypeResolver(), void webXmlWithoutTypeResolver()</td>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.EarScannerPluginIT</td><td>void warArchive(), void earArchive()</td>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.jsf.test.JsfIT</td><td>void JSFManagedBeanConcept(), void JSFManagedBeanConstraint()</td>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.injection.test.InjectionIT</td><td>void injectionPointIdentification(java.lang.Class), void beanProducerAccess(java.lang.Class), void injectableFieldManipulation(java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class), void finalFieldsForInjectables(java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class), void staticAccessOfInjectables(java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class), void staticVariablesForInjectables(java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class), void injectableInstantiation(java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class), void injectableInstantiationWithoutViolations(java.lang.Class), void injectableOfNonInjectable(java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class), void jdkClassesAsInjectables(java.lang.Class), void clockAsInjectable(java.lang.Class[]), void combinationOfBeanProducersAndApplicationCodeWithViolation(java.lang.Class), void combinationOfBeanProducersAndApplicationCodeWithoutViolation(java.lang.Class), void fieldInjectionWithEjb_Violation(java.lang.Class,java.lang.Class,java.lang.Class), void fieldInjectionWithEjb_No_Violation(java.lang.Class,java.lang.Class), void beansMustNotUseFieldInjectionForPersistenceContext(), void beansMustNotUseFieldInjectionForResource(java.lang.Class), void constraintValidator(java.lang.String,java.lang.Class,java.lang.Class), void constraintValidatorProvidedConceptInjectable(java.lang.Class,java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.XmlDescriptorScannerPluginIT</td><td>void webXml(), void applicationXml()</td>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.transaction.constraint.PrivateMethodMustNotBeAnnotatedWithTransactionalIT</td><td>void privateMethodMustNotBeAnnotatedWithTransactional(java.lang.Class), void privateMethodMustNotBeAnnotatedWithTransactionalNoViolations()</td>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.transaction.constraint.TransactionalMethodMustNotBeInvokedFromSameClassOrSubclassIT</td><td>void transactionMethodsMustNotBeCalledDirectlyWithViolations(java.lang.Class), void transactionalMethodMustNotBeInvokedFromSameClassSimpleInheritanceJakarta(), void transactionalMethodMustNotBeInvokedFromSameClassSimpleInheritanceJavax(), void transactionalMethodMustNotBeInvokedFromSameClassGenericInheritanceJakarta(), void transactionalMethodMustNotBeInvokedFromSameClassGenericInheritanceJavax(), void transactionalMethodMustNotBeInvokedFromNestedClass(java.lang.Class), void transactionalMethodMustNotBeInvokedFromNestedClassInSubClass(java.lang.Class), void nonTransactionalMethodCallingTransactionalMethod(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.transaction.concept.TransactionalMethodIT</td><td>void transactionalMethod()</td>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.transaction.concept.TransactionPropagationIT</td><td>void transactionPropagationEjbDefault(java.lang.Class), void transactionPropagationEjbTypeAndMethodLevel(java.lang.Class), void transactionPropagationEjbMethodLevel(java.lang.Class), void transactionPropagationType(java.lang.Class), void transactionPropagationMethod(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.ejb.test.EjbIT</td><td>void statelessSessionBean(java.lang.Class), void statefulSessionBean(java.lang.Class), void singletonBean(java.lang.Class), void messageDrivenBean(java.lang.Class), void localSessionBean(java.lang.Class), void remoteSessionBean(java.lang.Class), void providedConceptEjb(java.lang.Class[],java.lang.Class[]), void scheduleMethod(java.lang.Class), void ejbInjectable(java.lang.Class[],java.lang.Class[]), void providedConceptJeeInjectable(java.lang.Class[],java.lang.Class[]), void scheduleMethodWithoutEjb_No_Violation(java.lang.Class), void scheduleMethodWithoutEjb(java.lang.Class)</td>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.cdi.test.CdiEventIT</td><td>void eventProducerConcept(java.lang.Class), void testInvalid_EventProducer_Concept(), void eventConsumerConcept(java.lang.Class), void testInvalid_EventConsumer_Concept()</td>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.cdi.test.CdiIT</td><td>void dependent(java.lang.Class), void requestScoped(java.lang.Class), void sessionScoped(java.lang.Class), void conversationScoped(java.lang.Class), void applicationScoped(java.lang.Class), void singletonScoped(java.lang.Class), void stereotype(java.lang.Class), void alternative(java.lang.Class), void specializes(java.lang.Class), void qualifier(java.lang.Class), void produces(java.lang.Class), void producesUnique(java.lang.Class), void disposes(java.lang.Class), void disposesUnique(java.lang.Class), void named(java.lang.Class), void decorator(java.lang.Class), void delegate(java.lang.Class), void any(java.lang.Class), void newQualifier(), void defaultQualifier(java.lang.Class), void injectableClassType(java.util.List,java.lang.Class,java.lang.String), void providedConceptJeeInjectable(java.lang.Class[],java.lang.Class[])</td>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.cdi.test.BeansXmlScannerPluginIT</td><td>void beansDescriptor(java.lang.String,java.lang.String,java.lang.Class,java.lang.Class,java.lang.Class,java.lang.Class), void empty(), void invalid()</td>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.cdi.test.InterceptorIT</td><td>void interceptor(java.lang.Class), void providedConceptInjectable(java.lang.Class), void interceptorBinding(java.lang.Class), void activatedInterceptor(java.lang.String,java.lang.Class), void inactiveInterceptor()</td>
+                                </tr>
+                                <tr>
+                                    <td>org.jqassistant.plugin.jee.jpa.test.JpaConceptsIT</td><td>void persistenceContext(java.lang.Class,java.lang.Class)</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <table>
+                            <tr>
+                                <th>Required Concept</th><th>Status</th>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('junit5:ParameterizedTestMethod')">junit5:ParameterizedTestMethod</span></td><td><span class="success">success</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('junit5:TestMethod')">junit5:TestMethod</span></td><td><span class="success">success</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('junit5:TestTemplateMethod')">junit5:TestTemplateMethod</span></td><td><span class="success">success</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rule-name" onclick="javascript:showResult('junit5:RepeatedTestMethod')">junit5:RepeatedTestMethod</span></td><td><span class="success">success</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </details>
+                <details id="junit5:TestMethod" class="row-separator">
+                    <summary class="success columns-grid">
+                        <div>14</div>
+                        <div>
+                            <span title="Matches Found">&#9728;&nbsp;</span><span title="Success (Result evaluation according to warn-on-severity/fail-on-severity thresholds)">&#10004;</span>
+                        </div>
+                        <div>info</div>
+                        <div>58</div>
+                        <div>
+                            <span title="Finds all test methods (i.e. annotated with &quot;@org.junit.jupiter.api.Test&quot;) and
+labels them with &quot;Test&quot; and &quot;Junit5&quot;." class="rule-name">junit5:TestMethod</span>
+                        </div>
+                    </summary>
+                    <div id="resultOfjunit5:TestMethod" class="details-content" name="resultRow">
+                        <pre style="font-family:'Open Sans', sans-serif;">Finds all test methods (i.e. annotated with "@org.junit.jupiter.api.Test") and
+labels them with "Test" and "Junit5".</pre>
+                        <div class="result">
+                            <table>
+                                <tr>
+                                    <th>Test</th>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetsCorrectValidationModeFromPersistenceUnitInPersistenceXMLV20()</td>
+                                </tr>
+                                <tr>
+                                    <td>void applicationXml()</td>
+                                </tr>
+                                <tr>
+                                    <td>void JSFManagedBeanConstraint()</td>
+                                </tr>
+                                <tr>
+                                    <td>void transactionalMethodMustNotBeInvokedFromSameClassGenericInheritanceJavax()</td>
+                                </tr>
+                                <tr>
+                                    <td>void webXmlWithTypeResolver()</td>
+                                </tr>
+                                <tr>
+                                    <td>void accepts()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerAcceptsIfPersistenceXMLIsInWEBINF()</td>
+                                </tr>
+                                <tr>
+                                    <td>void fullPersistenceUnitDescriptorV21()</td>
+                                </tr>
+                                <tr>
+                                    <td>void testInvalid_EventConsumer_Concept()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetsExcludeUnlistedClassesAsSpecifiedXMLV20()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerFindsOnePersistenceUnitInPersistenceXMLV20()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetcCorrectTransactionTypeForPersistenceUnitInPersistenceXMLV21()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetsCorrectProviderFromPersistenceUnitInPersistenceXMLV21()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerFindAllPropertiesInPersistenceXMLV20()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetsCorrectProviderFromPersistenceUnitInPersistenceXMLV20()</td>
+                                </tr>
+                                <tr>
+                                    <td>void newQualifier()</td>
+                                </tr>
+                                <tr>
+                                    <td>void invalid()</td>
+                                </tr>
+                                <tr>
+                                    <td>void testInvalid_EventProducer_Concept()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerAddsAllClasseseFromPersistenceUnitInPersistenceXMLV21()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetsCorrectNameForPersistenceUnitInPersistenceXMLV21()</td>
+                                </tr>
+                                <tr>
+                                    <td>void fullPersistenceUnitDescriptorV20()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetsCorrectJTADataSourceFromPersistenceUnitInPersistenceXMLV20()</td>
+                                </tr>
+                                <tr>
+                                    <td>void transactionalMethodMustNotBeInvokedFromSameClassGenericInheritanceJakarta()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerFindsOnePersistenceUnitInPersistenceXMLV21()</td>
+                                </tr>
+                                <tr>
+                                    <td>void empty()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetsCorrectSharedCacheModeFromPersistenceUnitInPersistenceXMLV20()</td>
+                                </tr>
+                                <tr>
+                                    <td>void earArchive()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetcCorrectTransactionTypeForPersistenceUnitInPersistenceXMLV20()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerAcceptsIfPersistenceXMLIsInMETAINF()</td>
+                                </tr>
+                                <tr>
+                                    <td>void warArchive()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetsCorrectNonJTADataSourceFromPersistenceUnitInPersistenceXMLV20()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetsCorrectDescriptionFoundInPersistenceUnitInPersistenceXMLV21()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetsExcludeUnlistedClassesToTrueIfNotSpecifiedXMLV20()</td>
+                                </tr>
+                                <tr>
+                                    <td>void privateMethodMustNotBeAnnotatedWithTransactionalNoViolations()</td>
+                                </tr>
+                                <tr>
+                                    <td>void fullPersistenceUnitDescriptorV32()</td>
+                                </tr>
+                                <tr>
+                                    <td>void transactionalMethod()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerFindVersionInPersistenceXMLV21()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetsCorrectValidationModeFromPersistenceUnitInPersistenceXMLV21()</td>
+                                </tr>
+                                <tr>
+                                    <td>void beansMustNotUseFieldInjectionForPersistenceContext()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetsExcludeUnlistedClassesToTrueIfNotSpecifiedXMLV21()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerFindVersionInPersistenceXMLV20()</td>
+                                </tr>
+                                <tr>
+                                    <td>void transactionalMethodMustNotBeInvokedFromSameClassSimpleInheritanceJavax()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerAddsAllClasseseFromPersistenceUnitInPersistenceXMLV20()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetsExcludeUnlistedClassesAsSpecifiedXMLV21()</td>
+                                </tr>
+                                <tr>
+                                    <td>void webXmlWithoutTypeResolver()</td>
+                                </tr>
+                                <tr>
+                                    <td>void transactionalMethodMustNotBeInvokedFromSameClassSimpleInheritanceJakarta()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerFindAllPropertiesInPersistenceXMLV21()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetsCorrectSharedCacheModeFromPersistenceUnitInPersistenceXMLV21()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scan()</td>
+                                </tr>
+                                <tr>
+                                    <td>void inactiveInterceptor()</td>
+                                </tr>
+                                <tr>
+                                    <td>void JSFManagedBeanConcept()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetsCorrectNonJTADataSourceFromPersistenceUnitInPersistenceXMLV21()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetsCorrectDescriptionFoundInPersistenceUnitInPersistenceXMLV20()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerAcceptsIfInClasspathScope()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetsCorrectNameForPersistenceUnitInPersistenceXMLV20()</td>
+                                </tr>
+                                <tr>
+                                    <td>void scannerSetsCorrectJTADataSourceFromPersistenceUnitInPersistenceXMLV21()</td>
+                                </tr>
+                                <tr>
+                                    <td>void applicationXml()</td>
+                                </tr>
+                                <tr>
+                                    <td>void webXml()</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </details>
+            </section>
+        </div>
+        <div>
+            <h3>Groups</h3>
+            <section class="report-table">
+                <div class="header-row groups-grid">
+                    <div>#</div>
+                    <div>Group</div>
+                    <div>Description</div>
+                </div>
+                <summary class="groups-grid">
+                    <div>1</div>
+                    <div>jqassistant-plugin:Default</div>
+                    <div></div>
+                </summary>
+                <summary class="groups-grid">
+                    <div>2</div>
+                    <div>jqassistant-plugin-maven:Default</div>
+                    <div></div>
+                </summary>
+                <summary class="groups-grid">
+                    <div>3</div>
+                    <div>jqassistant-plugin-test:Default</div>
+                    <div></div>
+                </summary>
+                <summary class="groups-grid">
+                    <div>4</div>
+                    <div>jqassistant-plugin-plugin:Default</div>
+                    <div></div>
+                </summary>
+                <summary class="groups-grid">
+                    <div>5</div>
+                    <div>jqassistant-plugin-package:Default</div>
+                    <div></div>
+                </summary>
+            </section>
+        </div>
+    </body>
+</html>
