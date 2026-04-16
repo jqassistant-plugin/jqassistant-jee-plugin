@@ -12,7 +12,9 @@ import com.buschmais.jqassistant.core.report.api.model.Row;
 import com.buschmais.jqassistant.core.rule.api.model.Concept;
 import com.buschmais.jqassistant.core.rule.api.model.Constraint;
 import com.buschmais.jqassistant.plugin.java.api.model.FieldDescriptor;
+import com.buschmais.jqassistant.plugin.java.api.model.MethodDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
+import com.buschmais.jqassistant.plugin.java.api.model.WritesDescriptor;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
 
 import org.assertj.core.api.Assertions;
@@ -31,6 +33,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static com.buschmais.jqassistant.core.report.api.model.Result.Status.*;
 import static com.buschmais.jqassistant.plugin.java.test.assertj.FieldDescriptorCondition.fieldDescriptor;
+import static com.buschmais.jqassistant.plugin.java.test.assertj.MethodDescriptorCondition.methodDescriptor;
 import static com.buschmais.jqassistant.plugin.java.test.assertj.TypeDescriptorCondition.typeDescriptor;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.InstanceOfAssertFactories.type;
@@ -106,15 +109,36 @@ public class InjectionIT extends AbstractJavaPluginIT {
         Result<Constraint> constraintResult = validateConstraint("jee-injection:FieldsOfInjectablesMustNotBeManipulated");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
-        assertThat(constraintResult.getRows()).hasSize(2);
-        assertThat((TypeDescriptor) constraintResult.getRows().get(0).getColumns().get("Injectable").getValue())
+        assertThat(constraintResult.getRows()).hasSize(4);
+
+        Row row1 = constraintResult.getRows().get(0);
+        assertThat((TypeDescriptor) row1.getColumns().get("Injectable").getValue())
                 .is(typeDescriptor(injectableA));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("WriteToInjectableField").getLabel()).endsWith("void manipulateField()");
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Field").getLabel()).endsWith("InjectableB fieldOfInjectableB");
-        assertThat((TypeDescriptor) constraintResult.getRows().get(1).getColumns().get("Injectable").getValue())
+        assertThat(((WritesDescriptor) row1.getColumns().get("WriteToInjectableField").getValue()).getLineNumber()).isEqualTo(51);
+        assertThat((MethodDescriptor) row1.getColumns().get("Method").getValue()).is(methodDescriptor(injectableA, "accessFieldStatically"));
+        assertThat((FieldDescriptor) row1.getColumns().get("Field").getValue()).is(fieldDescriptor(injectableA, "fieldOfInjectableC"));
+
+        Row row2 = constraintResult.getRows().get(1);
+        assertThat((TypeDescriptor) row2.getColumns().get("Injectable").getValue())
                 .is(typeDescriptor(injectableA));
-        assertThat(constraintResult.getRows().get(1).getColumns().get("WriteToInjectableField").getLabel()).endsWith("void accessFieldStatically()");
-        assertThat(constraintResult.getRows().get(1).getColumns().get("Field").getLabel()).endsWith("InjectableC fieldOfInjectableC");
+        assertThat(((WritesDescriptor) row2.getColumns().get("WriteToInjectableField").getValue()).getLineNumber()).isEqualTo(34);
+        assertThat((MethodDescriptor) row2.getColumns().get("Method").getValue()).is(methodDescriptor(injectableA, "manipulateField"));
+        assertThat((FieldDescriptor) row2.getColumns().get("Field").getValue()).is(fieldDescriptor(injectableA, "fieldOfInjectableB"));
+
+        Row row3 = constraintResult.getRows().get(2);
+        assertThat((TypeDescriptor) row3.getColumns().get("Injectable").getValue())
+                .is(typeDescriptor(injectableA));
+        assertThat(((WritesDescriptor) row3.getColumns().get("WriteToInjectableField").getValue()).getLineNumber()).isEqualTo(40);
+        assertThat((MethodDescriptor) row3.getColumns().get("Method").getValue()).is(methodDescriptor(injectableA, "manipulateFieldViaPostConstruct"));
+        assertThat((FieldDescriptor) row3.getColumns().get("Field").getValue()).is(fieldDescriptor(injectableA, "fieldOfInjectableB"));
+
+        Row row4 = constraintResult.getRows().get(3);
+        assertThat((TypeDescriptor) row4.getColumns().get("Injectable").getValue())
+                .is(typeDescriptor(injectableA));
+        assertThat(((WritesDescriptor) row4.getColumns().get("WriteToInjectableField").getValue()).getLineNumber()).isEqualTo(46);
+        assertThat((MethodDescriptor) row4.getColumns().get("Method").getValue()).is(methodDescriptor(injectableA, "manipulateFieldViaPreDestroy"));
+        assertThat((FieldDescriptor) row4.getColumns().get("Field").getValue()).is(fieldDescriptor(injectableA, "fieldOfInjectableB"));
+
         store.commitTransaction();
     }
 

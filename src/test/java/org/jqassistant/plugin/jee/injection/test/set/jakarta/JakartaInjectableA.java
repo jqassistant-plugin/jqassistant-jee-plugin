@@ -1,5 +1,7 @@
 package org.jqassistant.plugin.jee.injection.test.set.jakarta;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.annotation.Resource;
 import jakarta.inject.Inject;
 
@@ -28,6 +30,18 @@ public class JakartaInjectableA {
     }
 
     public void manipulateField() {
+        // Illegal modification
+        fieldOfInjectableB = null;
+    }
+
+    @PostConstruct
+    public void manipulateFieldViaPostConstruct() {
+        // Illegal modification
+        fieldOfInjectableB = null;
+    }
+
+    @PreDestroy
+    public void manipulateFieldViaPreDestroy() {
         // Illegal modification
         fieldOfInjectableB = null;
     }
