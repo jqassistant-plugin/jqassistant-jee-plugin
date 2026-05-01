@@ -15,7 +15,6 @@ import com.buschmais.jqassistant.plugin.common.api.model.PropertyDescriptor;
 import com.buschmais.jqassistant.plugin.common.api.scanner.filesystem.FileResource;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.scanner.JavaScope;
-import com.buschmais.jqassistant.plugin.java.api.scanner.TypeCache;
 import com.buschmais.jqassistant.plugin.java.api.scanner.TypeResolver;
 import com.buschmais.jqassistant.plugin.xml.api.model.XmlFileDescriptor;
 
@@ -76,9 +75,6 @@ class PersistenceXmlScannerPluginTest {
     TypeDescriptor jpaEntityDescriptor;
 
     @Mock
-    TypeCache.CachedType<TypeDescriptor> cachedType;
-
-    @Mock
     Scanner scanner;
 
     @Mock
@@ -132,9 +128,7 @@ class PersistenceXmlScannerPluginTest {
                 .getProperties();
         doReturn(propertyDescriptor).when(store)
                 .create(PropertyDescriptor.class);
-        doReturn(jpaEntityDescriptor).when(cachedType)
-                .getTypeDescriptor();
-        doReturn(cachedType).when(typeResolver)
+        doReturn(jpaEntityDescriptor).when(typeResolver)
                 .resolve(eq(JavaxJpaEntity.class.getName()), eq(context));
         doReturn(typeResolver).when(context)
                 .peek(TypeResolver.class);
@@ -362,7 +356,7 @@ class PersistenceXmlScannerPluginTest {
         assertThat("There must be one JPA entity class.", persistenceUnitList.get(0)
                 .getContains(), hasSize(1));
         assertThat(persistenceUnitList.get(0)
-                .getContains(), hasItem(equalTo(cachedType.getTypeDescriptor())));
+                .getContains(), hasItem(equalTo(jpaEntityDescriptor)));
     }
 
     @Test
@@ -373,7 +367,7 @@ class PersistenceXmlScannerPluginTest {
         assertThat("There must be one JPA entity class.", persistenceUnitList.get(0)
                 .getContains(), hasSize(1));
         assertThat(persistenceUnitList.get(0)
-                .getContains(), hasItem(equalTo(cachedType.getTypeDescriptor())));
+                .getContains(), hasItem(equalTo(jpaEntityDescriptor)));
     }
 
     @Test

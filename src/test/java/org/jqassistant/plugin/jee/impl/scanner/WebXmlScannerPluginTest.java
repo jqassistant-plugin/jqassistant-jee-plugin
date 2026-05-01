@@ -7,9 +7,7 @@ import java.util.List;
 import javax.xml.transform.stream.StreamSource;
 
 import com.buschmais.jqassistant.plugin.common.api.scanner.filesystem.FileResource;
-import com.buschmais.jqassistant.plugin.java.api.model.ClassFileDescriptor;
 import com.buschmais.jqassistant.plugin.java.api.model.TypeDescriptor;
-import com.buschmais.jqassistant.plugin.java.api.scanner.TypeCache;
 import com.buschmais.jqassistant.plugin.java.api.scanner.TypeResolver;
 import com.buschmais.jqassistant.plugin.xml.api.model.XmlFileDescriptor;
 
@@ -79,10 +77,7 @@ class WebXmlScannerPluginTest extends AbstractXmlScannerTest {
     private ParamValueDescriptor servletInitParamDescriptor;
 
     @Mock
-    private ClassFileDescriptor servletClassDescriptor;
-
-    @Mock
-    private TypeCache.CachedType<TypeDescriptor> cachedServletClassDescriptor;
+    private TypeDescriptor servletClassDescriptor;
 
     // Servlet Mapping
 
@@ -109,10 +104,7 @@ class WebXmlScannerPluginTest extends AbstractXmlScannerTest {
     private ParamValueDescriptor filterInitParamDescriptor;
 
     @Mock
-    private TypeCache.CachedType<TypeDescriptor> cachedFilterClassDescriptor;
-
-    @Mock
-    private ClassFileDescriptor filterClassDescriptor;
+    private TypeDescriptor filterClassDescriptor;
 
     // Filter Mapping
 
@@ -125,10 +117,7 @@ class WebXmlScannerPluginTest extends AbstractXmlScannerTest {
     // Listener
 
     @Mock
-    private TypeCache.CachedType<TypeDescriptor> cachedListenerClassDescriptor;
-
-    @Mock
-    private ClassFileDescriptor listenerClassDescriptor;
+    private TypeDescriptor listenerClassDescriptor;
 
     @Mock
     private ListenerDescriptor listenerDescriptor;
@@ -185,9 +174,9 @@ class WebXmlScannerPluginTest extends AbstractXmlScannerTest {
     @Test
     void webXmlWithTypeResolver() throws IOException {
         when(scannerContext.peekOrDefault(TypeResolver.class, null)).thenReturn(typeResolver);
-        when(typeResolver.resolve(TEST_SERVLET, scannerContext)).thenReturn(cachedServletClassDescriptor);
-        when(typeResolver.resolve(TEST_FILTER, scannerContext)).thenReturn(cachedFilterClassDescriptor);
-        when(typeResolver.resolve(TEST_LISTENER, scannerContext)).thenReturn(cachedListenerClassDescriptor);
+        when(typeResolver.resolve(TEST_SERVLET, scannerContext)).thenReturn(servletClassDescriptor);
+        when(typeResolver.resolve(TEST_FILTER, scannerContext)).thenReturn(filterClassDescriptor);
+        when(typeResolver.resolve(TEST_LISTENER, scannerContext)).thenReturn(listenerClassDescriptor);
 
         verifyWebXml();
 
@@ -245,7 +234,6 @@ class WebXmlScannerPluginTest extends AbstractXmlScannerTest {
         when(store.create(IconDescriptor.class)).thenReturn(servletIconDescriptor, filterIconDescriptor, null);
 
         when(store.create(ParamValueDescriptor.class)).thenReturn(contextParamDescriptor, servletInitParamDescriptor, filterInitParamDescriptor, null);
-        when(cachedServletClassDescriptor.getTypeDescriptor()).thenReturn(servletClassDescriptor);
 
         // Servlet Mapping
         when(store.create(ServletMappingDescriptor.class)).thenReturn(servletMappingDescriptor);
@@ -256,7 +244,6 @@ class WebXmlScannerPluginTest extends AbstractXmlScannerTest {
         // Filter
         when(store.create(FilterDescriptor.class)).thenReturn(filterDescriptor);
         when(webXmlDescriptor.getFilters()).thenReturn(mock(List.class));
-        when(cachedFilterClassDescriptor.getTypeDescriptor()).thenReturn(filterClassDescriptor);
         when(filterDescriptor.getDescriptions()).thenReturn(mock(List.class));
         when(filterDescriptor.getDisplayNames()).thenReturn(mock(List.class));
         when(filterDescriptor.getIcons()).thenReturn(mock(List.class));
@@ -268,7 +255,6 @@ class WebXmlScannerPluginTest extends AbstractXmlScannerTest {
         when(filterMappingDescriptor.getUrlPatterns()).thenReturn(mock(List.class));
 
         // Listener
-        when(cachedListenerClassDescriptor.getTypeDescriptor()).thenReturn(listenerClassDescriptor);
         when(store.create(ListenerDescriptor.class)).thenReturn(listenerDescriptor);
 
         // Security Constraint
