@@ -31,19 +31,19 @@ public class TransactionPropagationIT extends AbstractJavaPluginIT {
         assertThat(conceptResult.getRows().size()).isEqualTo(5);
 
         Row row1  = conceptResult.getRows().get(0);
-        assertTransactionalMethodWithTxSemantics(row1, typeDescriptor(testClass), methodDescriptor(testClass, "anotherTransactionalMethodWithRequiredSemantics"), "REQUIRED");
+        assertTransactionalMethodWithTxSemanticsAndAdditionalConfiguration(row1, typeDescriptor(testClass), methodDescriptor(testClass, "anotherTransactionalMethodWithRequiredSemantics"), "REQUIRED", false);
 
         Row row2  = conceptResult.getRows().get(1);
-        assertTransactionalMethodWithTxSemantics(row2, typeDescriptor(testClass), methodDescriptor(testClass, "neverTransactionalCallingRequiredTransactionalTransitively"), "NEVER");
+        assertTransactionalMethodWithTxSemanticsAndAdditionalConfiguration(row2, typeDescriptor(testClass), methodDescriptor(testClass, "neverTransactionalCallingRequiredTransactionalTransitively"), "NEVER", false);
 
         Row row3  = conceptResult.getRows().get(2);
-        assertTransactionalMethodWithTxSemantics(row3, typeDescriptor(testClass), methodDescriptor(testClass, "requiredTransactionalCallingRequiredTransactionalTransitively"), "REQUIRED");
+        assertTransactionalMethodWithTxSemanticsAndAdditionalConfiguration(row3, typeDescriptor(testClass), methodDescriptor(testClass, "requiredTransactionalCallingRequiredTransactionalTransitively"), "REQUIRED", false);
 
         Row row4  = conceptResult.getRows().get(3);
-        assertTransactionalMethodWithTxSemantics(row4, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodWithNeverSemantics"), "NEVER");
+        assertTransactionalMethodWithTxSemanticsAndAdditionalConfiguration(row4, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodWithNeverSemantics"), "NEVER", false);
 
         Row row5  = conceptResult.getRows().get(4);
-        assertTransactionalMethodWithTxSemantics(row5, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodWithRequiredSemantics"), "REQUIRED");
+        assertTransactionalMethodWithTxSemanticsAndAdditionalConfiguration(row5, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodWithRequiredSemantics"), "REQUIRED", false);
 
         store.commitTransaction();
     }
@@ -62,13 +62,13 @@ public class TransactionPropagationIT extends AbstractJavaPluginIT {
         assertThat(conceptResult.getRows().size()).isEqualTo(3);
 
         Row row1  = conceptResult.getRows().get(0);
-        assertTransactionalMethodWithTxSemantics(row1, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodMandatory"), "MANDATORY");
+        assertTransactionalMethodWithTxSemanticsAndAdditionalConfiguration(row1, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodMandatory"), "MANDATORY", false);
 
         Row row2  = conceptResult.getRows().get(1);
-        assertTransactionalMethodWithTxSemantics(row2, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodNever"), "NEVER");
+        assertTransactionalMethodWithTxSemanticsAndAdditionalConfiguration(row2, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodNever"), "NEVER", false);
 
         Row row3  = conceptResult.getRows().get(2);
-        assertTransactionalMethodWithTxSemantics(row3, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodRequired"), "REQUIRED");
+        assertTransactionalMethodWithTxSemanticsAndAdditionalConfiguration(row3, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodRequired"), "REQUIRED", false);
 
         store.commitTransaction();
     }
@@ -85,7 +85,7 @@ public class TransactionPropagationIT extends AbstractJavaPluginIT {
         assertThat(conceptResult.getRows().size()).isEqualTo(1);
 
         Row row1  = conceptResult.getRows().get(0);
-        assertTransactionalMethodWithTxSemantics(row1, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodMandatory"), "MANDATORY");
+        assertTransactionalMethodWithTxSemanticsAndAdditionalConfiguration(row1, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodMandatory"), "MANDATORY", false);
 
         store.commitTransaction();
     }
@@ -99,16 +99,19 @@ public class TransactionPropagationIT extends AbstractJavaPluginIT {
         store.beginTransaction();
 
         assertThat(conceptResult.getStatus()).isEqualTo(Result.Status.SUCCESS);
-        assertThat(conceptResult.getRows().size()).isEqualTo(3);
+        assertThat(conceptResult.getRows().size()).isEqualTo(4);
 
         Row row1  = conceptResult.getRows().get(0);
-        assertTransactionalMethodWithTxSemantics(row1, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodMandatory"), "MANDATORY");
+        assertTransactionalMethodWithTxSemanticsAndAdditionalConfiguration(row1, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodMandatoryAndRollbackOnException"), "MANDATORY", true);
 
         Row row2  = conceptResult.getRows().get(1);
-        assertTransactionalMethodWithTxSemantics(row2, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodNever"), "NEVER");
+        assertTransactionalMethodWithTxSemanticsAndAdditionalConfiguration(row2, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodNeverAndRollbackOnRuntimeException"), "NEVER", true);
 
         Row row3  = conceptResult.getRows().get(2);
-        assertTransactionalMethodWithTxSemantics(row3, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodRequiresNew"), "REQUIRES_NEW");
+        assertTransactionalMethodWithTxSemanticsAndAdditionalConfiguration(row3, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodRequiredAndRollbackOnRuntimeException"), "REQUIRED", true);
+
+        Row row4  = conceptResult.getRows().get(3);
+        assertTransactionalMethodWithTxSemanticsAndAdditionalConfiguration(row4, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodRequiresNewAndDefaultRollback"), "REQUIRES_NEW", false);
 
         store.commitTransaction();
     }
@@ -122,20 +125,27 @@ public class TransactionPropagationIT extends AbstractJavaPluginIT {
         store.beginTransaction();
 
         assertThat(conceptResult.getStatus()).isEqualTo(Result.Status.SUCCESS);
-        assertThat(conceptResult.getRows().size()).isEqualTo(2);
+        assertThat(conceptResult.getRows().size()).isEqualTo(4);
 
-        Row row1  = conceptResult.getRows().get(0);
-        assertTransactionalMethodWithTxSemantics(row1, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodRequired"), "REQUIRED");
+        Row row1 = conceptResult.getRows().get(0);
+        assertTransactionalMethodWithTxSemanticsAndAdditionalConfiguration(row1, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodNeverAndRollbackOnRuntimeException"), "NEVER", true);
 
-        Row row2  = conceptResult.getRows().get(1);
-        assertTransactionalMethodWithTxSemantics(row2, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodRequiresNew"), "REQUIRES_NEW");
+        Row row2 = conceptResult.getRows().get(1);
+        assertTransactionalMethodWithTxSemanticsAndAdditionalConfiguration(row2, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodRequiredAndDefaultRollback"), "REQUIRED", false);
+
+        Row row3 = conceptResult.getRows().get(2);
+        assertTransactionalMethodWithTxSemanticsAndAdditionalConfiguration(row3, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodRequiredAndRollbackOnRuntimeException"), "REQUIRED", true);
+
+        Row row4 = conceptResult.getRows().get(3);
+        assertTransactionalMethodWithTxSemanticsAndAdditionalConfiguration(row4, typeDescriptor(testClass), methodDescriptor(testClass, "transactionalMethodRequiresNewAndDefaultRollback"), "REQUIRES_NEW", false);
 
         store.commitTransaction();
     }
 
-    private void assertTransactionalMethodWithTxSemantics(Row row, TypeDescriptorCondition typeDescriptorCondition, MethodDescriptorCondition methodDescriptorCondition, String transactionPropagation) {
+    private void assertTransactionalMethodWithTxSemanticsAndAdditionalConfiguration(Row row, TypeDescriptorCondition typeDescriptorCondition, MethodDescriptorCondition methodDescriptorCondition, String transactionPropagation, boolean withAdditionalConfiguration) {
         assertThat((TypeDescriptor) row.getColumns().get("Type").getValue()).is(typeDescriptorCondition);
         assertThat((MethodDescriptor) row.getColumns().get("TransactionalMethod").getValue()).is(methodDescriptorCondition);
         assertThat(row.getColumns().get("TransactionPropagation").getLabel()).isEqualTo(transactionPropagation);
+        assertThat(row.getColumns().get("AdditionalTransactionConfiguration").getLabel()).isEqualTo(String.valueOf(withAdditionalConfiguration));
     }
 }

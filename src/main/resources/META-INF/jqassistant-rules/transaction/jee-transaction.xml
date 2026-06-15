@@ -97,14 +97,15 @@
     </constraint>
 
     <concept id="jee-transaction:TransactionalMethod">
-        <description>Provides transactional methods as ":JEE:Transactional:Method".</description>
+        <description>Provides transactional methods as ":JEE:Transactional:Method" and its configuration.</description>
         <cypher><![CDATA[
            MATCH
              (type:Type)-[:DECLARES]->(transactionalMethod:JEE:Transactional:Method)
            RETURN
              type as Type,
              transactionalMethod as TransactionalMethod,
-             transactionalMethod.transactionPropagation as TransactionPropagation
+             transactionalMethod.transactionPropagation as TransactionPropagation,
+             transactionalMethod.additionalTransactionConfiguration as AdditionalTransactionConfiguration
            ORDER BY
              type.fqn, transactionalMethod.signature
         ]]></cypher>

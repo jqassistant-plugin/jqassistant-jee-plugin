@@ -6,7 +6,13 @@ import javax.transaction.Transactional;
 public class JavaxMethodLevelTransactionPropagation {
 
     @Transactional(value = Transactional.TxType.REQUIRES_NEW)
-    public void transactionalMethodRequiresNew(){}
+    public void transactionalMethodRequiresNewAndDefaultRollback(){}
 
-    public void transactionalMethodRequired(){}
+    public void transactionalMethodRequiredAndDefaultRollback(){}
+
+    @Transactional(value = Transactional.TxType.NEVER, rollbackOn = RuntimeException.class)
+    public void transactionalMethodNeverAndRollbackOnRuntimeException(){}
+
+    @Transactional(rollbackOn = RuntimeException.class)
+    public void transactionalMethodRequiredAndRollbackOnRuntimeException() {}
 }
