@@ -61,7 +61,7 @@ public class TransactionalMethodMustNotBeInvokedFormSameClassOrSubclassWithAddit
                 .isEqualTo("jee-transaction:TransactionChangingMethodMustNotBeInvokedFromSameClassOrSubclass");
 
         final Result<Constraint> result = constraintViolations.get(0);
-        assertThat(result.getRows()).hasSize(3);
+        assertThat(result.getRows()).hasSize(4);
 
         final Row row1 = result.getRows().get(0);
         assertThat(row1.getColumns().get("Type").getValue()).asInstanceOf(type(TypeDescriptor.class))
@@ -95,6 +95,17 @@ public class TransactionalMethodMustNotBeInvokedFormSameClassOrSubclassWithAddit
                 .is(methodDescriptor(clazz, "transactionalMethodWithRequiredSemanticsAndRollbackOnException"));
         assertThat(row3.getColumns().get("TargetTransactionalSemantics").getLabel()).isEqualTo("REQUIRED");
         assertThat(row3.getColumns().get("TargetMethodSetsAdditionalConfiguration").getLabel()).isEqualTo("true");
+
+        final Row row4 = result.getRows().get(3);
+        assertThat(row4.getColumns().get("Type").getValue()).asInstanceOf(type(TypeDescriptor.class))
+                .is(typeDescriptor(clazz));
+        assertThat(row4.getColumns().get("SourceMethod").getValue()).asInstanceOf(type(MethodDescriptor.class))
+                .is(methodDescriptor(clazz, "transactionalMethodWithRequiredSemanticsCallingMethodsWithAdditionalConfiguration"));
+        assertThat(row4.getColumns().get("SourceTransactionalSemantics").getLabel()).isEqualTo("REQUIRED");
+        assertThat(row4.getColumns().get("TargetTransactionalMethod").getValue()).asInstanceOf(type(MethodDescriptor.class))
+                .is(methodDescriptor(clazz, "transactionalMethodWithSupportsSemanticsAndRollbackOnException"));
+        assertThat(row4.getColumns().get("TargetTransactionalSemantics").getLabel()).isEqualTo("SUPPORTS");
+        assertThat(row4.getColumns().get("TargetMethodSetsAdditionalConfiguration").getLabel()).isEqualTo("true");
 
         store.commitTransaction();
     }
