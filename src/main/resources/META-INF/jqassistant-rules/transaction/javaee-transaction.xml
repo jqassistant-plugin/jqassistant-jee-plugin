@@ -16,20 +16,31 @@
              (type:Type)-[:DECLARES]->(transactionalMethod:Method),
              (transactionalMethod:Java:Method)-[:INHERITED_FROM*0..]->(definedMethod:Java:Method)-[:ANNOTATED_BY]->(annotation:Java:Annotation),
              (annotation)-[:OF_TYPE]->(annotationType:Type {fqn: 'javax.transaction.Transactional'})
+           WHERE
+             NOT definedMethod.visibility = "private"
            OPTIONAL MATCH
              (annotation)-[:HAS]->(propagation:Value {name: 'value'})-[:IS]->(propagationType:Java:Field)
+           OPTIONAL MATCH
+             (annotation)-[:HAS]->(configurationParameter:Value)
+           WHERE
+             // transaction configuration parameters besides the propagation
+             configurationParameter.name <> "value"
            WITH
              type,
              transactionalMethod,
-             COALESCE(SPLIT(propagationType.signature,' ')[1], 'REQUIRED') AS effectivePropagationType
-           WHERE
-             NOT definedMethod.visibility = "private"
+             COALESCE(SPLIT(propagationType.signature,' ')[1], 'REQUIRED') AS effectivePropagationType,
+             CASE WHEN configurationParameter IS NOT NULL THEN true ELSE false END AS additionalTransactionConfiguration
            SET
              transactionalMethod:JEE:Transactional
            SET
              transactionalMethod.transactionPropagation = effectivePropagationType
+           SET
+             transactionalMethod.additionalTransactionConfiguration = additionalTransactionConfiguration
            RETURN
-             type as Type, transactionalMethod as TransactionalMethod
+             type as Type,
+             transactionalMethod as TransactionalMethod,
+             transactionalMethod.transactionPropagation AS TransactionPropagation,
+             transactionalMethod.additionalTransactionConfiguration
         ]]></cypher>
     </concept>
 
@@ -44,25 +55,34 @@
              (transactionalClass:Type)-[:EXTENDS|IMPLEMENTS*0..]->(:Type)-[:ANNOTATED_BY]->(annotation:Java:Annotation),
              (annotation)-[:OF_TYPE]->(annotationType:Type {fqn: 'javax.transaction.Transactional'}),
              (transactionalClass)-[:DECLARES]->(definedMethod:Java:Method)<-[:INHERITED_FROM*0..]-(transactionalMethod:Java:Method)
-           OPTIONAL MATCH
-             (annotation)-[:HAS]->(propagation:Value {name: 'value'})-[:IS]->(propagationType:Java:Field)
-           WITH
-             transactionalClass,
-             transactionalMethod,
-             COALESCE(SPLIT(propagationType.signature,' ')[1], 'REQUIRED') AS effectivePropagationType
            WHERE NOT (
              definedMethod:Constructor
              OR (definedMethod.static IS NOT NULL and definedMethod.static)
              OR definedMethod.visibility = "private"
            )
+           OPTIONAL MATCH
+             (annotation)-[:HAS]->(propagation:Value {name: 'value'})-[:IS]->(propagationType:Java:Field)
+           OPTIONAL MATCH
+             (annotation)-[:HAS]->(configurationParameter:Value)
+           WHERE
+             // transaction configuration parameters besides the propagation
+             configurationParameter.name <> "value"
+           WITH
+             transactionalClass,
+             transactionalMethod,
+             COALESCE(SPLIT(propagationType.signature,' ')[1], 'REQUIRED') AS effectivePropagationType,
+             CASE WHEN configurationParameter IS NOT NULL THEN true ELSE false END AS additionalTransactionConfiguration
            SET
              transactionalMethod:JEE:Transactional
            SET
              transactionalMethod.transactionPropagation = effectivePropagationType
+           SET
+             transactionalMethod.additionalTransactionConfiguration = additionalTransactionConfiguration
            RETURN
              transactionalClass as TransactionalClass,
              transactionalMethod as TransactionalMethod,
-             transactionalMethod.transactionPropagation AS TransactionPropagation
+             transactionalMethod.transactionPropagation AS TransactionPropagation,
+             transactionalMethod.additionalTransactionConfiguration AS AdditionalTransactionConfiguration
         ]]></cypher>
     </concept>
     

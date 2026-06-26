@@ -11,7 +11,7 @@
         <requiresConcept refId="jee-transaction:TransactionalMethod"/>
         <requiresConcept refId="java:GeneratedType"/>
         <requiresConcept refId="java:MemberInheritedFrom"/>
-        <description>Transactional methods must not be invoked from the same class or from a subclass within the inheritance hierarchy if the transactional semantics of the invoked method requires a change to the current transaction handling.</description>
+        <description>Transactional methods must not be invoked from the same class or from a subclass within the inheritance hierarchy if the transactional semantics of the invoked method requires a change to the current transaction handling or the invoked method sets an additional configuration parameter.</description>
         <cypher><![CDATA[
             // If the target transaction semantics is SUPPORTS, the transaction handling will not change regardless of the source transaction semantics. It is therefore handled separately in the WHERE clause.
             // The transaction semantics 'NONE' is assigned to methods neither implicitly (class-level) nor explicitly (method-level) annotated as transactional.
@@ -54,11 +54,14 @@
               OR (sourceMethod.synthetic IS NOT NULL AND sourceMethod.synthetic)
               // Private callers themselves are not handled as violations since only non-private callers are relevant regarding transaction handling
               OR sourceMethod.visibility = 'private'
-              OR (
-                {sourceTxSemantics: sourceTxSemantics, targetTxSemantics: targetTxSemantics} IN semanticsCombinationsWithoutTransactionChange
+            )
+            AND NOT (
+              (
+                // If the targetTxMethod has the SUPPORTS semantics, it never changes the current transaction
+                targetTxMethod.transactionPropagation = 'SUPPORTS'
+                OR {sourceTxSemantics: sourceTxSemantics, targetTxSemantics: targetTxSemantics} IN semanticsCombinationsWithoutTransactionChange
               )
-              // If the targetTxMethod has the SUPPORTS semantics, it never changes the current transaction
-              OR targetTxMethod.transactionPropagation = 'SUPPORTS'
+              AND targetTxMethod.additionalTransactionConfiguration = false
             )
             RETURN
               DISTINCT callingType as Type,
@@ -66,6 +69,7 @@
               sourceTxSemantics AS SourceTransactionalSemantics,
               targetTxMethod AS TargetTransactionalMethod,
               targetTxSemantics AS TargetTransactionalSemantics,
+              targetTxMethod.additionalTransactionConfiguration AS TargetMethodSetsAdditionalConfiguration,
               invokes[0].lineNumber as LineNumber
             ORDER BY
               Type.fqn, SourceMethod.name, TargetTransactionalMethod.name
@@ -97,14 +101,15 @@
     </constraint>
 
     <concept id="jee-transaction:TransactionalMethod">
-        <description>Provides transactional methods as ":JEE:Transactional:Method".</description>
+        <description>Provides transactional methods as ":JEE:Transactional:Method" and its configuration.</description>
         <cypher><![CDATA[
            MATCH
              (type:Type)-[:DECLARES]->(transactionalMethod:JEE:Transactional:Method)
            RETURN
              type as Type,
              transactionalMethod as TransactionalMethod,
-             transactionalMethod.transactionPropagation as TransactionPropagation
+             transactionalMethod.transactionPropagation as TransactionPropagation,
+             transactionalMethod.additionalTransactionConfiguration as AdditionalTransactionConfiguration
            ORDER BY
              type.fqn, transactionalMethod.signature
         ]]></cypher>
