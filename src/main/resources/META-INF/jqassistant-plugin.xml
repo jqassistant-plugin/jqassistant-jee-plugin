@@ -78,6 +78,9 @@
         <resource>jsf/jsf.xml</resource>
         <resource>jsf/jakartaee-jsf.xml</resource>
         <resource>jsf/javaee-jsf.xml</resource>
+        <resource>jws/jws.xml</resource>
+        <resource>jws/jakartaee-jws.xml</resource>
+        <resource>jws/javaee-jws.xml</resource>
         <resource>resource/jee-resource.xml</resource>
         <resource>resource/jakartaee-resource.xml</resource>
         <resource>resource/javaee-resource.xml</resource>
