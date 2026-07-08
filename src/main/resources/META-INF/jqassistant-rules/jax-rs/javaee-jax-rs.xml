@@ -35,4 +35,18 @@
     ]]></cypher>
     </concept>
 
+    <concept id="javaee-jax-rs:Provider">
+        <providesConcept refId="jax-rs:Provider"/>
+        <providesConcept refId="jee-injection:Injectable"/>
+        <description>Labels all types annotated with @javax.ws.rs.ext.Provider with "JaxRS", "Provider", "JEE" and "Injectable".</description>
+        <cypher><![CDATA[
+            MATCH
+              (t:Java:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]-(:Java:Type {fqn: "javax.ws.rs.ext.Provider"})
+            SET
+              t:JaxRS:Provider:JEE:Injectable
+            RETURN
+              t AS Provider
+        ]]></cypher>
+    </concept>
+
 </jqassistant-rules>

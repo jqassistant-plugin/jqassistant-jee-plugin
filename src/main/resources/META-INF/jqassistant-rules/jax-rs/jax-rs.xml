@@ -12,4 +12,14 @@
     ]]></cypher>
     </concept>
 
+    <concept id="jax-rs:Provider">
+        <description>Abstract concept that returns all types labeled with "JaxRS" and "Provider".</description>
+        <cypher><![CDATA[
+            MATCH
+              (t:Type:JaxRS:Provider)
+            RETURN
+              t AS Provider
+    ]]></cypher>
+    </concept>
+
 </jqassistant-rules>
