@@ -191,24 +191,21 @@
     <constraint id="jee-injection:InjectablesMustOnlyBeHeldInInjectables">
         <requiresConcept refId="jee-injection:Injectable"/>
         <requiresConcept refId="java:GeneratedType"/>
-        <description>Injectable classes must not be held as fields in non-injectable classes.</description>
+        <description>Injectable classes must not be held as fields in non-injectable classes. If an abstract class holds injectable classes, the corresponding fields are only reported if a non-injectable subclass exists.</description>
         <cypher><![CDATA[
             MATCH
-              (artifact:Artifact)-[:CONTAINS]->(t:Type)-[:DECLARES]->(f:Field)-[:OF_TYPE]->(fType:Type:JEE:Injectable:CDI)
+              (artifact:Artifact)-[:CONTAINS]->(t:Type)-[:EXTENDS*0..]->(:Type)-[:DECLARES]->(f:Field)-[:OF_TYPE]->(fType:Type:JEE:Injectable:CDI)
             WHERE NOT (
               artifact:Test
               or t:Generated
               or t:JEE:Injectable
+              or t.abstract IS NOT NULL
               or f.synthetic IS NOT NULL // exclude synthetic inner class field referencing the outer class
             )
             WITH
               t, collect(DISTINCT fType.fqn) AS fields
-            OPTIONAL MATCH
-              (t)<-[:EXTENDS|IMPLEMENTS*]-(injectableImpl:Type:JEE:CDI:Injectable)
             WITH
-              t, fields, count(DISTINCT injectableImpl) AS injectableImplCnt
-            WHERE
-              t.abstract IS NULL OR injectableImplCnt = 0
+              t, fields
             RETURN
               t AS NonInjectableHavingInjectablesAsField, fields AS Fields
         ]]></cypher>
