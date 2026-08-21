@@ -1,0 +1,11 @@
+package org.jqassistant.plugin.jee.transaction.set.inheritance.simple.semantics.javax;
+
+import javax.transaction.Transactional;
+
+@Transactional
+public class JavaxSimpleTransactionalClass {
+
+    public void methodWithRequiredSemantics() {}
+
+    public void methodWithOverriddenSemantics() {}
+}

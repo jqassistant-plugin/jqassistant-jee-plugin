@@ -1,0 +1,23 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+
+    <concept id="jakartaee-jws:WebService">
+        <providesConcept refId="jws:WebService"/>
+        <providesConcept refId="jee-injection:Injectable"/>
+        <!--
+            WebServices can make use of DI without being CDI beans or EJBs themselves.
+            So they are labeled with :JEE and :Injectable but neither with :CDI nor with :EJB.
+        -->
+        <description>Labels all types annotated with @jakarta.jws.WebService with "JWS", "WebService", "JEE" and "Injectable".</description>
+        <cypher><![CDATA[
+            MATCH
+              (t:Java:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]-(:Java:Type {fqn: "jakarta.jws.WebService"})
+            SET
+              t:JWS:WebService:JEE:Injectable
+            RETURN
+              t AS `WebService`
+    ]]></cypher>
+    </concept>
+    
+</jqassistant-rules>

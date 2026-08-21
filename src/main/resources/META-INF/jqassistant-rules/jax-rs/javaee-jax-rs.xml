@@ -1,0 +1,52 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+
+    <concept id="javaee-jax-rs:PathResourceByAnnotatedType">
+        <providesConcept refId="jax-rs:PathResource"/>
+        <providesConcept refId="jee-injection:Injectable"/>
+        <!--
+            Resources annotated with @Path can make use of DI without being CDI beans or EJBs themselves.
+            So they are labeled with :JEE and :Injectable but neither with :CDI nor with :EJB.
+        -->
+        <description>Labels all types annotated with @javax.ws.rs.Path with "JaxRS", "PathResource", "JEE" and "Injectable".</description>
+        <cypher><![CDATA[
+            MATCH
+              (t:Java:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]-(:Java:Type {fqn: "javax.ws.rs.Path"})
+            SET
+              t:JaxRS:PathResource:JEE:Injectable
+            RETURN
+              t AS PathResource
+    ]]></cypher>
+    </concept>
+
+    <concept id="javaee-jax-rs:PathResourceByAnnotatedMethod">
+        <providesConcept refId="jax-rs:PathResource"/>
+        <providesConcept refId="jee-injection:Injectable"/>
+        <description>Labels all types annotated with @javax.ws.rs.Path with "JaxRS", "PathResource", "JEE" and "Injectable".</description>
+        <cypher><![CDATA[
+            MATCH
+              (t:Java:Type)-[:DECLARES]->(m:Java:Method),
+              (m)-[:ANNOTATED_BY]->()-[:OF_TYPE]-(:Java:Type {fqn: "javax.ws.rs.Path"})
+            SET
+              t:JaxRS:PathResource:JEE:Injectable
+            RETURN
+              t AS PathResource
+    ]]></cypher>
+    </concept>
+
+    <concept id="javaee-jax-rs:Provider">
+        <providesConcept refId="jax-rs:Provider"/>
+        <providesConcept refId="jee-injection:Injectable"/>
+        <description>Labels all types annotated with @javax.ws.rs.ext.Provider with "JaxRS", "Provider", "JEE" and "Injectable".</description>
+        <cypher><![CDATA[
+            MATCH
+              (t:Java:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]-(:Java:Type {fqn: "javax.ws.rs.ext.Provider"})
+            SET
+              t:JaxRS:Provider:JEE:Injectable
+            RETURN
+              t AS Provider
+        ]]></cypher>
+    </concept>
+
+</jqassistant-rules>

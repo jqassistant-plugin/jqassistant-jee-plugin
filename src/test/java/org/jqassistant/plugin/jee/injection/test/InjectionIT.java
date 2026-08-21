@@ -227,9 +227,11 @@ public class InjectionIT extends AbstractJavaPluginIT {
 
     private static Stream<Arguments> injectableOfNonInjectableClasses() {
         return Stream.of(Arguments.of(JavaxBeanProducerWithConstraintViolations.class, JavaxInjectableA.class, JavaxNonInjectableType.class,
-                        JavaxLocalEjb.class, JavaxNonCdiInjectable.class),
+                        JavaxLocalEjb.class, JavaxNonCdiInjectable.class, JavaxAbstractClassHoldingInjectable.class, JavaxConcreteInjectableSubclass.class,
+                        JavaxConcreteSubclassWithInheritedInjectable.class, JavaxConcreteSubclassWithOwnAndInheritedInjectable.class),
                 Arguments.of(JakartaBeanProducerWithConstraintViolations.class, JakartaInjectableA.class, JakartaNonInjectableType.class,
-                        JakartaLocalEjb.class, JakartaNonCdiInjectable.class));
+                        JakartaLocalEjb.class, JakartaNonCdiInjectable.class, JakartaAbstractClassHoldingInjectable.class, JakartaConcreteInjectableSubclass.class,
+                        JakartaConcreteSubclassWithInheritedInjectable.class, JakartaConcreteSubclassWithOwnAndInheritedInjectable.class));
     }
 
     /**
@@ -254,12 +256,15 @@ public class InjectionIT extends AbstractJavaPluginIT {
      */
     @ParameterizedTest
     @MethodSource("injectableOfNonInjectableClasses")
-    void injectableOfNonInjectable(Class<?> producerWithViolations, Class<?> injectableA, Class<?> nonInjectable, Class<?> localEjb, Class<?> nonCdiInjectable) throws Exception {
-        scanClasses(producerWithViolations, injectableA, nonInjectable, localEjb, nonCdiInjectable);
+    void injectableOfNonInjectable(Class<?> producerWithViolations, Class<?> injectableA, Class<?> nonInjectable, Class<?> localEjb, Class<?> nonCdiInjectable,
+                                   Class<?> abstractClass, Class<?> concreteSubclass, Class<?> concreteSubclassWithInheritedInjectable,
+                                   Class<?> concreteSubclassWithOwnAndInheritedInjectable) throws Exception {
+        scanClasses(producerWithViolations, injectableA, nonInjectable, localEjb, nonCdiInjectable, abstractClass, concreteSubclass,
+                concreteSubclassWithInheritedInjectable, concreteSubclassWithOwnAndInheritedInjectable);
         final Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesMustOnlyBeHeldInInjectables");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
-        assertThat(constraintResult.getRows().size()).isEqualTo(2);
+        assertThat(constraintResult.getRows().size()).isEqualTo(4);
 
         final Map<String, List<?>> violations = constraintResult.getRows().stream()
                 .map(Row::getColumns)
@@ -268,7 +273,8 @@ public class InjectionIT extends AbstractJavaPluginIT {
                         map -> (List<?>)  map.get("Fields").getValue()
                 ));
 
-        Assertions.assertThat(violations.keySet()).containsExactlyInAnyOrder(producerWithViolations.getName(), nonInjectable.getName());
+        Assertions.assertThat(violations.keySet()).containsExactlyInAnyOrder(producerWithViolations.getName(), nonInjectable.getName(),
+                concreteSubclassWithInheritedInjectable.getName(), concreteSubclassWithOwnAndInheritedInjectable.getName());
         Assertions.assertThat(violations.get(nonInjectable.getName()))
                 .asInstanceOf(InstanceOfAssertFactories.LIST).containsExactly(injectableA.getName());
         Assertions.assertThat(violations.get(producerWithViolations.getName()))

@@ -77,6 +77,12 @@
         <resource>jsf/jsf.xml</resource>
         <resource>jsf/jakartaee-jsf.xml</resource>
         <resource>jsf/javaee-jsf.xml</resource>
+        <resource>jws/jws.xml</resource>
+        <resource>jws/jakartaee-jws.xml</resource>
+        <resource>jws/javaee-jws.xml</resource>
+        <resource>jax-rs/jax-rs.xml</resource>
+        <resource>jax-rs/jakartaee-jax-rs.xml</resource>
+        <resource>jax-rs/javaee-jax-rs.xml</resource>
         <resource>resource/jee-resource.xml</resource>
         <resource>resource/jakartaee-resource.xml</resource>
         <resource>resource/javaee-resource.xml</resource>

@@ -101,6 +101,9 @@
              transactionalMethod:JEE:Transactional
            SET
              transactionalMethod.transactionPropagation = 'REQUIRED'
+           SET
+             // Additional configuration parameters cannot be set on EJBs.
+             transactionalMethod.additionalTransactionConfiguration = false
            RETURN
              transactionalClass as TransactionalClass, collect(transactionalMethod) as TransactionalMethods
         ]]></cypher>
