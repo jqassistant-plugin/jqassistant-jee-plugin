@@ -25,7 +25,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static com.buschmais.jqassistant.core.report.api.model.Result.Status.SUCCESS;
-import static com.buschmais.jqassistant.core.report.api.model.Result.Status.WARNING;
 import static com.buschmais.jqassistant.plugin.java.test.assertj.TypeDescriptorCondition.typeDescriptor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
@@ -143,7 +142,7 @@ class InterceptorIT extends AbstractJavaPluginIT {
         scanClassPathDirectory(new File(getClassesDirectory(InterceptorIT.class), "cdi/5_0"));
         scanClasses(JavaxInactiveCustomInterceptor.class, JakartaInactiveCustomInterceptor.class);
         final Result<Concept> conceptResult = applyConcept("interceptor:ActivatedInterceptor");
-        assertThat(conceptResult.getStatus()).isEqualTo(WARNING);
+        assertThat(conceptResult.getStatus()).isEqualTo(SUCCESS);
         store.beginTransaction();
         final List<TypeDescriptor> conceptResultTypes = conceptResult.getRows()
                 .stream()

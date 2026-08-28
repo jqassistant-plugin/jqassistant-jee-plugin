@@ -83,7 +83,7 @@ public class InjectionIT extends AbstractJavaPluginIT {
         assertThat(constraintResult.getRows()).hasSize(1);
         final TypeDescriptor actualType = (TypeDescriptor) constraintResult.getRows().get(0).getColumns().get("Type").getValue();
         assertThat(actualType).is(typeDescriptor(classToScan));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Invocation").getLabel()).endsWith("void beanProducerAccessor()");
+        assertThat(constraintResult.getRows().get(0).getColumns().get("Invocation").getLabel()).endsWith("void beanProducerAccessor():52");
         store.commitTransaction();
     }
 
