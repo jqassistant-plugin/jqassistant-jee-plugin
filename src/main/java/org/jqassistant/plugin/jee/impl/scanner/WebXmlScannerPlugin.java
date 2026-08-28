@@ -432,8 +432,7 @@ public class WebXmlScannerPlugin extends AbstractScannerPlugin<FileResource, Web
     private static TypeDescriptor resolveType(String fqn, ScannerContext context) {
         TypeResolver typeResolver = context.peekOrDefault(TypeResolver.class, null);
         if (typeResolver != null) {
-            return typeResolver.resolve(fqn, context)
-                    .getTypeDescriptor();
+            return typeResolver.resolve(fqn, context);
         }
         // TOOD verify if a default type resolver can be provided instead
         TypeDescriptor typeDescriptor = context.getStore()

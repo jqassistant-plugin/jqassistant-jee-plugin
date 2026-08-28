@@ -79,8 +79,7 @@ public class BeansXmlScannerPlugin extends AbstractScannerPlugin<FileResource, B
         if (alternatives != null) {
             for (JAXBElement<String> element : alternatives.getClazzOrStereotype()) {
                 TypeDescriptor alternative = context.peek(TypeResolver.class)
-                        .resolve(element.getValue(), context)
-                        .getTypeDescriptor();
+                        .resolve(element.getValue(), context);
                 beansXmlDescriptor.getAlternatives()
                         .add(alternative);
             }
@@ -90,8 +89,7 @@ public class BeansXmlScannerPlugin extends AbstractScannerPlugin<FileResource, B
     private void addTypes(List<String> typeNames, List<TypeDescriptor> types, ScannerContext scannerContext) {
         for (String typeName : typeNames) {
             TypeDescriptor type = scannerContext.peek(TypeResolver.class)
-                    .resolve(typeName, scannerContext)
-                    .getTypeDescriptor();
+                    .resolve(typeName, scannerContext);
             types.add(type);
         }
     }

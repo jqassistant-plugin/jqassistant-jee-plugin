@@ -10,7 +10,6 @@
 
         <class>org.jqassistant.plugin.jee.api.model.EnterpriseApplicationArchiveDescriptor</class>
         <class>org.jqassistant.plugin.jee.api.model.WebApplicationArchiveDescriptor</class>
-        <class>org.jqassistant.plugin.jee.api.model.WebApplicationDirectoryDescriptor</class>
         <class>org.jqassistant.plugin.jee.api.model.WebXmlDescriptor</class>
         <class>org.jqassistant.plugin.jee.api.model.SessionConfigDescriptor</class>
         <class>org.jqassistant.plugin.jee.api.model.ErrorPageDescriptor</class>

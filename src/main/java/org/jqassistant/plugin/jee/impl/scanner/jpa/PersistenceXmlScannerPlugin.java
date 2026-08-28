@@ -93,8 +93,7 @@ public class PersistenceXmlScannerPlugin extends AbstractScannerPlugin<FileResou
 
         for (String clazz : persistenceUnit.getClazz()) {
             TypeDescriptor typeDescriptor = scannerContext.peek(TypeResolver.class)
-                    .resolve(clazz, scannerContext)
-                    .getTypeDescriptor();
+                    .resolve(clazz, scannerContext);
             persistenceUnitDescriptor.getContains()
                     .add(typeDescriptor);
         }
