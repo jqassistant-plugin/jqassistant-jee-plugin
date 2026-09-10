@@ -80,6 +80,9 @@
         <resource>jws/jws.xml</resource>
         <resource>jws/jakartaee-jws.xml</resource>
         <resource>jws/javaee-jws.xml</resource>
+        <resource>servlet/jakartaee-servlet.xml</resource>
+        <resource>servlet/javaee-servlet.xml</resource>
+        <resource>servlet/servlet.xml</resource>
         <resource>jax-rs/jax-rs.xml</resource>
         <resource>jax-rs/jakartaee-jax-rs.xml</resource>
         <resource>jax-rs/javaee-jax-rs.xml</resource>

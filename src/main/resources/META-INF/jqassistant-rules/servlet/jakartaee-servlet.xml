@@ -1,0 +1,33 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+
+    <concept id="jakartaee-servlet:WebFilter">
+        <providesConcept refId="servlet:WebFilter"/>
+        <providesConcept refId="jee-injection:Injectable"/>
+        <description>Labels all types annotated with @jakarta.servlet.annotation.WebFilter with "ServletAPI", "Web", "Filter", "JEE" and "Injectable".</description>
+        <cypher><![CDATA[
+            MATCH
+              (webFilter:Java:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]-(:Java:Type {fqn: "jakarta.servlet.annotation.WebFilter"})
+            SET
+              webFilter:ServletAPI:Web:Filter:JEE:Injectable
+            RETURN
+              webFilter AS WebFilter
+    ]]></cypher>
+    </concept>
+
+    <concept id="jakartaee-servlet:WebServlet">
+        <providesConcept refId="servlet:WebServlet"/>
+        <providesConcept refId="jee-injection:Injectable"/>
+        <description>Labels all types annotated with @jakarta.servlet.annotation.WebServlet with "ServletAPI", "Web", "Servlet", "JEE" and "Injectable".</description>
+        <cypher><![CDATA[
+            MATCH
+              (webServlet:Java:Type)-[:ANNOTATED_BY]->()-[:OF_TYPE]-(:Java:Type {fqn: "jakarta.servlet.annotation.WebServlet"})
+            SET
+              webServlet:ServletAPI:Web:Servlet:JEE:Injectable
+            RETURN
+              webServlet AS WebServlet
+    ]]></cypher>
+    </concept>
+
+</jqassistant-rules>
