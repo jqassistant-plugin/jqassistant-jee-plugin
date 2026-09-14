@@ -1,0 +1,25 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 http://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+
+    <concept id="servlet:WebFilter">
+        <description>Abstract concept that returns all types labeled with "ServletAPI", "Web", and "Filter".</description>
+        <cypher><![CDATA[
+            MATCH
+              (webFilter:Type:ServletAPI:Web:Filter)
+            RETURN
+              webFilter AS WebFilter
+        ]]></cypher>
+    </concept>
+
+    <concept id="servlet:WebServlet">
+        <description>Abstract concept that returns all types labeled with "ServletAPI", "Web", and "Servlet".</description>
+        <cypher><![CDATA[
+            MATCH
+              (webServlet:Type:ServletAPI:Web:Servlet)
+            RETURN
+              webServlet AS WebServlet
+        ]]></cypher>
+    </concept>
+
+</jqassistant-rules>
