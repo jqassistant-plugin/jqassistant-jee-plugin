@@ -90,9 +90,11 @@ public class InjectionIT extends AbstractJavaPluginIT {
     private static Stream<Arguments> beanProducerWithConstraintViolationsAndInjectablesAndApplicationResource() {
         return Stream.of(
                 Arguments.of(JavaxBeanProducerWithConstraintViolations.class, JavaxInjectableA.class, JavaxInjectableB.class,
-                        JavaxInjectableC.class, JavaxInjectableD.class, JavaxApplicationResource.class, JavaxNonCdiInjectable.class),
+                        JavaxInjectableC.class, JavaxInjectableD.class, JavaxApplicationResource.class, JavaxNonCdiInjectable.class,
+                        JavaxInjectableBFactory.class),
                 Arguments.of(JakartaBeanProducerWithConstraintViolations.class, JakartaInjectableA.class, JakartaInjectableB.class,
-                        JakartaInjectableC.class, JakartaInjectableD.class, JakartaApplicationResource.class, JakartaNonCdiInjectable.class)
+                        JakartaInjectableC.class, JakartaInjectableD.class, JakartaApplicationResource.class, JakartaNonCdiInjectable.class,
+                        JakartaInjectableBFactory.class)
         );
     }
 
@@ -104,8 +106,9 @@ public class InjectionIT extends AbstractJavaPluginIT {
     @ParameterizedTest
     @MethodSource("beanProducerWithConstraintViolationsAndInjectablesAndApplicationResource")
     void injectableFieldManipulation(Class<?> producerWithViolations, Class<?> injectableA, Class<?> injectableB,
-                                     Class<?> injectableC, Class<?> injectableD, Class<?> resource, Class<?> nonCdiInjectable) throws Exception {
-        scanClasses(producerWithViolations, injectableA, injectableB, injectableC, injectableD, resource, nonCdiInjectable);
+                                     Class<?> injectableC, Class<?> injectableD, Class<?> resource, Class<?> nonCdiInjectable,
+                                     Class<?> factory) throws Exception {
+        scanClasses(producerWithViolations, injectableA, injectableB, injectableC, injectableD, resource, nonCdiInjectable, factory);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:FieldsOfInjectablesMustNotBeManipulated");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
@@ -114,28 +117,28 @@ public class InjectionIT extends AbstractJavaPluginIT {
         Row row1 = constraintResult.getRows().get(0);
         assertThat((TypeDescriptor) row1.getColumns().get("Injectable").getValue())
                 .is(typeDescriptor(injectableA));
-        assertThat(((WritesDescriptor) row1.getColumns().get("WriteToInjectableField").getValue()).getLineNumber()).isEqualTo(51);
+        assertThat(((WritesDescriptor) row1.getColumns().get("WriteToInjectableField").getValue()).getLineNumber()).isEqualTo(54);
         assertThat((MethodDescriptor) row1.getColumns().get("Method").getValue()).is(methodDescriptor(injectableA, "accessFieldStatically"));
         assertThat((FieldDescriptor) row1.getColumns().get("Field").getValue()).is(fieldDescriptor(injectableA, "fieldOfInjectableC"));
 
         Row row2 = constraintResult.getRows().get(1);
         assertThat((TypeDescriptor) row2.getColumns().get("Injectable").getValue())
                 .is(typeDescriptor(injectableA));
-        assertThat(((WritesDescriptor) row2.getColumns().get("WriteToInjectableField").getValue()).getLineNumber()).isEqualTo(34);
+        assertThat(((WritesDescriptor) row2.getColumns().get("WriteToInjectableField").getValue()).getLineNumber()).isEqualTo(37);
         assertThat((MethodDescriptor) row2.getColumns().get("Method").getValue()).is(methodDescriptor(injectableA, "manipulateField"));
         assertThat((FieldDescriptor) row2.getColumns().get("Field").getValue()).is(fieldDescriptor(injectableA, "fieldOfInjectableB"));
 
         Row row3 = constraintResult.getRows().get(2);
         assertThat((TypeDescriptor) row3.getColumns().get("Injectable").getValue())
                 .is(typeDescriptor(injectableA));
-        assertThat(((WritesDescriptor) row3.getColumns().get("WriteToInjectableField").getValue()).getLineNumber()).isEqualTo(40);
+        assertThat(((WritesDescriptor) row3.getColumns().get("WriteToInjectableField").getValue()).getLineNumber()).isEqualTo(43);
         assertThat((MethodDescriptor) row3.getColumns().get("Method").getValue()).is(methodDescriptor(injectableA, "manipulateFieldViaPostConstruct"));
         assertThat((FieldDescriptor) row3.getColumns().get("Field").getValue()).is(fieldDescriptor(injectableA, "fieldOfInjectableB"));
 
         Row row4 = constraintResult.getRows().get(3);
         assertThat((TypeDescriptor) row4.getColumns().get("Injectable").getValue())
                 .is(typeDescriptor(injectableA));
-        assertThat(((WritesDescriptor) row4.getColumns().get("WriteToInjectableField").getValue()).getLineNumber()).isEqualTo(46);
+        assertThat(((WritesDescriptor) row4.getColumns().get("WriteToInjectableField").getValue()).getLineNumber()).isEqualTo(49);
         assertThat((MethodDescriptor) row4.getColumns().get("Method").getValue()).is(methodDescriptor(injectableA, "manipulateFieldViaPreDestroy"));
         assertThat((FieldDescriptor) row4.getColumns().get("Field").getValue()).is(fieldDescriptor(injectableA, "fieldOfInjectableB"));
 
@@ -150,8 +153,9 @@ public class InjectionIT extends AbstractJavaPluginIT {
     @ParameterizedTest
     @MethodSource("beanProducerWithConstraintViolationsAndInjectablesAndApplicationResource")
     void finalFieldsForInjectables(Class<?> producerWithViolations, Class<?> injectableA, Class<?> injectableB,
-                                   Class<?> injectableC, Class<?> injectableD, Class<?> resource, Class<?> nonCdiInjectable) throws Exception {
-        scanClasses(producerWithViolations, injectableA, injectableB, injectableC, injectableD, resource, nonCdiInjectable);
+                                   Class<?> injectableC, Class<?> injectableD, Class<?> resource, Class<?> nonCdiInjectable,
+                                   Class<?> factory) throws Exception {
+        scanClasses(producerWithViolations, injectableA, injectableB, injectableC, injectableD, resource, nonCdiInjectable, factory);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesShouldBeHeldInFinalFields");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
@@ -170,8 +174,9 @@ public class InjectionIT extends AbstractJavaPluginIT {
     @ParameterizedTest
     @MethodSource("beanProducerWithConstraintViolationsAndInjectablesAndApplicationResource")
     void staticAccessOfInjectables(Class<?> producerWithViolations, Class<?> injectableA, Class<?> injectableB,
-                                   Class<?> injectableC, Class<?> injectableD, Class<?> resource, Class<?> nonCdiInjectable) throws Exception {
-        scanClasses(producerWithViolations, injectableA, injectableB, injectableC, injectableD, resource, nonCdiInjectable);
+                                   Class<?> injectableC, Class<?> injectableD, Class<?> resource, Class<?> nonCdiInjectable,
+                                   Class<?> factory) throws Exception {
+        scanClasses(producerWithViolations, injectableA, injectableB, injectableC, injectableD, resource, nonCdiInjectable, factory);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesMustNotBeAccessedStatically");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
@@ -191,8 +196,9 @@ public class InjectionIT extends AbstractJavaPluginIT {
     @ParameterizedTest
     @MethodSource("beanProducerWithConstraintViolationsAndInjectablesAndApplicationResource")
     void staticVariablesForInjectables(Class<?> producerWithViolations, Class<?> injectableA, Class<?> injectableB,
-                                       Class<?> injectableC, Class<?> injectableD, Class<?> resource, Class<?> nonCdiInjectable) throws Exception {
-        scanClasses(producerWithViolations, injectableA, injectableB, injectableC, injectableD, resource, nonCdiInjectable);
+                                       Class<?> injectableC, Class<?> injectableD, Class<?> resource, Class<?> nonCdiInjectable,
+                                       Class<?> factory) throws Exception {
+        scanClasses(producerWithViolations, injectableA, injectableB, injectableC, injectableD, resource, nonCdiInjectable, factory);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesMustNotBeHeldInStaticVariables");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
@@ -205,23 +211,28 @@ public class InjectionIT extends AbstractJavaPluginIT {
 
     /**
      * Verifies the constraint "jee-injection:InjectablesMustNotBeInstantiated".
-     *
-     * @throws IOException If the test fails.
      */
     @ParameterizedTest
     @MethodSource("beanProducerWithConstraintViolationsAndInjectablesAndApplicationResource")
     void injectableInstantiation(Class<?> producerWithViolations, Class<?> injectableA, Class<?> injectableB,
-                                 Class<?> injectableC, Class<?> injectableD, Class<?> resource, Class<?> nonCdiInjectable) throws Exception {
-        scanClasses(producerWithViolations, injectableA, injectableB, injectableC, injectableD, resource, nonCdiInjectable);
+                                 Class<?> injectableC, Class<?> injectableD, Class<?> resource, Class<?> nonCdiInjectable,
+                                 Class<?> factory) throws Exception {
+        scanClasses(producerWithViolations, injectableA, injectableB, injectableC, injectableD, resource, nonCdiInjectable, factory);
         Result<Constraint> constraintResult = validateConstraint("jee-injection:InjectablesMustNotBeInstantiated");
         store.beginTransaction();
         assertThat(constraintResult.getStatus()).isEqualTo(Result.Status.FAILURE);
-        assertThat(constraintResult.getRows()).hasSize(1);
-        assertThat((TypeDescriptor) constraintResult.getRows().get(0).getColumns().get("Type").getValue())
-                .is(typeDescriptor(injectableA));
-        assertThat(constraintResult.getRows().get(0).getColumns().get("Method").getLabel()).endsWith("void injectableInstantiation()");
-        assertThat((TypeDescriptor) constraintResult.getRows().get(0).getColumns().get("Injectable").getValue())
-                .is(typeDescriptor(injectableB));
+        assertThat(constraintResult.getRows()).hasSize(2);
+
+        final Row row0 = constraintResult.getRows().get(0);
+        assertThat((TypeDescriptor) row0.getColumns().get("Type").getValue()).is(typeDescriptor(injectableA));
+        assertThat((MethodDescriptor) row0.getColumns().get("Method").getValue()).is(methodDescriptor(injectableA, "someOtherMethodUsingFactoryMethod"));
+        assertThat((TypeDescriptor) row0.getColumns().get("Injectable").getValue()).is(typeDescriptor(injectableB));
+
+        final Row row1 = constraintResult.getRows().get(1);
+        assertThat((TypeDescriptor) row1.getColumns().get("Type").getValue()).is(typeDescriptor(injectableA));
+        assertThat((MethodDescriptor) row1.getColumns().get("Method").getValue()).is(methodDescriptor(injectableA, "injectableInstantiation"));
+        assertThat((TypeDescriptor) row1.getColumns().get("Injectable").getValue()).is(typeDescriptor(injectableB));
+
         store.commitTransaction();
     }
 

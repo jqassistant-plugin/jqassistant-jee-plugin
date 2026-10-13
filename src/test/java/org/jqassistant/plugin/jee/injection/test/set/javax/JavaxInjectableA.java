@@ -3,9 +3,12 @@ package org.jqassistant.plugin.jee.injection.test.set.javax;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 public class JavaxInjectableA {
+
+    private final JavaxInjectableBFactory factory = new JavaxInjectableBFactory();
 
     private JavaxInjectableB fieldOfInjectableB;
 
@@ -65,4 +68,15 @@ public class JavaxInjectableA {
         // Legal instantiation
         JavaxNonCdiInjectable javaxNonCdiInjectable = new JavaxNonCdiInjectable();
     }
+
+    @Produces
+    public JavaxInjectableB beanProducerUsingFactoryMethod() {
+        return factory.createInjectableB();
+    }
+
+    public JavaxInjectableB someOtherMethodUsingFactoryMethod() {
+        // Illegal factory call
+        return factory.createInjectableB();
+    }
+
 }

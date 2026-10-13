@@ -159,7 +159,7 @@
         <requiresConcept refId="jee-injection:Injectable"/>
         <requiresConcept refId="java:GeneratedType"/>
         <description>
-            If the constructor of an Injectable is called from another Injectable, then the caller must be a Bean Producer or a private method
+            If the constructor of an Injectable is called from another Injectable, then the caller must be a Bean Producer or a factory method
             called from a Bean Producer.
         </description>
         <cypher><![CDATA[
@@ -175,10 +175,7 @@
                 method:Constructor
                 AND (type)-[:EXTENDS*0..]->(injectable)
               )
-              OR (
-                method.visibility = 'private'
-                AND (:JEE:BeanProducer)-[:INVOKES]->(method)
-              )
+              OR (:JEE:BeanProducer)-[:INVOKES]->(method)
             )
             RETURN
               type as Type, method as Method, injectable as Injectable
