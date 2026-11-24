@@ -3,9 +3,12 @@ package org.jqassistant.plugin.jee.injection.test.set.jakarta;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.annotation.Resource;
+import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
 
 public class JakartaInjectableA {
+
+    private final JakartaInjectableBFactory factory = new JakartaInjectableBFactory();
 
     private JakartaInjectableB fieldOfInjectableB;
 
@@ -65,4 +68,15 @@ public class JakartaInjectableA {
         // Legal instantiation
         JakartaNonCdiInjectable jakartaNonCdiInjectable = new JakartaNonCdiInjectable();
     }
+
+    @Produces
+    public JakartaInjectableB beanProducerUsingFactoryMethod() {
+        return factory.createInjectableB();
+    }
+
+    public JakartaInjectableB someOtherMethodUsingFactoryMethod() {
+        // Illegal factory call
+        return factory.createInjectableB();
+    }
+
 }
